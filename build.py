@@ -27,6 +27,11 @@ BOOK_DIR = SITE_DIR / "book"
 
 # The reverse structure: polynomial first, evidence last
 SECTIONS = {
+    "00_narrative": {
+        "title": "The Story",
+        "files": [],
+        "local": ["partial_agreement.md"],
+    },
     "01_alphabet": {
         "title": "The Alphabet",
         "files": [
