@@ -32,6 +32,7 @@ SECTIONS = {
         "files": [
             ("harmonics", "sync_cost/derivations/10_minimum_alphabet.md"),
         ],
+        "local": ["14_three_dimensions.md"],
     },
     "02_field_equation": {
         "title": "The Field Equation",
@@ -116,6 +117,9 @@ def fetch_sources(local_root=None):
     return result
 
 
+CONTENT_DIR = SITE_DIR / "content"
+
+
 def write_book_sources(sources):
     if BOOK_DIR.exists():
         shutil.rmtree(BOOK_DIR)
@@ -124,6 +128,66 @@ def write_book_sources(sources):
         dest = BOOK_DIR / section_id / Path(path).name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
+
+    # Copy local content files
+    for section_id, section in SECTIONS.items():
+        for filename in section.get("local", []):
+            src = CONTENT_DIR / filename
+            dest = BOOK_DIR / section_id / filename
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dest)
+            print(f"  {section_id}/{filename} (local)")
+
+
+def generate_schrodinger_intro():
+    """Generate the K < 1 bridging page pointing to Derivation 12 Part II."""
+    text = """\
+# K < 1: Schrödinger
+
+At subcritical coupling ($K < 1$), the order parameter $r$ is small and a
+finite fraction of oscillators remain **unlocked** — they sit in the gaps
+of the devil's staircase with no definite winding number. These are the
+quantum states.
+
+The linearized Kuramoto equation in this regime, with nearest-neighbor
+diffusive coupling on a spatial lattice, reduces to the **Schrödinger
+equation** via the Madelung transform:
+
+$$i\\hbar\\partial_t\\Psi = -\\frac{\\hbar^2}{2m}\\nabla^2\\Psi + V\\Psi$$
+
+where:
+
+| Kuramoto quantity | QM quantity |
+|---|---|
+| Unlocked oscillator density $\\rho(x,t)$ | $|\\Psi|^2$ |
+| Accumulated phase perturbation $S(x,t)$ | Action / phase |
+| Tongue-structure effective potential | $V(x)$ |
+| Stern-Brocot RG diffusion $D_{\\text{eff}}$ | Quantum potential $\\frac{\\hbar^2}{2m}\\frac{\\nabla^2\\sqrt{\\rho}}{\\sqrt{\\rho}}$ |
+
+The quantum potential — the term that distinguishes quantum from classical
+mechanics — arises from the **Stern-Brocot renormalization group flow**:
+per-level variance $\\sigma^2(d) \\sim \\phi^{-4d}$ sums to a convergent
+constant $D_{\\text{eff}} = D_0 / (1 - \\phi^{-4})$.
+
+The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/12_continuum_limits.md),
+Part II (§156 ff.).
+
+## Three regimes, one equation
+
+| Coupling | Regime | Physics |
+|---|---|---|
+| $K = 1$ | Critical — all oscillators locked | **General relativity** (Lovelock uniqueness) |
+| $0 < K < 1$ | Subcritical — partial locking | **Quantum mechanics** (Madelung / Nelson) |
+| $K \\to 0$ | No coupling | Free particles — no structure |
+
+The transition between regimes is controlled by the **same** self-consistency
+equation on the Stern-Brocot tree (Derivation 11). There is no
+quantization postulate.
+"""
+    dest = BOOK_DIR / "04_schrodinger" / "04_schrodinger_intro.md"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(text)
+    print("  04_schrodinger/04_schrodinger_intro.md")
 
 
 def generate_schrodinger_intro():
@@ -193,6 +257,9 @@ def generate_toc():
         for repo_name, path in section.get("files", []):
             name = Path(path).stem
             lines.append(f"      - file: {section_id}/{name}")
+        for local_name in section.get("local", []):
+            name = Path(local_name).stem
+            lines.append(f"      - file: {section_id}/{name}")
 
     toc_path = BOOK_DIR / "_toc.yml"
     toc_path.write_text("\n".join(lines) + "\n")
@@ -212,7 +279,7 @@ execute:
   allow_errors: false
 
 repository:
-  url: https://github.com/nickjoven/submediant
+  url: https://github.com/nickjoven/submediant-site
 
 html:
   use_issues_button: false
@@ -249,51 +316,70 @@ def generate_intro():
     intro = """\
 # Submediant
 
-**One polynomial. Four primitives. Two PDEs.**
-
 N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
 
 ---
 
-The characteristic polynomial of the Fibonacci recurrence:
+You know this pattern.
 
-$$x^2 - x - 1 = 0$$
+Take two numbers. Add them. Use the last two to make the next.
+1, 1, 2, 3, 5, 8, 13, 21 ...
 
-has two roots: $\\phi = (1+\\sqrt{5})/2$ and $\\psi = -1/\\phi$.
+The ratio between consecutive terms settles to $\\phi = (1 + \\sqrt{5})/2$.
+This is the golden ratio — the number that appears in sunflower spirals,
+nautilus shells, and the branching of trees.
 
-Three properties of these roots produce three physical predictions:
+It also appears in the cosmic microwave background.
 
-| Root property | Prediction | Status |
+The polynomial behind the Fibonacci sequence, $x^2 - x - 1 = 0$,
+has two roots. Three properties of these roots correspond to three
+physical measurements:
+
+| What the roots do | What we observe | Residual |
 |---|---|---|
-| $|\\phi\\psi| = 1$ | Born rule exponent = 2 | Confirmed |
-| $\\phi^2 = \\phi + 1$ | Spectral tilt $n_s \\approx 0.965$ | Confirmed (Planck 2018) |
-| $\\phi - \\psi = \\sqrt{5}$ | $N_{\\text{efolds}} = 61.3 \\pm 0.7$ | Testable (CMB-S4, ~2028) |
+| Their product is $\\pm 1$ | Born rule: $P = |\\psi|^2$ | exact |
+| $\\phi^2 = \\phi + 1$ (self-similarity) | CMB spectral tilt $n_s \\approx 0.965$ | 0.2% |
+| $\\phi - \\psi = \\sqrt{5}$ (gap width) | Inflation lasted $\\sim 61$ e-folds | CMB-S4, ~2028 |
 
-The framework is built from four irreducible primitives — integers,
-mediants, the fixed-point equation, and the parabola — which generate
-the circle, the devil's staircase, Arnold tongues, and the Born rule
-as compositions.
+The same polynomial also determines that space has **three dimensions**
+(because fractions have two parts: $\\dim \\mathrm{SL}(2) = 2^2 - 1 = 3$)
+and that the MOND acceleration scale is $a_0 = 1.25 \\times 10^{-10}$ m/s$^2$
+(observed: $1.2 \\times 10^{-10}$, residual: 4%).
 
-A single self-consistency equation on the Stern-Brocot tree:
+The frequency distribution $g(\\omega)$ — the one remaining free input —
+determines itself: the distribution that produces dynamics reproducing
+that distribution is unique. Zero free parameters. Zero free functions.
 
-$$N(p/q) = N_{\\text{total}} \\times g(p/q) \\times w(p/q,\\, K_0 F[N])$$
+This site walks through the derivation chain, starting from the polynomial
+and arriving at known physics:
 
-produces, in its continuum limits:
+**Counting** $\\to$ **fractions** $\\to$ **the golden ratio** $\\to$
+**mode-locking** $\\to$ **the devil's staircase** $\\to$ **a self-consistency
+equation** $\\to$ **general relativity and quantum mechanics**
 
-- **$K = 1$**: the Einstein field equations $G_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = 8\\pi G\\, T_{\\mu\\nu}$ (uniquely, via Lovelock's theorem)
-- **$K < 1$**: the Schrödinger equation $i\\hbar\\partial_t\\Psi = -\\frac{\\hbar^2}{2m}\\nabla^2\\Psi + V\\Psi$ (via Madelung + Nelson)
-- **$K \\to 0$**: no structure (free particles)
+Each step is a composition of the previous ones. The
+[derivation chain](https://github.com/nickjoven/harmonics) is 14 steps.
+The [engine](https://github.com/nickjoven/rfe) solves the equation
+numerically and produces all predictions from a single run.
 
-One equation. One parameter. Three regimes. Two PDEs.
+## Where to start
+
+- **Curious about the math?** Start with [The Alphabet](01_alphabet/10_minimum_alphabet.html) —
+  four primitives that generate all the structure
+- **Curious about the physics?** Start with [Predictions](05_predictions/01_born_rule.html) —
+  what the framework says and how it compares to measurement
+- **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
+  how one equation produces general relativity, uniquely
+- **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
+  `python -m rfe --observables`
 
 ## Source
 
-- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–13)
-- [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — $\\Lambda \\to a_0$: one frequency, zero free parameters
+- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–14)
+- [rfe](https://github.com/nickjoven/rfe) — the engine (one equation, all observables)
+- [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — one frequency, zero free parameters
 - [201](https://github.com/nickjoven/201) — gravity as synchronization in a frictional medium
 - [intersections](https://github.com/nickjoven/intersections) — stick-slip dynamics and dark matter
-
-All pages on this site are **executed during build** — outputs are computed, not pre-rendered.
 """
     (BOOK_DIR / "intro.md").write_text(intro)
     print("  intro.md")

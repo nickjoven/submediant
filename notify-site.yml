@@ -23,7 +23,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SITE_DISPATCH_TOKEN }}
-          repository: nickjoven/submediant
+          repository: nickjoven/submediant-site
           event-type: source-updated
           client-payload: >-
             {
