@@ -48,9 +48,8 @@ SECTIONS = {
     },
     "04_schrodinger": {
         "title": "K < 1: Schrödinger",
-        "files": [
-            # 12_continuum_limits.md Part II covers this; linked from 03
-        ],
+        "files": [],
+        "generated": ["04_schrodinger_intro.md"],
     },
     "05_predictions": {
         "title": "Predictions",
@@ -127,6 +126,57 @@ def write_book_sources(sources):
         dest.write_bytes(data)
 
 
+def generate_schrodinger_intro():
+    """Generate the K < 1 bridging page pointing to Derivation 12 Part II."""
+    text = """\
+# K < 1: Schrödinger
+
+At subcritical coupling ($K < 1$), the order parameter $r$ is small and a
+finite fraction of oscillators remain **unlocked** — they sit in the gaps
+of the devil's staircase with no definite winding number. These are the
+quantum states.
+
+The linearized Kuramoto equation in this regime, with nearest-neighbor
+diffusive coupling on a spatial lattice, reduces to the **Schrödinger
+equation** via the Madelung transform:
+
+$$i\\hbar\\partial_t\\Psi = -\\frac{\\hbar^2}{2m}\\nabla^2\\Psi + V\\Psi$$
+
+where:
+
+| Kuramoto quantity | QM quantity |
+|---|---|
+| Unlocked oscillator density $\\rho(x,t)$ | $|\\Psi|^2$ |
+| Accumulated phase perturbation $S(x,t)$ | Action / phase |
+| Tongue-structure effective potential | $V(x)$ |
+| Stern-Brocot RG diffusion $D_{\\text{eff}}$ | Quantum potential $\\frac{\\hbar^2}{2m}\\frac{\\nabla^2\\sqrt{\\rho}}{\\sqrt{\\rho}}$ |
+
+The quantum potential — the term that distinguishes quantum from classical
+mechanics — arises from the **Stern-Brocot renormalization group flow**:
+per-level variance $\\sigma^2(d) \\sim \\phi^{-4d}$ sums to a convergent
+constant $D_{\\text{eff}} = D_0 / (1 - \\phi^{-4})$.
+
+The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/12_continuum_limits.md),
+Part II (§156 ff.).
+
+## Three regimes, one equation
+
+| Coupling | Regime | Physics |
+|---|---|---|
+| $K = 1$ | Critical — all oscillators locked | **General relativity** (Lovelock uniqueness) |
+| $0 < K < 1$ | Subcritical — partial locking | **Quantum mechanics** (Madelung / Nelson) |
+| $K \\to 0$ | No coupling | Free particles — no structure |
+
+The transition between regimes is controlled by the **same** self-consistency
+equation on the Stern-Brocot tree (Derivation 11). There is no
+quantization postulate.
+"""
+    dest = BOOK_DIR / "04_schrodinger" / "04_schrodinger_intro.md"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(text)
+    print("  04_schrodinger/04_schrodinger_intro.md")
+
+
 def generate_toc():
     lines = [
         "format: jb-book",
@@ -137,6 +187,9 @@ def generate_toc():
         section = SECTIONS[section_id]
         lines.append(f'  - caption: "{section["title"]}"')
         lines.append("    chapters:")
+        for gen_name in section.get("generated", []):
+            name = Path(gen_name).stem
+            lines.append(f"      - file: {section_id}/{name}")
         for repo_name, path in section.get("files", []):
             name = Path(path).stem
             lines.append(f"      - file: {section_id}/{name}")
@@ -250,7 +303,6 @@ def build_book():
     cmd = [
         sys.executable, "-c",
         "from jupyter_book.cli.main import main; main()",
-        "--",
         "build", str(BOOK_DIR),
     ]
     print(f"  Running jupyter-book build {BOOK_DIR}")
@@ -276,6 +328,7 @@ def main():
 
     print("\nGenerating Jupyter Book config...")
     generate_config()
+    generate_schrodinger_intro()
     generate_toc()
     generate_intro()
 
