@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+book/_build/
+book/manifest.json
+.ket/cas/
