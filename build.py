@@ -300,12 +300,11 @@ All pages on this site are **executed during build** — outputs are computed, n
 
 
 def build_book():
-    cmd = [
-        sys.executable, "-c",
-        "from jupyter_book.cli.main import main; main()",
-        "build", str(BOOK_DIR),
-    ]
-    print(f"  Running jupyter-book build {BOOK_DIR}")
+    # jupyter-book <2 exposes CLI via jupyter_book.cli.main
+    # jupyter-book >=2 uses myst and has a different CLI
+    # We require <2 (see requirements.txt); use the entry point directly.
+    cmd = [shutil.which("jupyter-book") or "jupyter-book", "build", str(BOOK_DIR)]
+    print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=False)
     return result.returncode == 0
 
