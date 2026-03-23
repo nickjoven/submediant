@@ -1,34 +1,61 @@
-name: Build & Deploy Site
+name: Build and Deploy Site
 
 on:
-  push:
-    branches: [main]
+  # Trigger from source repo dispatches
   repository_dispatch:
     types: [source-updated]
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual rebuild"
+        required: false
+
+  # Scheduled fallback — daily at 06:00 UTC
+  schedule:
+    - cron: "0 6 * * *"
+
+  # Build on pushes to main (site repo's own changes)
+  push:
+    branches: [main]
+
+# Only allow one build at a time
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout site repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
-        run: pip install 'jupyter-book<1'
+        run: pip install -r requirements.txt
 
-      - name: Build site
+      - name: Log trigger info
+        run: |
+          echo "Trigger: ${{ github.event_name }}"
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "Source: ${{ github.event.client_payload.repository }}"
+            echo "Ref: ${{ github.event.client_payload.ref }}"
+            echo "SHA: ${{ github.event.client_payload.sha }}"
+          fi
+
+      - name: Fetch sources and build Jupyter Book
         run: python build.py
 
       - name: Upload artifact
@@ -41,8 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deploy
         uses: actions/deploy-pages@v4
