@@ -228,7 +228,7 @@ execute:
   allow_errors: false
 
 repository:
-  url: https://github.com/nickjoven/submediant
+  url: https://github.com/nickjoven/submediant-site
 
 html:
   use_issues_button: false
@@ -265,51 +265,59 @@ def generate_intro():
     intro = """\
 # Submediant
 
-**One polynomial. Four primitives. Two PDEs.**
-
 N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
 
 ---
 
-The characteristic polynomial of the Fibonacci recurrence:
+You know this pattern.
 
-$$x^2 - x - 1 = 0$$
+Take two numbers. Add them. Use the last two to make the next.
+1, 1, 2, 3, 5, 8, 13, 21 ...
 
-has two roots: $\\phi = (1+\\sqrt{5})/2$ and $\\psi = -1/\\phi$.
+The ratio between consecutive terms settles to $\\phi = (1 + \\sqrt{5})/2$.
+This is the golden ratio — the number that appears in sunflower spirals,
+nautilus shells, and the branching of trees.
 
-Three properties of these roots produce three physical predictions:
+It also appears in the cosmic microwave background.
 
-| Root property | Prediction | Status |
+The polynomial behind the Fibonacci sequence, $x^2 - x - 1 = 0$,
+has two roots. Three properties of these roots correspond to three
+physical measurements:
+
+| What the roots do | What we observe | Status |
 |---|---|---|
-| $|\\phi\\psi| = 1$ | Born rule exponent = 2 | Confirmed |
-| $\\phi^2 = \\phi + 1$ | Spectral tilt $n_s \\approx 0.965$ | Confirmed (Planck 2018) |
-| $\\phi - \\psi = \\sqrt{5}$ | $N_{\\text{efolds}} = 61.3 \\pm 0.7$ | Testable (CMB-S4, ~2028) |
+| Their product is $\\pm 1$ | Probability squares: $P = |\\psi|^2$ | Confirmed |
+| $\\phi^2 = \\phi + 1$ (self-similarity) | CMB spectral tilt $n_s \\approx 0.965$ | Confirmed (Planck 2018) |
+| $\\phi - \\psi = \\sqrt{5}$ (gap width) | Inflation lasted $\\sim 61$ e-folds | Testable (CMB-S4, ~2028) |
 
-The framework is built from four irreducible primitives — integers,
-mediants, the fixed-point equation, and the parabola — which generate
-the circle, the devil's staircase, Arnold tongues, and the Born rule
-as compositions.
+This site walks through the derivation chain — starting from the
+polynomial, building up through the mathematics of synchronization,
+and arriving at known physics. The path goes:
 
-A single self-consistency equation on the Stern-Brocot tree:
+**Counting** $\\to$ **fractions** $\\to$ **the golden ratio** $\\to$
+**mode-locking** $\\to$ **the devil's staircase** $\\to$ **a self-consistency
+equation** $\\to$ **general relativity and quantum mechanics**
 
-$$N(p/q) = N_{\\text{total}} \\times g(p/q) \\times w(p/q,\\, K_0 F[N])$$
+Each step is a composition of the previous ones. Nothing is postulated
+that wasn't built. The [derivation chain](https://github.com/nickjoven/harmonics)
+is 14 steps, and every computational result on this site is executed
+during build — you can check the arithmetic yourself.
 
-produces, in its continuum limits:
+## Where to start
 
-- **$K = 1$**: the Einstein field equations $G_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = 8\\pi G\\, T_{\\mu\\nu}$ (uniquely, via Lovelock's theorem)
-- **$K < 1$**: the Schrödinger equation $i\\hbar\\partial_t\\Psi = -\\frac{\\hbar^2}{2m}\\nabla^2\\Psi + V\\Psi$ (via Madelung + Nelson)
-- **$K \\to 0$**: no structure (free particles)
-
-One equation. One parameter. Three regimes. Two PDEs.
+- **Curious about the math?** Start with [The Alphabet](01_alphabet/10_minimum_alphabet.html) —
+  four primitives that generate all the structure
+- **Curious about the physics?** Start with [Predictions](05_predictions/01_born_rule.html) —
+  what the framework says and how it compares to measurement
+- **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
+  how one equation produces general relativity, uniquely
 
 ## Source
 
-- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–13)
-- [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — $\\Lambda \\to a_0$: one frequency, zero free parameters
+- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–14)
+- [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — one frequency, zero free parameters
 - [201](https://github.com/nickjoven/201) — gravity as synchronization in a frictional medium
 - [intersections](https://github.com/nickjoven/intersections) — stick-slip dynamics and dark matter
-
-All pages on this site are **executed during build** — outputs are computed, not pre-rendered.
 """
     (BOOK_DIR / "intro.md").write_text(intro)
     print("  intro.md")
