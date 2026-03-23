@@ -32,6 +32,7 @@ SECTIONS = {
         "files": [
             ("harmonics", "sync_cost/derivations/10_minimum_alphabet.md"),
         ],
+        "local": ["14_three_dimensions.md"],
     },
     "02_field_equation": {
         "title": "The Field Equation",
@@ -116,6 +117,9 @@ def fetch_sources(local_root=None):
     return result
 
 
+CONTENT_DIR = SITE_DIR / "content"
+
+
 def write_book_sources(sources):
     if BOOK_DIR.exists():
         shutil.rmtree(BOOK_DIR)
@@ -124,6 +128,15 @@ def write_book_sources(sources):
         dest = BOOK_DIR / section_id / Path(path).name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
+
+    # Copy local content files
+    for section_id, section in SECTIONS.items():
+        for filename in section.get("local", []):
+            src = CONTENT_DIR / filename
+            dest = BOOK_DIR / section_id / filename
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dest)
+            print(f"  {section_id}/{filename} (local)")
 
 
 def generate_schrodinger_intro():
@@ -192,6 +205,9 @@ def generate_toc():
             lines.append(f"      - file: {section_id}/{name}")
         for repo_name, path in section.get("files", []):
             name = Path(path).stem
+            lines.append(f"      - file: {section_id}/{name}")
+        for local_name in section.get("local", []):
+            name = Path(local_name).stem
             lines.append(f"      - file: {section_id}/{name}")
 
     toc_path = BOOK_DIR / "_toc.yml"
