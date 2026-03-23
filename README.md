@@ -1,4 +1,5 @@
-# submediant
+# [submediant](https://nickjoven.github.io/submediant/intro.html)
+- https://nickjoven.github.io/submediant/intro.html
 
 One polynomial. Four primitives. Two PDEs.
 
