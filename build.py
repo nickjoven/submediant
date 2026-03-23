@@ -291,7 +291,7 @@ physical measurements:
 
 | What the roots do | What we observe | Residual |
 |---|---|---|
-| Their product is $\\pm 1$ | Born rule: $P = |\\psi|^2$ | exact |
+| Their product is $\\pm 1$ | Born rule: $P = \\lvert\\psi\\rvert^2$ | exact |
 | $\\phi^2 = \\phi + 1$ (self-similarity) | CMB spectral tilt $n_s \\approx 0.965$ | 0.2% |
 | $\\phi - \\psi = \\sqrt{5}$ (gap width) | Inflation lasted $\\sim 61$ e-folds | CMB-S4, ~2028 |
 
