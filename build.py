@@ -164,7 +164,7 @@ where:
 
 | Kuramoto quantity | QM quantity |
 |---|---|
-| Unlocked oscillator density $\\rho(x,t)$ | $|\\Psi|^2$ |
+| Unlocked oscillator density $\\rho(x,t)$ | $\\lvert\\Psi\\rvert^2$ |
 | Accumulated phase perturbation $S(x,t)$ | Action / phase |
 | Tongue-structure effective potential | $V(x)$ |
 | Stern-Brocot RG diffusion $D_{\\text{eff}}$ | Quantum potential $\\frac{\\hbar^2}{2m}\\frac{\\nabla^2\\sqrt{\\rho}}{\\sqrt{\\rho}}$ |
