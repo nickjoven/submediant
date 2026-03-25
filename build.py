@@ -130,6 +130,213 @@ REPOS = {
 MANIFEST_PATH = "MANIFEST.yml"
 
 
+# -- Derivation metadata for machine-readable graph and glossary -----------
+
+DERIVATIONS = {
+    1:  {"title": "Born Rule", "status": "derived",
+         "claim": "P = |psi|^2 from basin measure and tongue geometry",
+         "depends": [10], "section": "05_predictions"},
+    2:  {"title": "Spectral Tilt (Original)", "status": "superseded",
+         "claim": "CMB tilt from synchronization cost gradient",
+         "depends": [], "section": "05_predictions",
+         "note": "Superseded by Derivation 4"},
+    3:  {"title": "MOND Acceleration Scale", "status": "derived",
+         "claim": "a_0 = 1.25e-10 m/s^2 from synchronization cost",
+         "depends": [9, 11], "section": "06_evidence"},
+    4:  {"title": "Spectral Tilt (Reframed)", "status": "derived",
+         "claim": "n_s from mode-locking structure on Stern-Brocot tree",
+         "depends": [10], "section": "05_predictions"},
+    5:  {"title": "Two Forces", "status": "derived",
+         "claim": "Coherence and decoherence as the two structural forces",
+         "depends": [10], "section": "04_schrodinger"},
+    6:  {"title": "Planck Scale", "status": "derived",
+         "claim": "Planck scale from N=3 minimum self-sustaining loop",
+         "depends": [10, 14], "section": "06_evidence"},
+    7:  {"title": "Measurement Collapse", "status": "derived",
+         "claim": "Collapse as tongue traversal with duration tau ~ 1/sqrt(epsilon)",
+         "depends": [1, 10], "section": "06_evidence"},
+    8:  {"title": "High-z MOND", "status": "testable",
+         "claim": "a_0(z) = cH(z)/(2*pi) tested against high-z surveys",
+         "depends": [3, 9], "section": "05_predictions"},
+    9:  {"title": "Fidelity Bound", "status": "derived",
+         "claim": "Self-referential fidelity bound unifying MOND and collapse",
+         "depends": [1, 7, 10, 11], "section": "05_predictions"},
+    10: {"title": "Minimum Alphabet", "status": "derived",
+         "claim": "Four irreducible primitives: integers, mediant, fixed-point, parabola",
+         "depends": [29], "section": "01_alphabet"},
+    11: {"title": "Rational Field Equation", "status": "derived",
+         "claim": "Self-consistency on Stern-Brocot tree in exact rational arithmetic",
+         "depends": [10], "section": "02_field_equation"},
+    12: {"title": "Two Continuum Limits", "status": "derived",
+         "claim": "K=1 gives ADM/Einstein; K<1 linearized gives Schrodinger/Madelung",
+         "depends": [11, 14], "section": "03_einstein"},
+    13: {"title": "Einstein from Kuramoto", "status": "derived",
+         "claim": "Exact ADM from Kuramoto at K=1; uniqueness via Lovelock",
+         "depends": [12, 14, 15], "section": "03_einstein"},
+    14: {"title": "Three Dimensions", "status": "derived",
+         "claim": "d=3 forced by mediant -> SL(2,Z) -> SL(2,R) and self-consistent adjacency",
+         "depends": [10, 11], "section": "01_alphabet"},
+    15: {"title": "Lie Group Characterization", "status": "derived",
+         "claim": "SL(2,R) is the unique continuum substrate via four entrance conditions",
+         "depends": [14], "section": "01_alphabet"},
+    16: {"title": "Variable Denominator", "status": "derived",
+         "claim": "Hz with changing denominator; de Sitter as orientable fixed point",
+         "depends": [9, 11], "section": "02_field_equation"},
+    17: {"title": "Rank-1 Temporal Causation", "status": "derived",
+         "claim": "Arrow of time is the rank-1 Frechet factorization of the update map",
+         "depends": [11], "section": "02_field_equation"},
+    18: {"title": "Mobius Container", "status": "derived",
+         "claim": "Antiperiodic BC forces rational phase divisions from single perturbation",
+         "depends": [11, 14], "section": "04a_topology"},
+    19: {"title": "Klein Bottle", "status": "derived",
+         "claim": "XOR parity collapses 1764 mode pairs to 4 survivors at (q1,q2)=(2,3),(3,2)",
+         "depends": [18], "section": "04a_topology"},
+    20: {"title": "XOR Continuum Limit", "status": "derived",
+         "claim": "XOR filter dissolves in continuum; frame bundle gives Pin+(3) not SU(3)",
+         "depends": [19], "section": "04a_topology",
+         "note": "Honest negative: does not produce the Standard Model gauge group"},
+    21: {"title": "Two Open Paths", "status": "proposed",
+         "claim": "Five binary-outcome computations to resolve discrete vs continuous gauge",
+         "depends": [20], "section": "04a_topology"},
+    22: {"title": "Engineering Targets", "status": "proposed",
+         "claim": "Four physical devices from established results",
+         "depends": [18, 19], "section": "04a_topology"},
+    23: {"title": "Three Zeros", "status": "derived",
+         "claim": "Three structurally distinct zeros yield 1+3 decomposition",
+         "depends": [19], "section": "04a_topology"},
+    24: {"title": "Vacuum Energy", "status": "derived",
+         "claim": "Cosmological constant problem dissolves: Klein bottle has exactly 4 modes",
+         "depends": [19], "section": "04b_cosmology"},
+    25: {"title": "Farey Partition", "status": "derived",
+         "claim": "Omega_Lambda = |F_6|/(|F_6|+6) = 13/19 = 0.6842 (observed: 0.685)",
+         "depends": [19, 28], "section": "04b_cosmology"},
+    26: {"title": "Hierarchy", "status": "derived",
+         "claim": "Planck/Hubble ratio R = 6 * 13^54 (residual 0.48%)",
+         "depends": [25, 27], "section": "04b_cosmology"},
+    27: {"title": "Exponent", "status": "derived",
+         "claim": "Exponent 54 = q2 * q3^d derived from spatial dimension and Klein bottle",
+         "depends": [14, 19], "section": "04b_cosmology"},
+    28: {"title": "Farey Proof", "status": "derived",
+         "claim": "SO(2) structure at locked/unlocked boundary forces Farey counting",
+         "depends": [19, 11], "section": "04b_cosmology"},
+    29: {"title": "Mediant Derivation", "status": "derived",
+         "claim": "Mediant is the unique operation satisfying three simultaneous constraints",
+         "depends": [], "section": "01_alphabet"},
+}
+
+
+GLOSSARY = {
+    "golden ratio": {
+        "symbol": "phi",
+        "definition": "The positive root of x^2 - x - 1 = 0, equal to (1+sqrt(5))/2. "
+                      "The most irrational number; sits at the widest gap in the devil's staircase.",
+        "aka": ["phi"],
+    },
+    "Stern-Brocot tree": {
+        "definition": "The complete binary tree of all positive rationals, built by iterated "
+                      "mediants starting from 0/1 and 1/0. The natural coordinate system for "
+                      "the devil's staircase.",
+    },
+    "devil's staircase": {
+        "definition": "The winding number W(Omega) of the circle map as a function of driving "
+                      "frequency. A continuous, monotone function that is locally constant almost "
+                      "everywhere (on the Arnold tongues) yet maps [0,1] onto [0,1].",
+    },
+    "Arnold tongue": {
+        "definition": "A region in (Omega, K) parameter space where the circle map locks to "
+                      "a rational winding number p/q. Width scales as K^q at small coupling.",
+    },
+    "mode-locking": {
+        "definition": "The phenomenon where a driven oscillator synchronizes to a rational "
+                      "multiple of the driving frequency. The locked states form the Arnold tongues.",
+    },
+    "Kuramoto model": {
+        "definition": "A system of N coupled phase oscillators: d(theta_i)/dt = omega_i + "
+                      "(K/N) sum sin(theta_j - theta_i). The mean-field model of synchronization.",
+    },
+    "mediant": {
+        "definition": "The operation (a+c)/(b+d) on two fractions a/b and c/d. Derived in D29 "
+                      "as the unique operation satisfying monotonicity, denominator-additivity, "
+                      "and convergent-stability.",
+        "derivation": 29,
+    },
+    "Born rule": {
+        "definition": "The quantum measurement postulate P = |psi|^2. Here derived (D1) from "
+                      "saddle-node universality at Arnold tongue boundaries: Delta(theta) ~ sqrt(epsilon).",
+        "derivation": 1,
+    },
+    "order parameter": {
+        "symbol": "r",
+        "definition": "The magnitude of the mean field r*exp(i*psi) = (1/N) sum exp(i*theta_j). "
+                      "r=1 means full synchronization (K=1, gravity); r<1 means partial (K<1, QM).",
+    },
+    "ADM formalism": {
+        "definition": "The Arnowitt-Deser-Misner 3+1 decomposition of general relativity. "
+                      "Spacetime is foliated into spatial slices with lapse N, shift N^i, "
+                      "and 3-metric gamma_ij.",
+    },
+    "Lovelock theorem": {
+        "definition": "In 4D, the only divergence-free symmetric rank-2 tensor built from the "
+                      "metric and its first two derivatives is G_mu_nu + Lambda*g_mu_nu. "
+                      "Forces Einstein's equation uniquely at K=1 (D13).",
+        "derivation": 13,
+    },
+    "Madelung transform": {
+        "definition": "Writing Psi = sqrt(rho)*exp(iS/hbar), converting Schrodinger into "
+                      "continuity + Hamilton-Jacobi with a quantum pressure term. "
+                      "The K<1 continuum limit of the field equation (D12).",
+        "derivation": 12,
+    },
+    "Farey sequence": {
+        "symbol": "F_n",
+        "definition": "The ascending sequence of reduced fractions p/q in [0,1] with q <= n. "
+                      "|F_6| = 13 determines the dark energy fraction Omega_Lambda = 13/19 (D25).",
+        "derivation": 25,
+    },
+    "Klein bottle": {
+        "definition": "A closed non-orientable surface: two antiperiodic directions with XOR "
+                      "parity. The configuration space that collapses 1764 mode pairs to exactly "
+                      "4 survivors (D19).",
+        "derivation": 19,
+    },
+    "fidelity bound": {
+        "definition": "The self-referential constraint: the measurement instrument IS the "
+                      "measured dynamics. Unifies MOND transition and wavefunction collapse (D9).",
+        "derivation": 9,
+    },
+    "MOND": {
+        "definition": "Modified Newtonian Dynamics. Below acceleration a_0, gravitational "
+                      "dynamics deviate from Newton. Here a_0 = cH_0/(2*pi) / sqrt(g*(1/phi)) "
+                      "is derived, not postulated (D3).",
+        "derivation": 3,
+    },
+    "spectral tilt": {
+        "symbol": "n_s",
+        "definition": "The scalar spectral index of primordial perturbations. n_s = 1 is "
+                      "scale-invariant; observed n_s ~ 0.965. Derived from Stern-Brocot "
+                      "level sampling rate (D4).",
+        "derivation": 4,
+    },
+    "SL(2,R)": {
+        "definition": "The group of 2x2 real matrices with determinant 1. The unique "
+                      "continuum substrate: mediant -> SL(2,Z) -> SL(2,R). Its dimension "
+                      "(2^2 - 1 = 3) forces d=3 spatial dimensions (D14, D15).",
+        "derivation": 15,
+    },
+    "circle map": {
+        "definition": "theta_{n+1} = theta_n + Omega - (K/2*pi)*sin(2*pi*theta_n). "
+                      "The simplest model exhibiting mode-locking, Arnold tongues, "
+                      "and the devil's staircase.",
+    },
+    "rational field equation": {
+        "definition": "N(p/q) = N_total * g(p/q) * w(p/q, K_0*F[N]) on the Stern-Brocot "
+                      "tree. The self-consistency condition whose K=1 limit is Einstein "
+                      "and K<1 limit is Schrodinger (D11).",
+        "derivation": 11,
+    },
+}
+
+
 def fetch_file_github(repo_slug, path):
     url = f"https://raw.githubusercontent.com/{repo_slug}/main/{path}"
     return urlopen(Request(url), timeout=30).read()
@@ -307,6 +514,7 @@ html:
   favicon: ""
   extra_css:
     - _static/custom.css
+    - _static/glossary.css
 
 sphinx:
   config:
@@ -315,6 +523,8 @@ sphinx:
         macros:
           "RR": "\\\\mathbb{R}"
           "NN": "\\\\mathbb{N}"
+    html_js_files:
+      - glossary.js
     html_theme_options:
       navigation_with_keys: false
 """
@@ -407,6 +617,287 @@ numerically and produces all predictions from a single run.
     print("  intro.md")
 
 
+def generate_derivation_graph():
+    """Generate machine-readable derivation graph as JSON and JSON-LD."""
+    static_dir = BOOK_DIR / "_static"
+    static_dir.mkdir(exist_ok=True)
+
+    # Plain JSON graph for programmatic consumption
+    graph = {
+        "title": "Submediant Derivation Chain",
+        "description": "29 derivations from x^2 - x - 1 = 0 to general relativity and quantum mechanics",
+        "author": "N. Joven",
+        "license": "CC0 1.0",
+        "derivation_count": len(DERIVATIONS),
+        "free_parameters": 0,
+        "free_functions": 0,
+        "derivations": {},
+        "edges": [],
+    }
+    for num, d in sorted(DERIVATIONS.items()):
+        node = {
+            "number": num,
+            "title": d["title"],
+            "status": d["status"],
+            "claim": d["claim"],
+            "section": d["section"],
+            "depends_on": d["depends"],
+        }
+        if "note" in d:
+            node["note"] = d["note"]
+        graph["derivations"][str(num)] = node
+        for dep in d["depends"]:
+            graph["edges"].append({"from": dep, "to": num})
+
+    (static_dir / "derivation-graph.json").write_text(
+        json.dumps(graph, indent=2))
+    print("  _static/derivation-graph.json")
+
+    # JSON-LD for search engines and LLMs
+    jsonld = {
+        "@context": "https://schema.org",
+        "@type": "ScholarlyArticle",
+        "name": "Submediant",
+        "author": {"@type": "Person", "name": "N. Joven",
+                    "identifier": "https://orcid.org/0009-0008-0679-0812"},
+        "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "description": (
+            "A derivation chain showing how x^2 - x - 1 = 0 leads to "
+            "general relativity (K=1) and quantum mechanics (K<1) "
+            "with zero free parameters and zero free functions."
+        ),
+        "hasPart": [
+            {"@type": "Chapter", "name": f"Derivation {n}: {d['title']}",
+             "position": n, "description": d["claim"]}
+            for n, d in sorted(DERIVATIONS.items())
+        ],
+    }
+    (static_dir / "jsonld.json").write_text(json.dumps(jsonld, indent=2))
+    print("  _static/jsonld.json")
+
+
+def generate_glossary():
+    """Generate glossary data file and tooltip JS/CSS (off by default)."""
+    static_dir = BOOK_DIR / "_static"
+    static_dir.mkdir(exist_ok=True)
+
+    # Glossary JSON for machine consumption and JS tooltips
+    glossary_data = {}
+    for term, entry in GLOSSARY.items():
+        glossary_data[term] = {
+            "definition": entry["definition"],
+        }
+        if "symbol" in entry:
+            glossary_data[term]["symbol"] = entry["symbol"]
+        if "derivation" in entry:
+            glossary_data[term]["derivation"] = entry["derivation"]
+        if "aka" in entry:
+            glossary_data[term]["aka"] = entry["aka"]
+    (static_dir / "glossary.json").write_text(
+        json.dumps(glossary_data, indent=2))
+    print("  _static/glossary.json")
+
+    # Tooltip CSS
+    tooltip_css = """\
+/* Glossary tooltip styles — active only when [data-glossary="on"] is set on <html> */
+html[data-glossary="on"] .glossary-term {
+  border-bottom: 1px dotted var(--pst-color-secondary, #7ee787);
+  cursor: help;
+  position: relative;
+}
+html:not([data-glossary="on"]) .glossary-term {
+  /* No visual change when glossary is off */
+}
+.glossary-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--pst-color-surface, #1e1e2e);
+  color: var(--pst-color-text-base, #cdd6f4);
+  border: 1px solid var(--pst-color-border, #45475a);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  max-width: 360px;
+  min-width: 200px;
+  z-index: 1000;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+html[data-glossary="on"] .glossary-term:hover .glossary-tooltip,
+html[data-glossary="on"] .glossary-term:focus .glossary-tooltip {
+  display: block;
+}
+.glossary-tooltip .glossary-ref {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+#glossary-toggle {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 999;
+  background: var(--pst-color-surface, #1e1e2e);
+  color: var(--pst-color-text-base, #cdd6f4);
+  border: 1px solid var(--pst-color-border, #45475a);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+#glossary-toggle:hover {
+  opacity: 1;
+}
+"""
+    (static_dir / "glossary.css").write_text(tooltip_css)
+    print("  _static/glossary.css")
+
+    # Tooltip JS — scans text nodes and wraps glossary terms
+    tooltip_js = """\
+(function() {
+  "use strict";
+
+  var GLOSSARY = null;
+  var ACTIVE = localStorage.getItem("glossary") === "on";
+
+  function applyState() {
+    document.documentElement.setAttribute("data-glossary", ACTIVE ? "on" : "off");
+    var btn = document.getElementById("glossary-toggle");
+    if (btn) btn.textContent = ACTIVE ? "Glossary: ON" : "Glossary: OFF";
+  }
+
+  function createToggle() {
+    var btn = document.createElement("button");
+    btn.id = "glossary-toggle";
+    btn.type = "button";
+    btn.addEventListener("click", function() {
+      ACTIVE = !ACTIVE;
+      localStorage.setItem("glossary", ACTIVE ? "on" : "off");
+      applyState();
+    });
+    document.body.appendChild(btn);
+  }
+
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+  }
+
+  function annotateNode(textNode) {
+    var text = textNode.nodeValue;
+    if (!text || !text.trim()) return;
+    // Skip nodes inside tooltips, code blocks, math, headings
+    var parent = textNode.parentElement;
+    if (!parent) return;
+    var tag = parent.tagName;
+    if (tag === "CODE" || tag === "PRE" || tag === "SCRIPT" || tag === "STYLE") return;
+    if (parent.closest(".glossary-term, .glossary-tooltip, .MathJax, mjx-container, h1, h2, h3")) return;
+
+    var terms = Object.keys(GLOSSARY).sort(function(a, b) { return b.length - a.length; });
+    // Collect all terms and their aliases
+    var allPatterns = [];
+    terms.forEach(function(term) {
+      allPatterns.push({ pattern: term, key: term });
+      var entry = GLOSSARY[term];
+      if (entry.aka) {
+        entry.aka.forEach(function(a) { allPatterns.push({ pattern: a, key: term }); });
+      }
+    });
+    allPatterns.sort(function(a, b) { return b.pattern.length - a.pattern.length; });
+
+    var parts = allPatterns.map(function(p) { return escapeRegex(p.pattern); });
+    if (!parts.length) return;
+    var regex = new RegExp("\\\\b(" + parts.join("|") + ")\\\\b", "gi");
+    if (!regex.test(text)) return;
+
+    // Build a lookup from lowercase pattern to key
+    var lookup = {};
+    allPatterns.forEach(function(p) { lookup[p.pattern.toLowerCase()] = p.key; });
+
+    var fragment = document.createDocumentFragment();
+    var lastIndex = 0;
+    regex.lastIndex = 0;
+    var match;
+    var replaced = false;
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      var matched = match[0];
+      var key = lookup[matched.toLowerCase()];
+      var entry = GLOSSARY[key];
+      var span = document.createElement("span");
+      span.className = "glossary-term";
+      span.tabIndex = 0;
+      span.textContent = matched;
+      var tip = document.createElement("span");
+      tip.className = "glossary-tooltip";
+      tip.setAttribute("role", "tooltip");
+      tip.textContent = entry.definition;
+      if (entry.derivation) {
+        var ref = document.createElement("span");
+        ref.className = "glossary-ref";
+        ref.textContent = "See Derivation " + entry.derivation;
+        tip.appendChild(ref);
+      }
+      span.appendChild(tip);
+      fragment.appendChild(span);
+      lastIndex = regex.lastIndex;
+      replaced = true;
+    }
+    if (replaced) {
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+      parent.replaceChild(fragment, textNode);
+    }
+  }
+
+  function annotate() {
+    // Only annotate main content area
+    var main = document.querySelector("main, .bd-content, article, #main-content");
+    if (!main) main = document.body;
+    var walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    // Process in reverse to avoid invalidating walker
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      annotateNode(nodes[i]);
+    }
+  }
+
+  function init() {
+    fetch("_static/glossary.json")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        GLOSSARY = data;
+        createToggle();
+        applyState();
+        annotate();
+      })
+      .catch(function() {
+        // Glossary unavailable — degrade silently
+      });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+"""
+    (static_dir / "glossary.js").write_text(tooltip_js)
+    print("  _static/glossary.js")
+
+
 def build_book():
     # jupyter-book <2 exposes CLI via jupyter_book.cli.main
     # jupyter-book >=2 uses myst and has a different CLI
@@ -442,6 +933,10 @@ def main():
     generate_schrodinger_intro()
     generate_toc()
     generate_intro(framework_manifest)
+
+    print("\nGenerating machine-readable metadata...")
+    generate_derivation_graph()
+    generate_glossary()
 
     content_manifest = {k: hashlib.sha256(v[3]).hexdigest()[:16]
                         for k, v in sources.items()}
