@@ -76,17 +76,7 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/07_measurement_collapse.md"),
         ],
     },
-    "07_topology": {
-        "title": "Topology",
-        "files": [
-            ("harmonics", "sync_cost/derivations/18_mobius_container.md"),
-            ("harmonics", "sync_cost/derivations/19_klein_bottle.md"),
-            ("harmonics", "sync_cost/derivations/25_farey_partition.md"),
-            ("harmonics", "sync_cost/derivations/26_hierarchy.md"),
-            ("harmonics", "sync_cost/derivations/29_mediant_derivation.md"),
-        ],
-    },
-    "08_prior_work": {
+    "07_prior_work": {
         "title": "Prior Work",
         "files": [
             ("proslambenomenos", "proslambenomenos.md"),
@@ -322,26 +312,14 @@ and arriving at known physics:
 equation** $\\to$ **general relativity and quantum mechanics**
 
 Each step is a composition of the previous ones. The
-[derivation chain](https://github.com/nickjoven/harmonics) is 29 steps.
+[derivation chain](https://github.com/nickjoven/harmonics) is 14 steps.
 The [engine](https://github.com/nickjoven/rfe) solves the equation
 numerically and produces all predictions from a single run.
 
-| Prediction | Value | Observed | Residual |
-|---|---|---|---|
-| Spectral tilt $n_s$ | 0.963–0.966 | 0.9649 ± 0.0042 | < 0.2% |
-| Dark energy $\\Omega_\\Lambda$ | 13/19 = 0.6842 | 0.6847 ± 0.0073 | **0.07σ** |
-| Hierarchy $R$ | $6 \\times 13^{54}$ | 8.49 × 10⁶⁰ | 0.48% |
-| Born rule | $\\lvert\\psi\\rvert^2$ | $\\lvert\\psi\\rvert^2$ | exact |
-| Spatial dimension | 3 | 3 | exact |
-
 ## Where to start
 
-- **See the whole structure?** [Concept Graph](_static/graph.html) —
-  55 nodes, 67 edges, interactive. Drag, hover, explore.
 - **Curious about the math?** Start with [The Alphabet](01_alphabet/10_minimum_alphabet.html) —
   four primitives that generate all the structure
-- **Curious about the topology?** Start with [Topology](07_topology/18_mobius_container.html) —
-  the Klein bottle, 4 surviving modes, $\\Omega_\\Lambda = 13/19$
 - **Curious about the physics?** Start with [Predictions](05_predictions/01_born_rule.html) —
   what the framework says and how it compares to measurement
 - **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
@@ -351,7 +329,7 @@ numerically and produces all predictions from a single run.
 
 ## Source
 
-- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–29)
+- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–14)
 - [rfe](https://github.com/nickjoven/rfe) — the engine (one equation, all observables)
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — one frequency, zero free parameters
 - [201](https://github.com/nickjoven/201) — gravity as synchronization in a frictional medium
@@ -359,23 +337,6 @@ numerically and produces all predictions from a single run.
 """
     (BOOK_DIR / "intro.md").write_text(intro)
     print("  intro.md")
-
-
-def copy_graph_assets(local_root=None):
-    """Copy the interactive concept graph into the book's static assets."""
-    static_dir = BOOK_DIR / "_static"
-    static_dir.mkdir(parents=True, exist_ok=True)
-    for fname in ("graph.json", "graph.html"):
-        src_path = "sync_cost/derivations/" + fname
-        try:
-            if local_root:
-                data = fetch_file_local(local_root, "harmonics", src_path)
-            else:
-                data = fetch_file_github(REPOS["harmonics"], src_path)
-            (static_dir / fname).write_bytes(data)
-            print(f"  _static/{fname}")
-        except (FileNotFoundError, URLError, OSError) as e:
-            print(f"  _static/{fname} — MISSING ({e})")
 
 
 def build_book():
@@ -409,9 +370,6 @@ def main():
     generate_schrodinger_intro()
     generate_toc()
     generate_intro()
-
-    print("\nCopying graph assets...")
-    copy_graph_assets(local_root)
 
     manifest = {k: hashlib.sha256(v[3]).hexdigest()[:16]
                 for k, v in sources.items()}
