@@ -1,0 +1,12 @@
+[submodule "harmonics"]
+	path = harmonics
+	url = https://github.com/nickjoven/harmonics.git
+[submodule "proslambenomenos"]
+	path = proslambenomenos
+	url = https://github.com/nickjoven/proslambenomenos.git
+[submodule "201"]
+	path = 201
+	url = https://github.com/nickjoven/201.git
+[submodule "intersections"]
+	path = intersections
+	url = https://github.com/nickjoven/intersections.git

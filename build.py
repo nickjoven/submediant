@@ -41,6 +41,8 @@ SECTIONS = {
         "title": "The Alphabet",
         "files": [
             ("harmonics", "sync_cost/derivations/10_minimum_alphabet.md"),
+            ("harmonics", "sync_cost/derivations/29_mediant_derivation.md"),
+            ("harmonics", "sync_cost/derivations/15_lie_group_characterization.md"),
         ],
         "local": ["14_three_dimensions.md"],
     },
@@ -48,6 +50,8 @@ SECTIONS = {
         "title": "The Field Equation",
         "files": [
             ("harmonics", "sync_cost/derivations/11_rational_field_equation.md"),
+            ("harmonics", "sync_cost/derivations/16_variable_denominator.md"),
+            ("harmonics", "sync_cost/derivations/17_rank1_temporal_causation.md"),
         ],
     },
     "03_einstein": {
@@ -59,13 +63,37 @@ SECTIONS = {
     },
     "04_schrodinger": {
         "title": "K < 1: Schrödinger",
-        "files": [],
+        "files": [
+            ("harmonics", "sync_cost/derivations/05_two_forces.md"),
+        ],
         "generated": ["04_schrodinger_intro.md"],
+    },
+    "04a_topology": {
+        "title": "Topology",
+        "files": [
+            ("harmonics", "sync_cost/derivations/18_mobius_container.md"),
+            ("harmonics", "sync_cost/derivations/19_klein_bottle.md"),
+            ("harmonics", "sync_cost/derivations/20_xor_continuum_limit.md"),
+            ("harmonics", "sync_cost/derivations/21_discrete_gauge.md"),
+            ("harmonics", "sync_cost/derivations/22_engineering_targets.md"),
+            ("harmonics", "sync_cost/derivations/23_three_zeros.md"),
+        ],
+    },
+    "04b_cosmology": {
+        "title": "Cosmological Parameters",
+        "files": [
+            ("harmonics", "sync_cost/derivations/24_vacuum_energy.md"),
+            ("harmonics", "sync_cost/derivations/25_farey_partition.md"),
+            ("harmonics", "sync_cost/derivations/26_hierarchy.md"),
+            ("harmonics", "sync_cost/derivations/27_exponent.md"),
+            ("harmonics", "sync_cost/derivations/28_farey_proof.md"),
+        ],
     },
     "05_predictions": {
         "title": "Predictions",
         "files": [
             ("harmonics", "sync_cost/derivations/01_born_rule.md"),
+            ("harmonics", "sync_cost/derivations/02_spectral_tilt.md"),
             ("harmonics", "sync_cost/derivations/04_spectral_tilt_reframed.md"),
             ("harmonics", "sync_cost/derivations/08_high_z_mond.md"),
             ("harmonics", "sync_cost/derivations/09_fidelity_bound.md"),
