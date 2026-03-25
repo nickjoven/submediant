@@ -22,6 +22,11 @@ from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
 SITE_DIR = Path(__file__).parent
 BOOK_DIR = SITE_DIR / "book"
 
@@ -94,6 +99,9 @@ REPOS = {
 }
 
 
+MANIFEST_PATH = "MANIFEST.yml"
+
+
 def fetch_file_github(repo_slug, path):
     url = f"https://raw.githubusercontent.com/{repo_slug}/main/{path}"
     return urlopen(Request(url), timeout=30).read()
@@ -101,6 +109,35 @@ def fetch_file_github(repo_slug, path):
 
 def fetch_file_local(local_root, repo_name, path):
     return (Path(local_root) / repo_name / path).read_bytes()
+
+
+def load_manifest(local_root=None):
+    """Load MANIFEST.yml from harmonics (local or GitHub)."""
+    try:
+        if local_root:
+            data = fetch_file_local(local_root, "harmonics", MANIFEST_PATH)
+        else:
+            data = fetch_file_github(REPOS["harmonics"], MANIFEST_PATH)
+        text = data.decode("utf-8")
+        if yaml:
+            return yaml.safe_load(text)
+        # Minimal fallback: extract flat scalar keys we actually need
+        manifest = {}
+        for line in text.splitlines():
+            line = line.strip()
+            if line.startswith("#") or not line or ":" not in line:
+                continue
+            key, _, val = line.partition(":")
+            key = key.strip()
+            val = val.strip().strip('"').strip("'")
+            if val.isdigit():
+                val = int(val)
+            manifest[key] = val
+        return manifest
+    except (FileNotFoundError, URLError, OSError) as e:
+        print(f"  MANIFEST.yml — MISSING ({e}), using defaults")
+        return {"derivation_count": 29, "derivation_range": "1–29",
+                "free_parameters": 0, "free_functions": 0}
 
 
 def fetch_sources(local_root=None):
@@ -266,8 +303,11 @@ sphinx:
     print("  _config.yml")
 
 
-def generate_intro():
-    intro = """\
+def generate_intro(manifest):
+    d_count = manifest.get("derivation_count", 29)
+    d_range = manifest.get("derivation_range", "1–29")
+
+    intro = f"""\
 # Submediant
 
 N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
@@ -279,7 +319,7 @@ You know this pattern.
 Take two numbers. Add them. Use the last two to make the next.
 1, 1, 2, 3, 5, 8, 13, 21 ...
 
-The ratio between consecutive terms settles to $\\phi = (1 + \\sqrt{5})/2$.
+The ratio between consecutive terms settles to $\\phi = (1 + \\sqrt{{5}})/2$.
 This is the golden ratio — the number that appears in sunflower spirals,
 nautilus shells, and the branching of trees.
 
@@ -293,12 +333,12 @@ physical measurements:
 |---|---|---|
 | Their product is $\\pm 1$ | Born rule: $P = \\lvert\\psi\\rvert^2$ | exact |
 | $\\phi^2 = \\phi + 1$ (self-similarity) | CMB spectral tilt $n_s \\approx 0.965$ | 0.2% |
-| $\\phi - \\psi = \\sqrt{5}$ (gap width) | Inflation lasted $\\sim 61$ e-folds | CMB-S4, ~2028 |
+| $\\phi - \\psi = \\sqrt{{5}}$ (gap width) | Inflation lasted $\\sim 61$ e-folds | CMB-S4, ~2028 |
 
 The same polynomial also determines that space has **three dimensions**
-(because fractions have two parts: $\\dim \\mathrm{SL}(2) = 2^2 - 1 = 3$)
-and that the MOND acceleration scale is $a_0 = 1.25 \\times 10^{-10}$ m/s$^2$
-(observed: $1.2 \\times 10^{-10}$, residual: 4%).
+(because fractions have two parts: $\\dim \\mathrm{{SL}}(2) = 2^2 - 1 = 3$)
+and that the MOND acceleration scale is $a_0 = 1.25 \\times 10^{{-10}}$ m/s$^2$
+(observed: $1.2 \\times 10^{{-10}}$, residual: 4%).
 
 The frequency distribution $g(\\omega)$ — the one remaining free input —
 determines itself: the distribution that produces dynamics reproducing
@@ -312,7 +352,7 @@ and arriving at known physics:
 equation** $\\to$ **general relativity and quantum mechanics**
 
 Each step is a composition of the previous ones. The
-[derivation chain](https://github.com/nickjoven/harmonics) is 14 steps.
+[derivation chain](https://github.com/nickjoven/harmonics) is {d_count} steps.
 The [engine](https://github.com/nickjoven/rfe) solves the equation
 numerically and produces all predictions from a single run.
 
@@ -329,7 +369,7 @@ numerically and produces all predictions from a single run.
 
 ## Source
 
-- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–14)
+- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations {d_range})
 - [rfe](https://github.com/nickjoven/rfe) — the engine (one equation, all observables)
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — one frequency, zero free parameters
 - [201](https://github.com/nickjoven/201) — gravity as synchronization in a frictional medium
@@ -359,7 +399,11 @@ def main():
 
     local_root = Path(args.local).resolve() if args.local else None
 
-    print("Fetching sources...")
+    print("Loading manifest...")
+    framework_manifest = load_manifest(local_root)
+    print(f"  derivation_count: {framework_manifest.get('derivation_count', '?')}")
+
+    print("\nFetching sources...")
     sources = fetch_sources(local_root)
 
     print("\nWriting book sources...")
@@ -369,11 +413,11 @@ def main():
     generate_config()
     generate_schrodinger_intro()
     generate_toc()
-    generate_intro()
+    generate_intro(framework_manifest)
 
-    manifest = {k: hashlib.sha256(v[3]).hexdigest()[:16]
-                for k, v in sources.items()}
-    (BOOK_DIR / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    content_manifest = {k: hashlib.sha256(v[3]).hexdigest()[:16]
+                        for k, v in sources.items()}
+    (BOOK_DIR / "manifest.json").write_text(json.dumps(content_manifest, indent=2))
 
     if args.fetch_only:
         print(f"\nFetch complete. Book sources at {BOOK_DIR}")
