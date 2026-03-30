@@ -274,10 +274,52 @@ function createMoonToggle() {
   if (pyToggle) pyToggle.style.display = "none";
 }
 
+// ── Format Accordion: progressive disclosure ────────────────────────────
+// Levels: 0=conjecture, 1=visual, 2=math, 3=explanation
+function initFormatAccordion() {
+  var labels = ["visual +", "math +", "explanation +", "collapse"];
+  var sections = document.querySelectorAll(".fmt-section");
+
+  sections.forEach(function(section) {
+    var levels = section.querySelectorAll(".fmt-level");
+    if (levels.length === 0) return;
+
+    // Level-0 starts active (conjecture visible)
+    levels[0].classList.add("active");
+
+    // Find the expand trigger
+    var trigger = section.querySelector(".fmt-expand");
+    if (!trigger) return;
+
+    // Track how many levels are open (1 = only level-0)
+    var openCount = 1;
+    trigger.textContent = labels[0]; // "visual +"
+
+    trigger.addEventListener("click", function() {
+      if (openCount < levels.length) {
+        // Reveal next level
+        levels[openCount].classList.add("active");
+        openCount++;
+        trigger.textContent = openCount < levels.length
+          ? labels[openCount - 1]
+          : labels[3]; // "collapse"
+      } else {
+        // All open — collapse back to level-0 only
+        for (var i = 1; i < levels.length; i++) {
+          levels[i].classList.remove("active");
+        }
+        openCount = 1;
+        trigger.textContent = labels[0]; // "visual +"
+      }
+    });
+  });
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────
 function init() {
   createMoonToggle();  // button must exist before applyPalette sets its icon
   applyPalette();
+  initFormatAccordion();
 }
 
 if (document.readyState === "loading") {

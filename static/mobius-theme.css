@@ -130,3 +130,49 @@ table tbody tr:nth-child(even) th {
 @media (max-width: 600px) {
   .mobius-hover-nav { font-size: 0.7rem; padding: 3px 8px; }
 }
+
+/* ── Format accordion: progressive disclosure ── */
+.fmt-section {
+  margin: 1.5rem 0;
+}
+.fmt-level {
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.618, 0, 0.382, 1); /* golden ratio bezier */
+  max-height: 0;
+}
+.fmt-level.active {
+  max-height: 2000px;
+}
+.fmt-level-0 { padding-left: 0; }           /* conjecture: flush */
+.fmt-level-1 { padding-left: 1rem; }        /* visual: phi^-1 indent */
+.fmt-level-2 { padding-left: 1.618rem; }    /* math: phi indent */
+.fmt-level-3 { padding-left: 2.618rem; }    /* explanation: phi^2 indent */
+
+/* Expand trigger */
+.fmt-expand {
+  display: inline-block;
+  cursor: pointer;
+  color: var(--m-text-muted);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  user-select: none;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s;
+}
+.fmt-expand:hover { opacity: 1; color: var(--m-accent); }
+
+/* Format labels */
+.fmt-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.fmt-tag-conjecture { background: rgba(252,202,40,0.15); color: #FCCA28; }
+.fmt-tag-visual { background: rgba(8,169,83,0.15); color: #08A953; }
+.fmt-tag-math { background: rgba(88,166,255,0.15); color: #58a6ff; }
+.fmt-tag-explanation { background: rgba(139,148,158,0.15); color: #8b949e; }
