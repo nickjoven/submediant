@@ -40,19 +40,6 @@ Gallery of all visual and interactive resources across the framework, organized 
 
 ---
 
-## Product Visualizations
-
-Applied Farey geometry to physical engineering problems.
-
-| File | Description |
-|---|---|
-| [Farey Heat Sinks](https://github.com/nickjoven/product/blob/main/farey_heat_sinks.html) | Heat sink fin spacing optimized by Farey fractions. |
-| [Farey Integral Suppression](https://github.com/nickjoven/product/blob/main/farey_integral_suppression.html) | Vibration suppression via Farey-rational tuning. |
-| [Farey Muzzle Devices](https://github.com/nickjoven/product/blob/main/farey_muzzle_devices.html) | Muzzle device port geometry from Stern-Brocot structure. |
-| [Farey PC Cooling](https://github.com/nickjoven/product/blob/main/farey_pc_cooling.html) | PC cooling fan placement using Farey-spaced harmonics. |
-
----
-
 ## Phase Portraits and Plots
 
 ### Proslambenomenos
