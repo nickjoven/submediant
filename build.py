@@ -766,15 +766,32 @@ def generate_toc():
         section = SECTIONS[section_id]
         lines.append(f'  - caption: "{section["title"]}"')
         lines.append("    chapters:")
+
+        # Collect all files for this section
+        all_files = []
         for gen_name in section.get("generated", []):
-            name = Path(gen_name).stem
-            lines.append(f"      - file: {section_id}/{name}")
+            all_files.append(f"{section_id}/{Path(gen_name).stem}")
         for repo_name, path in section.get("files", []):
-            name = Path(path).stem
-            lines.append(f"      - file: {section_id}/{name}")
+            all_files.append(f"{section_id}/{Path(path).stem}")
         for local_name in section.get("local", []):
-            name = Path(local_name).stem
-            lines.append(f"      - file: {section_id}/{name}")
+            all_files.append(f"{section_id}/{Path(local_name).stem}")
+
+        if not all_files:
+            continue
+
+        # First file is the visible entry; rest nest as collapsed sections
+        lines.append(f"      - file: {all_files[0]}")
+        if len(all_files) > 1:
+            lines.append("        sections:")
+            for f in all_files[1:]:
+                lines.append(f"          - file: {f}")
+
+    # Reference: graph + glossary adjacent
+    lines.append('  - caption: "Reference"')
+    lines.append("    chapters:")
+    lines.append('      - file: graph')
+    lines.append('        title: "Derivation Graph"')
+    lines.append("      - file: glossary")
 
     toc_path = BOOK_DIR / "_toc.yml"
     toc_path.write_text("\n".join(lines) + "\n")
