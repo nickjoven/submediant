@@ -943,7 +943,7 @@ numerically and produces all predictions from a single run.
   how one equation produces general relativity, uniquely
 - **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
   `python -m rfe --observables`
-- **Where are we?** [Our Address](_static/our_address.html) —
+- **Where are we?** [Our Address](our_address.html) —
   the universe's computational clock on the Stern-Brocot tree
 
 ## Source
@@ -1246,7 +1246,19 @@ def build_book():
     cmd = [shutil.which("jupyter-book") or "jupyter-book", "build", str(BOOK_DIR)]
     print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=False)
-    return result.returncode == 0
+    if result.returncode != 0:
+        return False
+
+    # Copy standalone HTML pages to build output root (served as pages, not downloads)
+    build_html = BOOK_DIR / "_build" / "html"
+    if build_html.exists():
+        ref_dir = SITE_DIR / "reference"
+        if ref_dir.exists():
+            for f in ref_dir.iterdir():
+                if f.suffix == ".html":
+                    shutil.copy2(f, build_html / f.name)
+                    print(f"  → {f.name} (served as page)")
+    return True
 
 
 def main():

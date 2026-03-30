@@ -29,7 +29,7 @@ Terms defined in the context of the synchronization framework.
 ## Number Theory & Structure
 
 **Stern-Brocot tree**
-: Binary tree of all positive rationals, built by iterated mediants from $0/1$ and $1/0$. The framework's fundamental discrete structure. See [Our Address](_static/our_address.html).
+: Binary tree of all positive rationals, built by iterated mediants from $0/1$ and $1/0$. The framework's fundamental discrete structure. See [Our Address](our_address.html).
 
 **Mediant**
 : Given $a/b$ and $c/d$, the mediant is $(a+c)/(b+d)$. One of four irreducible primitives from which all structure is built.
