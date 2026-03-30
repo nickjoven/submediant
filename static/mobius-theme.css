@@ -90,6 +90,10 @@ html[data-theme="light"], html[data-mode="light"] {
 }
 
 /* ── Hover navigation bar ── */
+/* Unified with glossary toggle: off = no hover enrichment */
+html[data-glossary="off"] .mobius-hover-nav { display: none !important; }
+html[data-glossary="off"] .glossary-term { border-bottom: none !important; cursor: default !important; }
+
 .mobius-hover-nav {
   position: absolute; z-index: 50;
   display: none; align-items: center; gap: 0.6em;

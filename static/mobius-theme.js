@@ -345,23 +345,34 @@ function mobiusNeighbors(nodeId, radius) {
 var hoverNav = null;
 var hoverTimeout = null;
 
+// Check if hover enrichment is active (unified with glossary toggle)
+function hoverActive() {
+  return document.documentElement.getAttribute("data-glossary") !== "off";
+}
+
 function initHoverNav() {
   hoverNav = document.createElement("div");
   hoverNav.className = "mobius-hover-nav";
   document.body.appendChild(hoverNav);
 
+  // Watch for glossary toggle changes — hide nav when glossary goes off
+  var observer = new MutationObserver(function() {
+    if (!hoverActive()) hoverNav.classList.remove("visible");
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-glossary"] });
+
   // Single delegated listener
   document.addEventListener("mouseover", function(e) {
+    // All special hover behavior respects the glossary toggle
+    if (!hoverActive()) return;
     // Don't overlay canvas/plotly/nav
     if (e.target.closest("canvas, .plotly-chart, .js-plotly-plot, svg, nav, .mobius-hover-nav")) return;
 
     // Find the best anchor: a nearby block element of reasonable size
     var target = e.target.closest("[data-mobius-id], .card, .panel, h2, h3, dt, p, blockquote, .admonition, li");
     if (!target) {
-      // Fallback to section but only if viewport-height is reasonable
       target = e.target.closest("section, .bd-content .section");
       if (target && target.getBoundingClientRect().height > window.innerHeight * 0.8) {
-        // Section too large — find a child heading instead
         target = e.target.closest("h1, h2, h3, h4, p, dt, dd, li, blockquote") || null;
       }
     }
