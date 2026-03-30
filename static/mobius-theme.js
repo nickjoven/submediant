@@ -104,18 +104,20 @@ function darken(hex) {
 // twist=7 through 11 mirrors 5 through 1 (same unordered pairs).
 // Total: 66 unique pairings across 6 full cycles. Then it repeats.
 
+// step -1 = native dark (no pairing, no toggle visible). First click → step 0.
 let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") ||
-            { step: 0, twist: 1, mode: "dark" };
+            { step: -1, twist: 1, mode: "dark" };
 // Migration from old format
-if (state.phase !== undefined) { state.step = state.phase || 0; delete state.phase; }
+if (state.phase !== undefined) { state.step = (state.phase || 0) - 1; delete state.phase; }
 if (!state.twist) state.twist = 1;
-if (state.step < 0 || state.step >= 24) state.step = 0;
+if (state.step < -1 || state.step >= 24) state.step = -1;
 if (state.twist < 1 || state.twist > 6) state.twist = 1;
 
 // Apply mode immediately to prevent flash
-document.documentElement.setAttribute("data-mode", state.mode);
-document.documentElement.setAttribute("data-theme", state.mode);
-document.documentElement.style.colorScheme = state.mode;
+var initialMode = state.step < 0 ? "dark" : state.mode;
+document.documentElement.setAttribute("data-mode", initialMode);
+document.documentElement.setAttribute("data-theme", initialMode);
+document.documentElement.style.colorScheme = initialMode;
 
 function save() { localStorage.setItem("mobius-theme", JSON.stringify(state)); }
 
@@ -140,23 +142,36 @@ function goldenAccents(primary, secondary) {
 }
 
 function applyPalette() {
+  var root = document.documentElement;
+  var btn = document.getElementById("mobius-moon-toggle");
+
+  if (state.step < 0) {
+    // Native dark: no color overrides, toggle hidden
+    state.mode = "dark";
+    root.setAttribute("data-mode", "dark");
+    root.setAttribute("data-theme", "dark");
+    root.style.colorScheme = "dark";
+    if (btn) btn.style.opacity = "0";
+    return;
+  }
+
+  // Show toggle once pairings begin
+  if (btn) btn.style.opacity = "1";
+
   var pair = currentPairing();
   var primary, secondary;
 
   if (pair.isSun) {
-    // Sun transition: light mode, show hare advancing
     state.mode = "light";
     primary = pair.hare;
-    secondary = (pair.hare + 1) % 12; // hare's next position
+    secondary = (pair.hare + 1) % 12;
   } else {
-    // Night: dark mode, show the pairing
     state.mode = "dark";
     primary = pair.tortoise;
     secondary = pair.hare;
   }
 
   var extras = goldenAccents(primary, secondary);
-  var root = document.documentElement;
 
   root.style.setProperty("--m-ref", PALETTE[primary]);
   root.style.setProperty("--m-accent", PALETTE[primary]);
@@ -168,9 +183,7 @@ function applyPalette() {
   root.setAttribute("data-theme", state.mode);
   root.style.colorScheme = state.mode;
 
-  // Moon icon: 6 phases per cycle, based on pairing index
   var moonPhase = Math.floor(state.step / 2) % 6;
-  var btn = document.getElementById("mobius-moon-toggle");
   if (btn) btn.innerHTML = moonSVG(moonPhase, PALETTE[primary]);
 }
 
@@ -183,6 +196,9 @@ function createMoonToggle() {
     btn.id = "mobius-moon-toggle";
     btn.setAttribute("aria-label", "Cycle theme");
     btn.title = "Click: cycle through 12 color phases (two passes)";
+    // Hidden until first pairing (native dark shows no toggle)
+    btn.style.opacity = state.step < 0 ? "0" : "1";
+    btn.style.transition = "opacity 0.5s ease";
 
     // Try to place next to the PyData theme-switch-button in the secondary nav
     const pyThemeBtn = document.querySelector(".theme-switch-button");
