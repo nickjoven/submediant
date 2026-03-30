@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Address on the Tree</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  color: #c8c8c8;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 24px 120px;
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 48px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+.step-label {
+  color: #555;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.step-title {
+  color: #e0e0e0;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid #111;
+}
+
+.row .label { color: #777; }
+.row .value { color: #ddd; text-align: right; }
+
+.derived {
+  color: #7faaff;
+}
+
+.note {
+  color: #555;
+  font-size: 12px;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #1a1a1a;
+  margin: 48px 0;
+}
+
+/* predictions table */
+.pred-grid {
+  display: grid;
+  grid-template-columns: 60px 60px 1fr;
+  gap: 2px 12px;
+  font-size: 13px;
+}
+
+.pred-grid .hdr {
+  color: #555;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.pred-grid .settled { color: #5a5; }
+.pred-grid .unsettled { color: #444; }
+
+/* address block */
+.address-block {
+  background: #060606;
+  border: 1px solid #1a1a1a;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.address-block .group-label {
+  color: #555;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.address-block .group-label:first-child {
+  margin-top: 0;
+}
+
+.closing {
+  color: #444;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 48px;
+  line-height: 2;
+}
+
+.closing .highlight {
+  color: #888;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<main>
+
+<h1>Our Address on the Tree</h1>
+<p class="subtitle">From first principles + three observables</p>
+
+<!-- Step 1 -->
+<section>
+  <div class="step-label">Step 1</div>
+  <div class="step-title">The self-similarity rate</div>
+  <div class="row"><span class="label">n_s</span><span class="value">0.9649 <span style="color:#555">(Planck 2018)</span></span></div>
+  <div class="row"><span class="label">ln(phi^2)</span><span class="value">0.962424 <span style="color:#555">(from x^2 - x - 1 = 0)</span></span></div>
+  <div class="row"><span class="label">rate</span><span class="value">0.036470 levels / e-fold</span></div>
+</section>
+
+<!-- Step 2 -->
+<section>
+  <div class="step-label">Step 2</div>
+  <div class="step-title">Total tree depth</div>
+  <div class="row"><span class="label">omega_Planck</span><span class="value">1.855 x 10^43 Hz</span></div>
+  <div class="row"><span class="label">omega_Hubble</span><span class="value">2.183 x 10^-18 Hz</span></div>
+  <div class="row"><span class="label">ratio</span><span class="value">8.497 x 10^60</span></div>
+  <div class="row"><span class="label">depth</span><span class="value">145.8 Fibonacci levels</span></div>
+</section>
+
+<!-- Step 3 -->
+<section>
+  <div class="step-label">Step 3</div>
+  <div class="step-title">The CMB window</div>
+  <div class="row"><span class="label">sqrt(5)</span><span class="value">2.236068</span></div>
+  <div class="row"><span class="label">N_efolds</span><span class="value">61.3</span></div>
+  <div class="row"><span class="label">sampled levels</span><span class="value">sqrt(5) = 2.236</span></div>
+  <div class="row"><span class="label">CMB pivot</span><span class="value">level ~21 from root</span></div>
+</section>
+
+<!-- Step 4 -->
+<section>
+  <div class="step-label">Step 4</div>
+  <div class="step-title">Spent cycles</div>
+  <div class="row"><span class="label">age of universe</span><span class="value derived">13.80 Gyr (derived)</span></div>
+  <div class="row"><span class="label">Hubble time</span><span class="value">1.451 x 10^10 yr</span></div>
+  <div class="row"><span class="label">spent Hubble cycles</span><span class="value">0.95</span></div>
+  <p class="note">No hardcoded 13.8 Gyr. Age follows from H_0 + Omega_Lambda via Friedmann integration.</p>
+</section>
+
+<!-- Step 5 -->
+<section>
+  <div class="step-label">Step 5</div>
+  <div class="step-title">Computational progress</div>
+  <div class="row"><span class="label">oscillations / cycle</span><span class="value">49</span></div>
+  <div class="row"><span class="label">total oscillations</span><span class="value">47</span></div>
+  <div class="row"><span class="label">convergence rate</span><span class="value">2/pi = 0.6366</span></div>
+  <div class="row"><span class="label">digits of |r|</span><span class="value">9</span></div>
+</section>
+
+<!-- Step 6 -->
+<section>
+  <div class="step-label">Step 6</div>
+  <div class="step-title">The boundary weight</div>
+  <div class="row"><span class="label">Omega_Lambda</span><span class="value">0.6847 <span style="color:#555">(predicted)</span></span></div>
+  <div class="row"><span class="label">w*</span><span class="value">0.8281</span></div>
+  <div class="row"><span class="label">effective modes</span><span class="value">12.66</span></div>
+  <div class="row"><span class="label">effective depth</span><span class="value">5.83</span></div>
+</section>
+
+<!-- Step 7 -->
+<section>
+  <div class="step-label">Step 7</div>
+  <div class="step-title">The gap twin</div>
+  <div class="row"><span class="label">gap fraction</span><span class="value">0.187 of frequency axis</span></div>
+  <div class="row"><span class="label">per dimension</span><span class="value">0.572</span></div>
+  <div class="row"><span class="label">twin's cycles</span><span class="value">0.5</span></div>
+  <div class="row"><span class="label">twin's digits</span><span class="value">5</span></div>
+  <div class="row"><span class="label">distance</span><span class="value">2.6 x 10^-61 (Planck length)</span></div>
+  <div class="row"><span class="label">phase accumulated</span><span class="value">7.7 x 10^-59 rad</span></div>
+  <div class="row"><span class="label">time to 1 bit</span><span class="value">5.6 x 10^68 yr</span></div>
+</section>
+
+<hr class="divider">
+
+<!-- Step 8 -->
+<section>
+  <div class="step-label">Step 8</div>
+  <div class="step-title">What's been computed</div>
+  <p style="color:#777; margin-bottom:12px;">Digits available: <span style="color:#ddd">9</span></p>
+
+  <div class="pred-grid">
+    <span class="hdr">digits</span><span class="hdr">status</span><span class="hdr">prediction</span>
+
+    <span>1</span><span class="settled">settled</span><span>d = 3 (spatial dimension)</span>
+    <span>1</span><span class="settled">settled</span><span>q_2 = 2, q_3 = 3 (Klein bottle)</span>
+    <span>2</span><span class="settled">settled</span><span>Omega_Lambda in [13/19, 11/16]</span>
+    <span>2</span><span class="settled">settled</span><span>alpha_s / alpha_2 = 27/8</span>
+    <span>3</span><span class="settled">settled</span><span>sin^2(theta_W) = 8/35</span>
+    <span>4</span><span class="settled">settled</span><span>|r| correction to couplings</span>
+    <span>4</span><span class="settled">settled</span><span>n_s = 0.965 (tilt to 3 sig figs)</span>
+    <span>10</span><span class="unsettled">&mdash;</span><span style="color:#555">Omega_Lambda to 0.07 sigma</span>
+    <span>15</span><span class="unsettled">&mdash;</span><span style="color:#555">R = 6 x 13^54 (hierarchy)</span>
+    <span>61</span><span class="unsettled">&mdash;</span><span style="color:#555">Planck-scale structure</span>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- The Address -->
+<div class="address-block">
+  <div class="group-label">First principles</div>
+  <div class="row"><span class="label">phi</span><span class="value">(1 + sqrt(5)) / 2</span></div>
+  <div class="row"><span class="label">d</span><span class="value">3</span></div>
+  <div class="row"><span class="label">|F_6|</span><span class="value">13</span></div>
+
+  <div class="group-label">Three observables</div>
+  <div class="row"><span class="label">n_s</span><span class="value">0.9649</span></div>
+  <div class="row"><span class="label">H_0</span><span class="value">67.36 km/s/Mpc</span></div>
+  <div class="row"><span class="label">Planck units</span><span class="value">hbar, G, c</span></div>
+
+  <div class="group-label">Derived address</div>
+  <div class="row"><span class="label">total depth</span><span class="value">145.8 Fibonacci levels</span></div>
+  <div class="row"><span class="label">CMB window</span><span class="value">2.236 levels (= sqrt 5)</span></div>
+  <div class="row"><span class="label">CMB pivot</span><span class="value">level ~21</span></div>
+  <div class="row"><span class="label">age</span><span class="value derived">13.80 Gyr (derived)</span></div>
+  <div class="row"><span class="label">spent cycles</span><span class="value">0.95</span></div>
+  <div class="row"><span class="label">oscillations</span><span class="value">47</span></div>
+  <div class="row"><span class="label">digits of |r|</span><span class="value">9</span></div>
+
+  <div class="group-label">The staircase</div>
+  <div class="row"><span class="label">rate</span><span class="value">0.036470 levels / e-fold</span></div>
+  <div class="row"><span class="label">levels sampled</span><span class="value">sqrt(5) = 2.236068</span></div>
+  <div class="row"><span class="label">N_efolds</span><span class="value">61.3</span></div>
+
+  <div class="group-label">Boundary weight</div>
+  <div class="row"><span class="label">w*</span><span class="value">0.8281</span></div>
+  <div class="row"><span class="label">effective modes</span><span class="value">12.66</span></div>
+  <div class="row"><span class="label">effective depth</span><span class="value">5.83</span></div>
+  <div class="row"><span class="label">Omega_Lambda</span><span class="value">0.6847</span></div>
+</div>
+
+<div class="closing">
+  <span class="highlight">One tree. 145 levels. 9 digits known.</span><br>
+  The universe knows itself. We are reading the printout.
+</div>
+
+</main>
+
+<script>
+// ── Perturbation field ──────────────────────────────────────────────
+// Sparse drifting particles + subtle Kuramoto-inspired phase waves
+// rendered on a full-screen canvas behind the content.
+
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Particles: sparse, dim, slow
+const PHI = (1 + Math.sqrt(5)) / 2;
+const N = 180;
+const particles = [];
+
+for (let i = 0; i < N; i++) {
+  particles.push({
+    x: Math.random() * 2 - 1,   // normalised [-1, 1]
+    y: Math.random() * 2 - 1,
+    phase: Math.random() * Math.PI * 2,
+    freq: (0.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : PHI), // mode frequencies
+    radius: 0.5 + Math.random() * 1.5,
+    drift_x: (Math.random() - 0.5) * 0.0003,
+    drift_y: (Math.random() - 0.5) * 0.0002,
+  });
+}
+
+// A few "tongue" bands — horizontal sine waves at rational frequencies
+const tongues = [
+  { p: 1, q: 2, amp: 0.15 },
+  { p: 1, q: 3, amp: 0.10 },
+  { p: 2, q: 5, amp: 0.08 },
+  { p: 1, q: 1, amp: 0.06 },
+  { p: 3, q: 5, amp: 0.07 },
+];
+
+let t = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // tongue wave bands (very subtle horizontal perturbations)
+  for (const tg of tongues) {
+    const yCenter = (tg.p / tg.q) * H;
+    const omega = tg.p / tg.q * 0.4;
+    ctx.beginPath();
+    for (let x = 0; x < W; x += 3) {
+      const wave = Math.sin(x * 0.008 + t * omega) * tg.amp * 40;
+      const y = yCenter + wave;
+      const alpha = 0.025 * (1 + 0.5 * Math.sin(t * omega * 0.3));
+      ctx.fillStyle = `rgba(60, 80, 120, ${alpha})`;
+      ctx.fillRect(x, y - 0.5, 3, 1);
+    }
+  }
+
+  // particles
+  for (const p of particles) {
+    p.phase += p.freq * 0.008;
+    p.x += p.drift_x;
+    p.y += p.drift_y;
+
+    // wrap
+    if (p.x > 1.1) p.x = -1.1;
+    if (p.x < -1.1) p.x = 1.1;
+    if (p.y > 1.1) p.y = -1.1;
+    if (p.y < -1.1) p.y = 1.1;
+
+    const sx = (p.x + 1) * 0.5 * W;
+    const sy = (p.y + 1) * 0.5 * H;
+
+    // brightness oscillates with phase (Kuramoto sync visual)
+    const brightness = 0.12 + 0.08 * Math.sin(p.phase);
+    const r = p.radius * (1 + 0.2 * Math.sin(p.phase * PHI));
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180, 190, 220, ${brightness})`;
+    ctx.fill();
+  }
+
+  // Occasional coupling lines between nearby particles (very faint)
+  for (let i = 0; i < N; i += 3) {
+    const a = particles[i];
+    const b = particles[(i + 7) % N];
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 0.15) {
+      const alpha = 0.04 * (1 - dist / 0.15) * (0.5 + 0.5 * Math.cos(a.phase - b.phase));
+      ctx.beginPath();
+      ctx.moveTo((a.x + 1) * 0.5 * W, (a.y + 1) * 0.5 * H);
+      ctx.lineTo((b.x + 1) * 0.5 * W, (b.y + 1) * 0.5 * H);
+      ctx.strokeStyle = `rgba(100, 130, 200, ${alpha})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+  }
+
+  t += 1;
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
