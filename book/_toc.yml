@@ -57,4 +57,6 @@ parts:
         title: "Stick-Slip Dynamics and the Dark Matter Dual"
   - caption: "Reference"
     chapters:
+      - file: graph
+        title: "Derivation Graph"
       - file: glossary
