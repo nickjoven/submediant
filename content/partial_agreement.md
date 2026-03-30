@@ -116,7 +116,7 @@ the mediant of neighbors: $(a+c)/(b+d)$. He meant it as number
 theory. It turned out to be the natural coordinate system for
 synchronization.
 
-**1906.** Gutenberg and Richter notice that earthquake magnitudes
+**1944.** Gutenberg and Richter notice that earthquake magnitudes
 follow a power law. Small quakes are common. Large quakes are
 rare. The exponent is universal — it doesn't depend on the
 fault system. They couldn't say why. The answer: the power law

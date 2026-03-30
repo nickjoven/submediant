@@ -99,6 +99,23 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/09_fidelity_bound.md"),
         ],
     },
+    "04c_extended": {
+        "title": "Extended Derivations",
+        "files": [
+            ("harmonics", "sync_cost/derivations/30_denomination_boundary.md"),
+            ("harmonics", "sync_cost/derivations/31_speed_of_light.md"),
+            ("harmonics", "sync_cost/derivations/32_minkowski_signature.md"),
+            ("harmonics", "sync_cost/derivations/33_duty_cycle_dictionary.md"),
+            ("harmonics", "sync_cost/derivations/34_generation_mechanism.md"),
+            ("harmonics", "sync_cost/derivations/35_cosmological_cycle.md"),
+            ("harmonics", "sync_cost/derivations/36_conservation_computability.md"),
+            ("harmonics", "sync_cost/derivations/37_figure_eight.md"),
+            ("harmonics", "sync_cost/derivations/38_boundary_weight.md"),
+            ("harmonics", "sync_cost/derivations/duty_dimension_proof.md"),
+            ("harmonics", "sync_cost/derivations/isotropy_lemma.md"),
+            ("harmonics", "sync_cost/derivations/xor_derivation.md"),
+        ],
+    },
     "06_evidence": {
         "title": "Evidence",
         "files": [
@@ -124,8 +141,66 @@ REPOS = {
     "proslambenomenos": "nickjoven/proslambenomenos",
     "201": "nickjoven/201",
     "intersections": "nickjoven/intersections",
+    "stribeck-optics": "nickjoven/stribeck-optics",
+    "product": "nickjoven/product",
 }
 
+# Python scripts fetched alongside derivations (needed for link resolution)
+SCRIPT_FILES = {
+    "harmonics": [
+        "sync_cost/derivations/circle_map.py",
+        "sync_cost/derivations/born_rule_tongues.py",
+        "sync_cost/derivations/golden_ratio_pivot.py",
+        "sync_cost/derivations/stern_brocot_map.py",
+        "sync_cost/derivations/phi_squared_zoom.py",
+        "sync_cost/derivations/k_omega_mapping.py",
+        "sync_cost/derivations/field_equation_cmb.py",
+        "sync_cost/derivations/klein_bottle_kuramoto.py",
+        "sync_cost/derivations/alphabet_check.py",
+        "sync_cost/derivations/sigma_squared.py",
+        "sync_cost/derivations/alphabet_depth21.py",
+    ],
+}
+
+# Extra data files (images, datasets)
+DATA_FILES = {
+    "proslambenomenos": [
+        "docs/img/phase_newtonian.png",
+        "docs/img/phase_boundary.png",
+        "docs/img/phase_deep_mond.png",
+        "docs/img/ngc2403_score.png",
+        "docs/img/oa_potential.png",
+    ],
+}
+
+# Static assets (HTML visualizations, GIFs, images) copied to book/_static/
+# These are NOT Jupyter Book chapters — they are standalone files served as-is.
+STATIC_ASSETS = {
+    "harmonics": [
+        # HTML visualizations
+        "sync_cost/applications/stern_brocot_walk.html",
+        "sync_cost/applications/ontology.html",
+        "sync_cost/applications/mobius_views.html",
+        "sync_cost/applications/mobius_projector.html",
+        "sync_cost/derivations/our_address.html",
+        # GIF animations
+        "stairs.gif",
+        "triangles.gif",
+        "orbit.gif",
+        "spiral.gif",
+        "rose.gif",
+    ],
+    "stribeck-optics": [
+        "docs/index.html",
+        "stribeck_optics_results.png",
+    ],
+    "product": [
+        "farey-heat-sinks.html",
+        "farey-integral-suppression.html",
+        "farey-muzzle-devices.html",
+        "farey-pc-cooling.html",
+    ],
+}
 
 MANIFEST_PATH = "MANIFEST.yml"
 
@@ -394,10 +469,72 @@ def fetch_sources(local_root=None):
     return result
 
 
+def fetch_script_and_data_files(local_root=None):
+    """Fetch Python scripts and data files needed for execution."""
+    fetched = {}
+    for name, paths in SCRIPT_FILES.items():
+        slug = REPOS[name]
+        for path in paths:
+            try:
+                if local_root:
+                    data = fetch_file_local(local_root, name, path)
+                else:
+                    data = fetch_file_github(slug, path)
+                fetched[f"{name}/{path}"] = (name, path, data)
+                print(f"  {name}/{path} (script)")
+            except (FileNotFoundError, URLError, OSError) as e:
+                print(f"  {name}/{path} — MISSING ({e})")
+    for name, paths in DATA_FILES.items():
+        slug = REPOS[name]
+        for path in paths:
+            try:
+                if local_root:
+                    data = fetch_file_local(local_root, name, path)
+                else:
+                    data = fetch_file_github(slug, path)
+                fetched[f"{name}/{path}"] = (name, path, data)
+                print(f"  {name}/{path} (data)")
+            except (FileNotFoundError, URLError, OSError) as e:
+                print(f"  {name}/{path} — MISSING ({e})")
+    return fetched
+
+
+def fetch_static_assets(local_root=None):
+    """Fetch static assets (HTML, GIF, PNG). Returns {repo: {path: bytes}}."""
+    result = {}
+    for name, paths in STATIC_ASSETS.items():
+        result[name] = {}
+        slug = REPOS[name]
+        for path in paths:
+            try:
+                if local_root:
+                    data = fetch_file_local(local_root, name, path)
+                else:
+                    data = fetch_file_github(slug, path)
+                result[name][path] = data
+                print(f"  {name}/{path} (static)")
+            except (FileNotFoundError, URLError, OSError) as e:
+                print(f"  {name}/{path} — MISSING ({e})")
+    return result
+
+
+def copy_static_assets(static_sources):
+    """Copy fetched static assets into book/_static/."""
+    static_dir = BOOK_DIR / "_static"
+    static_dir.mkdir(parents=True, exist_ok=True)
+    for repo, files in static_sources.items():
+        for path, data in files.items():
+            # Flatten into _static/ using just the filename
+            filename = Path(path).name
+            dest = static_dir / filename
+            dest.write_bytes(data)
+            print(f"  _static/{filename}")
+
+
 CONTENT_DIR = SITE_DIR / "content"
 
 
-def write_book_sources(sources):
+def write_book_sources(sources, extra_files=None):
     if BOOK_DIR.exists():
         shutil.rmtree(BOOK_DIR)
 
@@ -405,6 +542,13 @@ def write_book_sources(sources):
         dest = BOOK_DIR / section_id / Path(path).name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
+
+    # Write script and data files into the book tree (preserving repo/path)
+    if extra_files:
+        for key, (repo_name, path, data) in extra_files.items():
+            dest = BOOK_DIR / repo_name / path
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(data)
 
     # Copy local content files
     for section_id, section in SECTIONS.items():
@@ -414,6 +558,151 @@ def write_book_sources(sources):
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest)
             print(f"  {section_id}/{filename} (local)")
+
+
+def resolve_script_references():
+    """Rewrite .py script references and internal .md cross-references in book markdown.
+
+    After write_book_sources() copies raw files into the book directory, local
+    references like `born_rule_tongues.py` or `[text](PROOF_A_gravity.md)` break
+    because those files aren't in the book.  This pass converts them to GitHub
+    links or corrected relative paths.
+    """
+    import re
+
+    # Build a reverse lookup: book filename -> (repo_name, original_path)
+    # so we know which GitHub repo a given book file came from.
+    file_origin = {}
+    for section_id, section in SECTIONS.items():
+        for repo_name, path in section.get("files", []):
+            filename = Path(path).name
+            file_origin[f"{section_id}/{filename}"] = (repo_name, path)
+
+    # --- GitHub URL mappings keyed by repo + original source path ---
+    REPO_SCRIPT_MAPS = {
+        "harmonics": [
+            ("sync_cost/derivations/",
+             "https://github.com/nickjoven/harmonics/blob/main/sync_cost/derivations/"),
+            ("seed/src/",
+             "https://github.com/nickjoven/harmonics/blob/main/seed/src/"),
+            ("",
+             "https://github.com/nickjoven/harmonics/blob/main/"),
+        ],
+        "201": [
+            ("", "https://github.com/nickjoven/201/blob/main/"),
+        ],
+        "intersections": [
+            ("", "https://github.com/nickjoven/intersections/blob/main/"),
+        ],
+        "proslambenomenos": [
+            ("", "https://github.com/nickjoven/proslambenomenos/blob/main/"),
+        ],
+    }
+
+    def _github_url_for(book_rel_path, script_name):
+        """Given a file's book-relative path, return the GitHub URL for a script."""
+        origin = file_origin.get(book_rel_path)
+        if not origin:
+            return None
+        repo_name, orig_path = origin
+        maps = REPO_SCRIPT_MAPS.get(repo_name, [])
+        orig_dir = str(Path(orig_path).parent)
+        if orig_dir == ".":
+            orig_dir = ""
+        else:
+            orig_dir = orig_dir + "/"
+        for prefix, base_url in maps:
+            if orig_dir.startswith(prefix):
+                return base_url + script_name
+        return None
+
+    # Build a lookup: filename -> book-relative path for all .md files in the book
+    md_index = {}
+    for md_path in BOOK_DIR.rglob("*.md"):
+        rel = md_path.relative_to(BOOK_DIR).as_posix()
+        md_index.setdefault(md_path.name, []).append(rel)
+
+    def _resolve_md_ref(book_rel_path, target):
+        """Resolve a .md reference to a correct relative path within the book."""
+        target_name = Path(target).name
+        candidates = md_index.get(target_name, [])
+        if not candidates:
+            return None
+        current_dir = str(Path(book_rel_path).parent)
+        # Same directory? Already correct as a bare filename.
+        for c in candidates:
+            if str(Path(c).parent) == current_dir:
+                return target_name
+        # Otherwise compute relative path from the file's directory
+        from_dir = Path(book_rel_path).parent
+        best = Path(candidates[0])
+        return os.path.relpath(best, from_dir)
+
+    count_scripts = 0
+    count_md_refs = 0
+
+    for md_file in BOOK_DIR.rglob("*.md"):
+        book_rel = md_file.relative_to(BOOK_DIR).as_posix()
+        text = md_file.read_text(encoding="utf-8", errors="replace")
+        original = text
+
+        # 1) Fix markdown links to .py files: [text](script.py) -> [text](github_url)
+        def _replace_link_py(m):
+            nonlocal count_scripts
+            full_match = m.group(0)
+            link_text = m.group(1)
+            script = m.group(2)
+            if script.startswith(("http://", "https://")):
+                return full_match
+            url = _github_url_for(book_rel, script)
+            if url:
+                count_scripts += 1
+                return f"[{link_text}]({url})"
+            return full_match
+
+        text = re.sub(r'\[([^\]]*)\]\(([^)]*\.py)\)', _replace_link_py, text)
+
+        # 2) Fix backtick-wrapped .py references: `script.py` -> [`script.py`](github_url)
+        #    Skip if already inside a markdown link [...](...) structure
+        def _replace_backtick_py(m):
+            nonlocal count_scripts
+            prefix = m.group(1)
+            script = m.group(2)
+            if prefix.endswith("](") or prefix.endswith("["):
+                return m.group(0)
+            url = _github_url_for(book_rel, script)
+            if url:
+                count_scripts += 1
+                return f"{prefix}[`{script}`]({url})"
+            return m.group(0)
+
+        text = re.sub(r'(^|[^[\](])`([a-zA-Z_]\w*\.py)`', _replace_backtick_py, text,
+                       flags=re.MULTILINE)
+
+        # 3) Fix internal .md cross-references: [text](file.md) -> corrected relative path
+        #    Only fix bare filenames or simple relative refs, not URLs
+        def _replace_link_md(m):
+            nonlocal count_md_refs
+            full_match = m.group(0)
+            link_text = m.group(1)
+            target = m.group(2)
+            if target.startswith(("http://", "https://")):
+                return full_match
+            target_name = Path(target).name
+            if not target_name.endswith(".md"):
+                return full_match
+            resolved = _resolve_md_ref(book_rel, target)
+            if resolved and resolved != target:
+                count_md_refs += 1
+                return f"[{link_text}]({resolved})"
+            return full_match
+
+        text = re.sub(r'\[([^\]]*)\]\(([^)]*\.md)\)', _replace_link_md, text)
+
+        if text != original:
+            md_file.write_text(text, encoding="utf-8")
+
+    print(f"  Resolved {count_scripts} script references, {count_md_refs} internal .md cross-references")
 
 
 def generate_schrodinger_intro():
@@ -447,7 +736,7 @@ per-level variance $\\sigma^2(d) \\sim \\phi^{-4d}$ sums to a convergent
 constant $D_{\\text{eff}} = D_0 / (1 - \\phi^{-4})$.
 
 The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/12_continuum_limits.md),
-Part II (§156 ff.).
+Part II.
 
 ## Three regimes, one equation
 
@@ -515,6 +804,7 @@ html:
   extra_css:
     - _static/custom.css
     - _static/glossary.css
+    - _static/mobius-theme.css
 
 sphinx:
   config:
@@ -525,6 +815,7 @@ sphinx:
           "NN": "\\\\mathbb{N}"
     html_js_files:
       - glossary.js
+      - mobius-theme.js
     html_theme_options:
       navigation_with_keys: false
 """
@@ -925,8 +1216,20 @@ def main():
     print("\nFetching sources...")
     sources = fetch_sources(local_root)
 
+    print("\nFetching scripts and data files...")
+    extra_files = fetch_script_and_data_files(local_root)
+
+    print("\nFetching static assets...")
+    static_sources = fetch_static_assets(local_root)
+
     print("\nWriting book sources...")
-    write_book_sources(sources)
+    write_book_sources(sources, extra_files)
+
+    print("\nCopying static assets...")
+    copy_static_assets(static_sources)
+
+    print("\nResolving script references and cross-links...")
+    resolve_script_references()
 
     print("\nGenerating Jupyter Book config...")
     generate_config()
