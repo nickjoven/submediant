@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Our Address on the Tree</title>
-<link rel="stylesheet" href="../static/mobius-theme.css">
+<link rel="stylesheet" href="mobius-theme.css">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -422,7 +422,7 @@ hr.divider {
 
 </main>
 
-<script src="../static/mobius-theme.js"></script>
+<script src="mobius-theme.js"></script>
 <script>
 // ── Background: Kuramoto particles (subtler version) ────────────────────
 const bgCanvas = document.getElementById('bg');
@@ -518,8 +518,103 @@ function drawBg() {
     }
   }
 
+  // ── Stern-Brocot tree: the observable universe's address space ──
+  // Rose (#DE3373) for left branches, green (#08A953) for right
+  // Grows downward from top center, ~5 levels deep
+  drawSternBrocotTree(bgCtx, W, H);
+
+  // ── Arrow of time: horizontal gradient at tree root level ──
+  var arrowY = H * 0.04;
+  var grad = bgCtx.createLinearGradient(0, arrowY, W, arrowY);
+  grad.addColorStop(0, "rgba(222,51,115,0)");
+  grad.addColorStop(0.2, "rgba(222,51,115,0.04)");
+  grad.addColorStop(0.95, "rgba(8,169,83,0.06)");  // 0.95 = current progress
+  grad.addColorStop(1, "rgba(8,169,83,0)");
+  bgCtx.fillStyle = grad;
+  bgCtx.fillRect(0, arrowY - 1, W, 3);
+  // Small arrowhead at 0.95 * W
+  bgCtx.beginPath();
+  bgCtx.moveTo(W * 0.95, arrowY - 4);
+  bgCtx.lineTo(W * 0.95 + 6, arrowY);
+  bgCtx.lineTo(W * 0.95, arrowY + 4);
+  bgCtx.fillStyle = "rgba(8,169,83,0.08)";
+  bgCtx.fill();
+
   bgT += 1;
   requestAnimationFrame(drawBg);
+}
+
+// ── Stern-Brocot tree renderer ──
+// Draws the tree to depth 5 on the background canvas
+function drawSternBrocotTree(ctx, W, H) {
+  var depth = 5;
+  var treeH = H * 0.45;  // use top 45% of screen
+  var rootY = H * 0.05;
+
+  function drawNode(a, b, c, d, x, y, level, parentX, parentY) {
+    if (level > depth) return;
+
+    var p = a + c;  // mediant numerator
+    var q = b + d;  // mediant denominator
+    var frac = p / q;
+
+    // Position: x is proportional to fraction value, y increases with depth
+    var nx = W * (0.1 + 0.8 * frac);
+    var ny = rootY + (level / depth) * treeH;
+
+    // Branch color: rose for left (frac < 0.5), green for right
+    var isLeft = frac < 0.5;
+    var r = isLeft ? 222 : 8;
+    var g = isLeft ? 51 : 169;
+    var bl = isLeft ? 115 : 83;
+    var branchAlpha = 0.07 - level * 0.008;
+    if (branchAlpha < 0.015) branchAlpha = 0.015;
+
+    // Draw branch from parent
+    if (parentX !== undefined) {
+      ctx.beginPath();
+      ctx.moveTo(parentX, parentY);
+      ctx.lineTo(nx, ny);
+      ctx.strokeStyle = "rgba(" + r + "," + g + "," + bl + "," + branchAlpha + ")";
+      ctx.lineWidth = Math.max(0.4, 1.5 - level * 0.2);
+      ctx.stroke();
+    }
+
+    // Node dot
+    ctx.beginPath();
+    ctx.arc(nx, ny, Math.max(1, 3 - level * 0.4), 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (branchAlpha + 0.02) + ")";
+    ctx.fill();
+
+    // Fraction label (barely visible)
+    if (level <= 3) {
+      ctx.fillStyle = "rgba(200,200,200,0.04)";
+      ctx.font = Math.max(8, 12 - level * 2) + "px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(p + "/" + q, nx, ny - 5);
+    }
+
+    // Recurse: left child mediant(a/b, p/q), right child mediant(p/q, c/d)
+    drawNode(a, b, p, q, nx, ny, level + 1, nx, ny);
+    drawNode(p, q, c, d, nx, ny, level + 1, nx, ny);
+  }
+
+  // Root: mediant of 0/1 and 1/0 = 1/1
+  var rootX = W * 0.5;
+  // Draw root node
+  ctx.beginPath();
+  ctx.arc(rootX, rootY, 2, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(200,200,200,0.06)";
+  ctx.fill();
+  ctx.fillStyle = "rgba(200,200,200,0.04)";
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("1/1", rootX, rootY - 6);
+
+  // Left subtree: mediants between 0/1 and 1/1
+  drawNode(0, 1, 1, 1, rootX, rootY, 1, rootX, rootY);
+  // Right subtree: mediants between 1/1 and 1/0
+  drawNode(1, 1, 1, 0, rootX, rootY, 1, rootX, rootY);
 }
 
 requestAnimationFrame(drawBg);
