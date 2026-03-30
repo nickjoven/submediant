@@ -818,6 +818,9 @@ sphinx:
       - mobius-theme.js
     html_theme_options:
       navigation_with_keys: false
+      collapse_navigation: true
+      show_nav_level: 1
+      navigation_depth: 2
 """
     (BOOK_DIR / "_config.yml").write_text(config)
 
