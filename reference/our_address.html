@@ -434,17 +434,715 @@ hr.divider {
 <div class="phi-spacer-sm"></div>
 
 <!-- The Minimum Self-Predicting Universe -->
-<section style="text-align:center;">
-  <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted,#8b949e); font-weight:300; margin-bottom:var(--sp);">
+<section id="mspu">
+  <h2 style="font-size:var(--fs-xl); color:var(--m-text,#e6edf3); font-weight:300; text-align:center; margin-bottom:var(--sp); font-family:sans-serif;">
     The Minimum Self-Predicting Universe
   </h2>
-  <img src="https://raw.githubusercontent.com/nickjoven/harmonics/main/sync_cost/minimum_self_predicting_universe.svg"
-       alt="The minimum self-predicting universe: four primitives (integers, mediant, fixed-point, parabola) and their compositions into the circle, devil's staircase, Arnold tongues, and the Born rule"
-       style="width:100%; max-width:700px; border-radius:8px; opacity:0.9;">
-  <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1rem;">
+
+  <!-- Section 1: The Stern-Brocot Tree -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        All rationals emerge from one operation: the mediant. The tree is the address space.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-tree" width="600" height="320" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        mediant(<em>a</em>/<em>b</em>, <em>c</em>/<em>d</em>) = (<em>a</em>+<em>c</em>) / (<em>b</em>+<em>d</em>)
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Starting from 0/1 and 1/0, every positive rational appears exactly once.
+        The golden ratio sits at the widest gap. 146 levels separate Planck from Hubble.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Tongues and Gaps -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        The frequency axis fills with locked modes. The gaps are where dark matter lives.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-tongues" width="600" height="120" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        width(<em>p</em>/<em>q</em>) &prop; K<sup>q</sup> / q<sup>2</sup>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        18.7% of the frequency axis remains unlocked. The gap twin at 1/&phi; accumulates phase
+        at 10<sup>-59</sup> radians per oscillation.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 3: Four Phase States -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Two binary choices (oscillator locked/unlocked &times; twist locked/unlocked)
+        produce exactly 4 states and force (3,1) Minkowski signature.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <div id="mspu-phases" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:360px; margin:0.5rem 0;">
+        <div style="background:rgba(30,118,184,0.25); border:1px solid #1E76B8; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#1E76B8;">A</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both locked</div>
+        </div>
+        <div style="background:rgba(8,169,83,0.25); border:1px solid #08A953; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#08A953;">B</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">osc in gap</div>
+        </div>
+        <div style="background:rgba(124,46,135,0.25); border:1px solid #7C2E87; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#7C2E87;">C</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">twist in gap</div>
+        </div>
+        <div style="background:rgba(13,17,23,0.7); border:1px solid var(--m-border,#30363d); border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:var(--m-text-muted,#8b949e);">D</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both unlocked</div>
+        </div>
+      </div>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        3 observable + 1 dark = (3,1)<br>
+        <span style="font-size:var(--fs-sm);">i<sup>2</sup> = &minus;1 = J<sup>2</sup> = double half-twist</span>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Three generations = three spatial dimensions = 2<sup>2</sup>&minus;1.
+        The dark state is not missing matter &mdash; it's the unobservable fourth phase.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 4: The Figure-8 -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Two loops share one crossing point. The crossing probability is the Weinberg angle.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-figure8" width="600" height="260" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        sin<sup>2</sup>&theta;<sub>W</sub> = 8/35 = 0.2286
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        8 cross-sector transitions = 8 gluons. The crossing point is the present moment.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 5: Predictions -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Zero free parameters. Everything follows from 13 modes, 12 channels, 4 states, 3 dimensions.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <div style="overflow-x:auto; margin:0.5rem 0;">
+        <table id="mspu-predictions" style="width:100%; max-width:600px; border-collapse:collapse; font-family:sans-serif; font-size:var(--fs-sm);">
+          <thead>
+            <tr style="border-bottom:1px solid var(--m-border,#30363d);">
+              <th style="text-align:left; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Prediction</th>
+              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Value</th>
+              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Residual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:4px 8px; color:#08A953;">&Omega;<sub>&Lambda;</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.6847</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.07&sigma;</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">&alpha;<sub>s</sub>/&alpha;<sub>2</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">27/8 = 3.375</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.3&sigma;</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">sin<sup>2</sup>&theta;<sub>W</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">8/35 = 0.2286</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.2&sigma;</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">n<sub>s</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.965</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.1&sigma;</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">d</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">generations</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
+            <tr><td style="padding:4px 8px; color:var(--m-text-muted,#8b949e); opacity:0.5;">hierarchy R</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">6&times;13<sup>54</sup></td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">15 digits</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        &Omega;<sub>&Lambda;</sub> = (11 + 2w*) / (16 + 3w*) = 0.6847<br>
+        <span style="font-size:var(--fs-sm);">&alpha;<sub>s</sub> / &alpha;<sub>2</sub> = 27/8</span>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Every row is derived from the Stern-Brocot address and the four phase states.
+        No fitted constants. The residuals measure distance from experiment, not from a fit.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 6: The Fixed Point -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">conjecture</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        The smallest program that prints its own source code. A quine over Q, thirteen tokens long.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-fixedpt" width="600" height="300" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        x = f(x)
+      </p>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); margin:0.2rem 0;">
+        Four primitives: <strong style="color:var(--m-text,#e6edf3);">Z</strong> (integers) &middot;
+        <strong style="color:var(--m-text,#e6edf3);">mediant</strong> &middot;
+        <strong style="color:var(--m-text,#e6edf3);">fixed point</strong> &middot;
+        <strong style="color:var(--m-text,#e6edf3);">parabola</strong>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        13 modes &middot; 12 channels &middot; 4 states &middot; 3 dimensions &middot; 1 dark &middot; 0 parameters
+      </p>
+    </div>
+  </div>
+
+  <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1.5rem; text-align:center; font-family:sans-serif;">
     Four primitives. Their compositions. Everything else is accounting.
   </p>
 </section>
+
+<script>
+// ── MSPU Canvas Renderers ──────────────────────────────────────────────
+(function() {
+  var PHI = (1 + Math.sqrt(5)) / 2;
+  var ROSE = '#DE3373';
+  var GREEN = '#08A953';
+  var GOLD = '#FCCA28';
+  var BLUE = '#1E76B8';
+  var PURPLE = '#7C2E87';
+  var MUTED = '#8b949e';
+  var BG = '#0d1117';
+
+  // Palette array for tongue coloring by q
+  var PALETTE = [ROSE, GOLD, GREEN, '#F5712A', '#F59EAF', '#EE1B3E',
+                 BLUE, PURPLE, '#7A0434', '#F98F81', '#37BA9B', '#C0C2C2'];
+
+  function dpr() { return window.devicePixelRatio || 1; }
+
+  function setupCanvas(id) {
+    var c = document.getElementById(id);
+    if (!c) return null;
+    var r = dpr();
+    var w = c.width, h = c.height;
+    c.width = w * r; c.height = h * r;
+    c.style.width = w + 'px';
+    c.style.maxWidth = '100%';
+    var ctx = c.getContext('2d');
+    ctx.scale(r, r);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  // ── 1. Stern-Brocot Tree ──
+  function drawTree() {
+    var s = setupCanvas('mspu-tree');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var DEPTH = 4;
+    var rootX = W / 2, rootY = 24;
+    var treeH = H - 50;
+
+    // Track Fibonacci backbone: fractions p/q where p,q are consecutive Fibonacci numbers
+    var fibs = [1,1,2,3,5,8,13,21];
+
+    function isFib(n) {
+      for (var i = 0; i < fibs.length; i++) { if (fibs[i] === n) return true; }
+      return false;
+    }
+
+    function drawNode(a, b, c, d, level, parentX, parentY) {
+      if (level > DEPTH) return;
+      var p = a + c, q = b + d;
+      var frac = p / q;
+      var nx = W * (0.06 + 0.88 * frac);
+      var ny = rootY + (level / DEPTH) * treeH;
+
+      // Fibonacci backbone?
+      var onFib = isFib(p) && isFib(q);
+      var isLeft = frac < 0.5;
+      var col = onFib ? GOLD : (isLeft ? ROSE : GREEN);
+      var lw = onFib ? 2.5 : Math.max(0.8, 2.2 - level * 0.35);
+      var alpha = onFib ? 0.95 : (0.85 - level * 0.12);
+
+      // Branch line
+      if (parentX !== undefined) {
+        ctx.beginPath();
+        ctx.moveTo(parentX, parentY);
+        ctx.lineTo(nx, ny);
+        ctx.strokeStyle = col;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = lw;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // Node dot
+      ctx.beginPath();
+      var dotR = onFib ? 4 : Math.max(2, 4 - level * 0.6);
+      ctx.arc(nx, ny, dotR, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = alpha + 0.1;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Label
+      if (level <= 3) {
+        ctx.font = (level <= 1 ? '600 13px' : '11px') + ' sans-serif';
+        ctx.fillStyle = onFib ? GOLD : MUTED;
+        ctx.globalAlpha = level <= 1 ? 0.9 : 0.6;
+        ctx.textAlign = 'center';
+        ctx.fillText(p + '/' + q, nx, ny - dotR - 4);
+        ctx.globalAlpha = 1;
+      }
+
+      drawNode(a, b, p, q, level + 1, nx, ny);
+      drawNode(p, q, c, d, level + 1, nx, ny);
+    }
+
+    // Root 1/1
+    ctx.beginPath();
+    ctx.arc(rootX, rootY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = GOLD;
+    ctx.fill();
+    ctx.font = '600 14px sans-serif';
+    ctx.fillStyle = GOLD;
+    ctx.textAlign = 'center';
+    ctx.fillText('1/1', rootX, rootY - 10);
+
+    drawNode(0, 1, 1, 1, 1, rootX, rootY);
+    drawNode(1, 1, 1, 0, 1, rootX, rootY);
+  }
+
+  // ── 2. Arnold Tongues ──
+  function drawTongues() {
+    var s = setupCanvas('mspu-tongues');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var barY = 30, barH = 50;
+
+    // Background bar (dark gap)
+    ctx.fillStyle = '#161b22';
+    ctx.fillRect(0, barY, W, barH);
+
+    // Generate Farey-like fractions for tongues
+    var tongues = [];
+    for (var q = 1; q <= 8; q++) {
+      for (var p = 0; p <= q; p++) {
+        // Check coprime
+        if (gcd(p, q) !== 1 && !(p === 0 && q === 1) && !(p === q)) continue;
+        var val = p / q;
+        var width = Math.max(3, (1 / (q * q)) * W * 0.7);
+        tongues.push({ p: p, q: q, val: val, width: width });
+      }
+    }
+
+    // Draw tongues
+    for (var i = 0; i < tongues.length; i++) {
+      var t = tongues[i];
+      var x = t.val * W;
+      var col = PALETTE[(t.q - 1) % PALETTE.length];
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.7 - t.q * 0.05;
+      ctx.fillRect(x - t.width / 2, barY, t.width, barH);
+      ctx.globalAlpha = 1;
+    }
+
+    // Labels
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = MUTED;
+    ctx.textAlign = 'left';
+    ctx.fillText('0', 4, barY + barH + 16);
+    ctx.textAlign = 'right';
+    ctx.fillText('1', W - 4, barY + barH + 16);
+    ctx.textAlign = 'center';
+    ctx.fillText('frequency axis', W / 2, barY - 8);
+
+    // Mark 1/phi gap
+    var phiInv = 1 / PHI;
+    ctx.beginPath();
+    ctx.moveTo(phiInv * W, barY - 4);
+    ctx.lineTo(phiInv * W, barY + barH + 4);
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '600 10px sans-serif';
+    ctx.fillStyle = GOLD;
+    ctx.fillText('1/\u03C6', phiInv * W, barY + barH + 16);
+
+    // Dark gap label
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = MUTED;
+    ctx.globalAlpha = 0.5;
+    ctx.fillText('18.7% dark gaps', W / 2, 16);
+    ctx.globalAlpha = 1;
+  }
+
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+  // ── 4. Figure-8 (lemniscate) ──
+  function drawFigure8() {
+    var s = setupCanvas('mspu-figure8');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var cx = W / 2, cy = H / 2;
+    var a = W * 0.22; // half-width of lemniscate
+
+    // Parametric lemniscate of Bernoulli: x = a*cos(t)/(1+sin^2(t)), y = a*sin(t)*cos(t)/(1+sin^2(t))
+    var steps = 200;
+
+    // Left loop (t from pi/2 to 3pi/2) - blue
+    ctx.beginPath();
+    for (var i = 0; i <= steps; i++) {
+      var t = Math.PI / 2 + (i / steps) * Math.PI;
+      var s2 = Math.sin(t) * Math.sin(t);
+      var denom = 1 + s2;
+      var x = cx + a * Math.cos(t) / denom;
+      var y = cy + a * Math.sin(t) * Math.cos(t) / denom;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = BLUE;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Right loop (t from -pi/2 to pi/2) - rose
+    ctx.beginPath();
+    for (var i = 0; i <= steps; i++) {
+      var t = -Math.PI / 2 + (i / steps) * Math.PI;
+      var s2 = Math.sin(t) * Math.sin(t);
+      var denom = 1 + s2;
+      var x = cx + a * Math.cos(t) / denom;
+      var y = cy + a * Math.sin(t) * Math.cos(t) / denom;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = ROSE;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Crossing point at center
+    ctx.beginPath();
+    ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+    ctx.fillStyle = GOLD;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = BG;
+    ctx.fill();
+
+    // Labels
+    ctx.font = '600 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = BLUE;
+    ctx.fillText('left loop', cx - a * 0.45, cy + a * 0.55);
+    ctx.fillStyle = ROSE;
+    ctx.fillText('right loop', cx + a * 0.45, cy + a * 0.55);
+    ctx.fillStyle = GOLD;
+    ctx.fillText('crossing', cx, cy - 14);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = MUTED;
+    ctx.fillText('sin\u00B2\u03B8_W = 8/35', cx, cy + a * 0.75);
+  }
+
+  // ── 6. Fixed Point x=f(x) ──
+  var fixedPtFrame = 0;
+  function drawFixedPoint() {
+    var s = setupCanvas('mspu-fixedpt');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var pad = 40;
+    var plotW = W - pad * 2, plotH = H - pad * 2;
+
+    // Axes
+    ctx.strokeStyle = MUTED;
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH);
+    ctx.lineTo(pad + plotW, pad + plotH);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // y = x line
+    ctx.beginPath();
+    ctx.moveTo(pad, pad + plotH);
+    ctx.lineTo(pad + plotW, pad);
+    ctx.strokeStyle = MUTED;
+    ctx.globalAlpha = 0.25;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // f(x) = parabola that crosses y=x at golden ratio: f(x) = x^2 - x + 1/phi
+    // Fixed point: x = 1/phi
+    var phiInv = 1 / PHI;
+    function f(x) { return x * x; }
+
+    // Draw f(x) curve
+    ctx.beginPath();
+    for (var i = 0; i <= 200; i++) {
+      var x = i / 200;
+      var y = f(x);
+      var px = pad + x * plotW;
+      var py = pad + plotH - y * plotH;
+      if (py < pad) continue;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = ROSE;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Cobweb iteration from start to fixed point
+    // x^2 = x => x = 0 or x = 1; use f(x) = x(2-x) which has fixed point at 1
+    // Better: use f(x) = sqrt(x) with fixed point at 1
+    // Actually, for golden ratio: f(x) = 1/(1+x), fixed point at 1/phi
+    function fg(x) { return 1 / (1 + x); }
+
+    // Cobweb animation
+    var nSteps = 12;
+    var animStep = Math.min(nSteps, Math.floor(fixedPtFrame / 8));
+    var xn = 0.1; // start
+    ctx.beginPath();
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.8;
+    for (var i = 0; i < animStep; i++) {
+      var yn = fg(xn);
+      // horizontal to curve
+      var px1 = pad + xn * plotW;
+      var py1 = pad + plotH - xn * plotH; // on y=x
+      var py2 = pad + plotH - yn * plotH; // on f(x)
+      if (i === 0) ctx.moveTo(px1, py1);
+      ctx.lineTo(px1, py2); // vertical to f(x)
+      ctx.lineTo(pad + yn * plotW, py2); // horizontal to y=x
+      xn = yn;
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Draw f(x) = 1/(1+x) curve
+    ctx.beginPath();
+    for (var i = 1; i <= 200; i++) {
+      var x = i / 200;
+      var y = fg(x);
+      var px = pad + x * plotW;
+      var py = pad + plotH - y * plotH;
+      if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = GREEN;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Mark fixed point 1/phi
+    var fpx = pad + phiInv * plotW;
+    var fpy = pad + plotH - phiInv * plotH;
+    ctx.beginPath();
+    ctx.arc(fpx, fpy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = GOLD;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(fpx, fpy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = BG;
+    ctx.fill();
+
+    // Labels
+    ctx.font = '600 12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = GREEN;
+    ctx.fillText('f(x) = 1/(1+x)', pad + plotW * 0.55, pad + 20);
+    ctx.fillStyle = MUTED;
+    ctx.globalAlpha = 0.4;
+    ctx.fillText('y = x', pad + plotW - 40, pad + 20);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = GOLD;
+    ctx.fillText('1/\u03C6', fpx + 10, fpy - 8);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = MUTED;
+    ctx.textAlign = 'center';
+    ctx.fillText('x = f(x)', W / 2, H - 8);
+
+    // Animate
+    if (fixedPtFrame < nSteps * 8 + 60) {
+      fixedPtFrame++;
+      requestAnimationFrame(function() {
+        // Clear and redraw
+        ctx.clearRect(0, 0, W, H);
+        // Re-setup not needed since we keep the same ctx, just re-call the draw internals
+        drawFixedPointInner(ctx, W, H, pad, plotW, plotH);
+      });
+    }
+  }
+
+  // Inner draw for animation loop
+  function drawFixedPointInner(ctx, W, H, pad, plotW, plotH) {
+    var phiInv = 1 / PHI;
+    function fg(x) { return 1 / (1 + x); }
+
+    // Axes
+    ctx.strokeStyle = MUTED;
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH);
+    ctx.lineTo(pad + plotW, pad + plotH);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // y = x line
+    ctx.beginPath();
+    ctx.moveTo(pad, pad + plotH);
+    ctx.lineTo(pad + plotW, pad);
+    ctx.strokeStyle = MUTED;
+    ctx.globalAlpha = 0.25;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // f(x) = 1/(1+x) curve
+    ctx.beginPath();
+    for (var i = 1; i <= 200; i++) {
+      var x = i / 200;
+      var y = fg(x);
+      var px = pad + x * plotW;
+      var py = pad + plotH - y * plotH;
+      if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = GREEN;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Cobweb
+    var nSteps = 12;
+    var animStep = Math.min(nSteps, Math.floor(fixedPtFrame / 8));
+    var xn = 0.1;
+    ctx.beginPath();
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.8;
+    for (var i = 0; i < animStep; i++) {
+      var yn = fg(xn);
+      var px1 = pad + xn * plotW;
+      var py1 = pad + plotH - xn * plotH;
+      var py2 = pad + plotH - yn * plotH;
+      if (i === 0) ctx.moveTo(px1, py1);
+      ctx.lineTo(px1, py2);
+      ctx.lineTo(pad + yn * plotW, py2);
+      xn = yn;
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Fixed point
+    var fpx = pad + phiInv * plotW;
+    var fpy = pad + plotH - phiInv * plotH;
+    ctx.beginPath();
+    ctx.arc(fpx, fpy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = GOLD;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(fpx, fpy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = BG;
+    ctx.fill();
+
+    // Labels
+    ctx.font = '600 12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = GREEN;
+    ctx.fillText('f(x) = 1/(1+x)', pad + plotW * 0.55, pad + 20);
+    ctx.fillStyle = MUTED;
+    ctx.globalAlpha = 0.4;
+    ctx.fillText('y = x', pad + plotW - 40, pad + 20);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = GOLD;
+    ctx.fillText('1/\u03C6', fpx + 10, fpy - 8);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = MUTED;
+    ctx.textAlign = 'center';
+    ctx.fillText('x = f(x)', W / 2, H - 8);
+
+    if (fixedPtFrame < nSteps * 8 + 60) {
+      fixedPtFrame++;
+      requestAnimationFrame(function() {
+        ctx.clearRect(0, 0, W, H);
+        drawFixedPointInner(ctx, W, H, pad, plotW, plotH);
+      });
+    }
+  }
+
+  // ── Init all canvases ──
+  function initMSPU() {
+    drawTree();
+    drawTongues();
+    drawFigure8();
+    drawFixedPoint();
+  }
+
+  // Run after DOM ready and after mobius-theme.js inits the accordion
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMSPU);
+  } else {
+    // Slight delay to let accordion init first
+    setTimeout(initMSPU, 50);
+  }
+})();
+</script>
 
 <div class="phi-spacer"></div>
 
