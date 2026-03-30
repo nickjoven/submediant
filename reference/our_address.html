@@ -4,15 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Our Address on the Tree</title>
+<link rel="stylesheet" href="../static/mobius-theme.css">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: #000;
-  color: #c8c8c8;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
-  line-height: 1.6;
+  background: var(--m-bg, #0d1117);
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
   overflow-x: hidden;
 }
 
@@ -24,125 +25,245 @@ canvas#bg {
   pointer-events: none;
 }
 
+/* ── Golden-ratio layout ── */
 main {
   position: relative;
   z-index: 1;
-  max-width: 720px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 60px 24px 120px;
+  padding: 0 32px 160px;
 }
 
-h1 {
-  font-size: 18px;
-  font-weight: normal;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #fff;
-  margin-bottom: 4px;
+/* phi-based vertical rhythm: sections placed at phi intervals */
+.phi-spacer-1 { height: 61.8vh; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+.phi-spacer    { height: calc(61.8px * 1.618); }
+.phi-spacer-sm { height: 61.8px; }
+
+/* ── Theme toggle (standalone page) ── */
+#mobius-moon-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
 }
 
-.subtitle {
-  color: #666;
-  font-size: 12px;
+/* ── Clock section ── */
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+canvas#clock {
+  width: min(420px, 80vw);
+  height: min(420px, 80vw);
+  border-radius: 50%;
+}
+
+.digital-readout {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.digital-readout .value {
+  color: var(--m-text, #e6edf3);
+  font-weight: 600;
+}
+
+.digital-readout .sep {
+  color: var(--m-border, #30363d);
+  margin: 0 0.3em;
+}
+
+/* ── Binary clock ── */
+.binary-clock {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.binary-digit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.binary-digit .bit {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--m-border, #30363d);
+  transition: background 0.3s;
+}
+
+.binary-digit .bit.on {
+  background: var(--m-accent, #DE3373);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--m-accent, #DE3373) 40%, transparent);
+}
+
+.binary-digit .label {
+  font-size: 0.65rem;
+  color: var(--m-text-muted, #8b949e);
+  margin-top: 2px;
+}
+
+/* ── Address block: postal envelope style ── */
+.address-envelope {
+  text-align: center;
+  padding: 48px 32px;
+  border: 1px solid var(--m-border, #30363d);
+  background: color-mix(in srgb, var(--m-surface, #161b22) 60%, transparent);
+  border-radius: 2px;
+  max-width: 480px;
+  margin: 0 auto;
+  backdrop-filter: blur(4px);
+}
+
+.return-address {
+  text-align: left;
+  font-size: 0.75rem;
+  color: var(--m-text-muted, #8b949e);
   margin-bottom: 48px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
 }
 
-section {
-  margin-bottom: 40px;
-}
-
-.step-label {
-  color: #555;
-  font-size: 11px;
-  letter-spacing: 0.15em;
+.return-address .sender {
+  font-weight: 600;
+  color: var(--m-text, #e6edf3);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  letter-spacing: 0.12em;
+  font-size: 0.7rem;
 }
 
-.step-title {
-  color: #e0e0e0;
-  font-size: 15px;
+.main-address {
+  font-size: 1.05rem;
+  line-height: 2.2;
+  color: var(--m-text, #e6edf3);
+}
+
+.main-address .line {
+  display: block;
+}
+
+.main-address .derived {
+  color: var(--m-accent, #DE3373);
+}
+
+.main-address .muted {
+  color: var(--m-text-muted, #8b949e);
+  font-size: 0.85em;
+}
+
+/* ── Stamp ── */
+.stamp {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 60px;
+  height: 72px;
+  border: 1.5px dashed var(--m-border, #30363d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: var(--m-text-muted, #8b949e);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── Data sections ── */
+section {
+  margin-bottom: 0;
+}
+
+.section-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--m-text-muted, #8b949e);
   margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  color: var(--m-text, #e6edf3);
+  font-weight: 500;
+  margin-bottom: 16px;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  padding: 3px 0;
-  border-bottom: 1px solid #111;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
 }
 
-.row .label { color: #777; }
-.row .value { color: #ddd; text-align: right; }
-
-.derived {
-  color: #7faaff;
-}
+.row .label { color: var(--m-text-muted, #8b949e); font-size: 0.9em; }
+.row .value { color: var(--m-text, #e6edf3); text-align: right; font-size: 0.9em; }
+.row .value .derived { color: var(--m-accent, #DE3373); }
+.row .value .dim { color: var(--m-text-muted, #8b949e); font-size: 0.85em; }
 
 .note {
-  color: #555;
-  font-size: 12px;
+  color: var(--m-text-muted, #8b949e);
+  font-size: 0.8rem;
   font-style: italic;
-  margin-top: 6px;
+  margin-top: 8px;
+  opacity: 0.7;
 }
 
-.divider {
+hr.divider {
   border: none;
-  border-top: 1px solid #1a1a1a;
-  margin: 48px 0;
+  border-top: 1px solid color-mix(in srgb, var(--m-border, #30363d) 30%, transparent);
+  margin: 0;
 }
 
-/* predictions table */
+/* ── Predictions grid ── */
 .pred-grid {
   display: grid;
-  grid-template-columns: 60px 60px 1fr;
-  gap: 2px 12px;
-  font-size: 13px;
+  grid-template-columns: 52px 60px 1fr;
+  gap: 4px 16px;
+  font-size: 0.85rem;
 }
 
 .pred-grid .hdr {
-  color: #555;
-  font-size: 11px;
+  color: var(--m-text-muted, #8b949e);
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
 }
 
-.pred-grid .settled { color: #5a5; }
-.pred-grid .unsettled { color: #444; }
+.pred-grid .settled { color: var(--m-accent3, #08A953); }
+.pred-grid .unsettled { color: var(--m-text-muted, #8b949e); opacity: 0.4; }
 
-/* address block */
-.address-block {
-  background: #060606;
-  border: 1px solid #1a1a1a;
-  padding: 24px;
-  margin-top: 24px;
-}
-
-.address-block .group-label {
-  color: #555;
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-top: 20px;
-  margin-bottom: 8px;
-}
-
-.address-block .group-label:first-child {
-  margin-top: 0;
-}
-
+/* ── Closing ── */
 .closing {
-  color: #444;
-  font-size: 13px;
   text-align: center;
-  margin-top: 48px;
+  color: var(--m-text-muted, #8b949e);
+  font-size: 0.9rem;
   line-height: 2;
 }
 
 .closing .highlight {
-  color: #888;
+  color: var(--m-text, #e6edf3);
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+  main { padding: 0 20px 100px; }
+  canvas#clock { width: 85vw; height: 85vw; }
+  .address-envelope { padding: 32px 20px; }
+  .stamp { display: none; }
+  .phi-spacer-1 { height: 50vh; min-height: 260px; }
 }
 </style>
 </head>
@@ -152,72 +273,112 @@ section {
 
 <main>
 
-<h1>Our Address on the Tree</h1>
-<p class="subtitle">From first principles + three observables</p>
+<!-- Hero: The Clock -->
+<div class="phi-spacer-1">
+  <div class="clock-container">
+    <canvas id="clock" width="840" height="840"></canvas>
+    <div class="digital-readout">
+      <span class="value">47</span> oscillations<span class="sep">|</span><span class="value">9</span> digits<span class="sep">|</span><span class="value">13.80</span> Gyr
+    </div>
+    <div class="binary-clock" id="binary-clock"></div>
+  </div>
+</div>
+
+<div class="phi-spacer"></div>
+
+<!-- The Address -->
+<div class="address-envelope" style="position: relative;">
+  <div class="stamp">0.95<br>Hubble<br>cycles</div>
+
+  <div class="return-address">
+    <span class="sender">From First Principles</span><br>
+    phi = (1 + sqrt(5)) / 2<br>
+    d = 3<br>
+    |F_6| = 13
+  </div>
+
+  <div class="main-address">
+    <span class="line">Level 21, CMB Pivot</span>
+    <span class="line">Window sqrt(5) = 2.236 levels</span>
+    <span class="line">Depth 145.8 Fibonacci Levels</span>
+    <span class="line">Stern-Brocot Tree</span>
+    <span class="line muted">---</span>
+    <span class="line"><span class="derived">Age 13.80 Gyr</span> <span class="muted">(derived)</span></span>
+    <span class="line">47 oscillations, 9 digits of |r|</span>
+    <span class="line">Omega_Lambda = 0.6847</span>
+  </div>
+</div>
+
+<div class="phi-spacer"></div>
 
 <!-- Step 1 -->
 <section>
-  <div class="step-label">Step 1</div>
-  <div class="step-title">The self-similarity rate</div>
-  <div class="row"><span class="label">n_s</span><span class="value">0.9649 <span style="color:#555">(Planck 2018)</span></span></div>
-  <div class="row"><span class="label">ln(phi^2)</span><span class="value">0.962424 <span style="color:#555">(from x^2 - x - 1 = 0)</span></span></div>
+  <div class="section-label">Step 1 — Self-similarity rate</div>
+  <div class="row"><span class="label">n_s</span><span class="value">0.9649 <span class="dim">(Planck 2018)</span></span></div>
+  <div class="row"><span class="label">ln(phi^2)</span><span class="value">0.962424 <span class="dim">(from x^2 - x - 1 = 0)</span></span></div>
   <div class="row"><span class="label">rate</span><span class="value">0.036470 levels / e-fold</span></div>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 2 -->
 <section>
-  <div class="step-label">Step 2</div>
-  <div class="step-title">Total tree depth</div>
+  <div class="section-label">Step 2 — Total tree depth</div>
   <div class="row"><span class="label">omega_Planck</span><span class="value">1.855 x 10^43 Hz</span></div>
   <div class="row"><span class="label">omega_Hubble</span><span class="value">2.183 x 10^-18 Hz</span></div>
   <div class="row"><span class="label">ratio</span><span class="value">8.497 x 10^60</span></div>
   <div class="row"><span class="label">depth</span><span class="value">145.8 Fibonacci levels</span></div>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 3 -->
 <section>
-  <div class="step-label">Step 3</div>
-  <div class="step-title">The CMB window</div>
+  <div class="section-label">Step 3 — The CMB window</div>
   <div class="row"><span class="label">sqrt(5)</span><span class="value">2.236068</span></div>
   <div class="row"><span class="label">N_efolds</span><span class="value">61.3</span></div>
   <div class="row"><span class="label">sampled levels</span><span class="value">sqrt(5) = 2.236</span></div>
   <div class="row"><span class="label">CMB pivot</span><span class="value">level ~21 from root</span></div>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 4 -->
 <section>
-  <div class="step-label">Step 4</div>
-  <div class="step-title">Spent cycles</div>
-  <div class="row"><span class="label">age of universe</span><span class="value derived">13.80 Gyr (derived)</span></div>
+  <div class="section-label">Step 4 — Spent cycles</div>
+  <div class="row"><span class="label">age of universe</span><span class="value"><span class="derived">13.80 Gyr</span> <span class="dim">(derived)</span></span></div>
   <div class="row"><span class="label">Hubble time</span><span class="value">1.451 x 10^10 yr</span></div>
   <div class="row"><span class="label">spent Hubble cycles</span><span class="value">0.95</span></div>
   <p class="note">No hardcoded 13.8 Gyr. Age follows from H_0 + Omega_Lambda via Friedmann integration.</p>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 5 -->
 <section>
-  <div class="step-label">Step 5</div>
-  <div class="step-title">Computational progress</div>
+  <div class="section-label">Step 5 — Computational progress</div>
   <div class="row"><span class="label">oscillations / cycle</span><span class="value">49</span></div>
   <div class="row"><span class="label">total oscillations</span><span class="value">47</span></div>
   <div class="row"><span class="label">convergence rate</span><span class="value">2/pi = 0.6366</span></div>
   <div class="row"><span class="label">digits of |r|</span><span class="value">9</span></div>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 6 -->
 <section>
-  <div class="step-label">Step 6</div>
-  <div class="step-title">The boundary weight</div>
-  <div class="row"><span class="label">Omega_Lambda</span><span class="value">0.6847 <span style="color:#555">(predicted)</span></span></div>
+  <div class="section-label">Step 6 — Boundary weight</div>
+  <div class="row"><span class="label">Omega_Lambda</span><span class="value">0.6847 <span class="dim">(predicted)</span></span></div>
   <div class="row"><span class="label">w*</span><span class="value">0.8281</span></div>
   <div class="row"><span class="label">effective modes</span><span class="value">12.66</span></div>
   <div class="row"><span class="label">effective depth</span><span class="value">5.83</span></div>
 </section>
 
+<div class="phi-spacer-sm"></div>
+
 <!-- Step 7 -->
 <section>
-  <div class="step-label">Step 7</div>
-  <div class="step-title">The gap twin</div>
+  <div class="section-label">Step 7 — The gap twin</div>
   <div class="row"><span class="label">gap fraction</span><span class="value">0.187 of frequency axis</span></div>
   <div class="row"><span class="label">per dimension</span><span class="value">0.572</span></div>
   <div class="row"><span class="label">twin's cycles</span><span class="value">0.5</span></div>
@@ -227,13 +388,14 @@ section {
   <div class="row"><span class="label">time to 1 bit</span><span class="value">5.6 x 10^68 yr</span></div>
 </section>
 
+<div class="phi-spacer"></div>
 <hr class="divider">
+<div class="phi-spacer-sm"></div>
 
 <!-- Step 8 -->
 <section>
-  <div class="step-label">Step 8</div>
-  <div class="step-title">What's been computed</div>
-  <p style="color:#777; margin-bottom:12px;">Digits available: <span style="color:#ddd">9</span></p>
+  <div class="section-label">Step 8 — What's been computed</div>
+  <p style="color: var(--m-text-muted); margin-bottom: 16px;">Digits available: <span style="color: var(--m-text); font-weight: 600;">9</span></p>
 
   <div class="pred-grid">
     <span class="hdr">digits</span><span class="hdr">status</span><span class="hdr">prediction</span>
@@ -245,46 +407,13 @@ section {
     <span>3</span><span class="settled">settled</span><span>sin^2(theta_W) = 8/35</span>
     <span>4</span><span class="settled">settled</span><span>|r| correction to couplings</span>
     <span>4</span><span class="settled">settled</span><span>n_s = 0.965 (tilt to 3 sig figs)</span>
-    <span>10</span><span class="unsettled">&mdash;</span><span style="color:#555">Omega_Lambda to 0.07 sigma</span>
-    <span>15</span><span class="unsettled">&mdash;</span><span style="color:#555">R = 6 x 13^54 (hierarchy)</span>
-    <span>61</span><span class="unsettled">&mdash;</span><span style="color:#555">Planck-scale structure</span>
+    <span>10</span><span class="unsettled">&mdash;</span><span style="opacity:0.4">Omega_Lambda to 0.07 sigma</span>
+    <span>15</span><span class="unsettled">&mdash;</span><span style="opacity:0.4">R = 6 x 13^54 (hierarchy)</span>
+    <span>61</span><span class="unsettled">&mdash;</span><span style="opacity:0.4">Planck-scale structure</span>
   </div>
 </section>
 
-<hr class="divider">
-
-<!-- The Address -->
-<div class="address-block">
-  <div class="group-label">First principles</div>
-  <div class="row"><span class="label">phi</span><span class="value">(1 + sqrt(5)) / 2</span></div>
-  <div class="row"><span class="label">d</span><span class="value">3</span></div>
-  <div class="row"><span class="label">|F_6|</span><span class="value">13</span></div>
-
-  <div class="group-label">Three observables</div>
-  <div class="row"><span class="label">n_s</span><span class="value">0.9649</span></div>
-  <div class="row"><span class="label">H_0</span><span class="value">67.36 km/s/Mpc</span></div>
-  <div class="row"><span class="label">Planck units</span><span class="value">hbar, G, c</span></div>
-
-  <div class="group-label">Derived address</div>
-  <div class="row"><span class="label">total depth</span><span class="value">145.8 Fibonacci levels</span></div>
-  <div class="row"><span class="label">CMB window</span><span class="value">2.236 levels (= sqrt 5)</span></div>
-  <div class="row"><span class="label">CMB pivot</span><span class="value">level ~21</span></div>
-  <div class="row"><span class="label">age</span><span class="value derived">13.80 Gyr (derived)</span></div>
-  <div class="row"><span class="label">spent cycles</span><span class="value">0.95</span></div>
-  <div class="row"><span class="label">oscillations</span><span class="value">47</span></div>
-  <div class="row"><span class="label">digits of |r|</span><span class="value">9</span></div>
-
-  <div class="group-label">The staircase</div>
-  <div class="row"><span class="label">rate</span><span class="value">0.036470 levels / e-fold</span></div>
-  <div class="row"><span class="label">levels sampled</span><span class="value">sqrt(5) = 2.236068</span></div>
-  <div class="row"><span class="label">N_efolds</span><span class="value">61.3</span></div>
-
-  <div class="group-label">Boundary weight</div>
-  <div class="row"><span class="label">w*</span><span class="value">0.8281</span></div>
-  <div class="row"><span class="label">effective modes</span><span class="value">12.66</span></div>
-  <div class="row"><span class="label">effective depth</span><span class="value">5.83</span></div>
-  <div class="row"><span class="label">Omega_Lambda</span><span class="value">0.6847</span></div>
-</div>
+<div class="phi-spacer"></div>
 
 <div class="closing">
   <span class="highlight">One tree. 145 levels. 9 digits known.</span><br>
@@ -293,74 +422,67 @@ section {
 
 </main>
 
+<script src="../static/mobius-theme.js"></script>
 <script>
-// ── Perturbation field ──────────────────────────────────────────────
-// Sparse drifting particles + subtle Kuramoto-inspired phase waves
-// rendered on a full-screen canvas behind the content.
-
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
+// ── Background: Kuramoto particles (subtler version) ────────────────────
+const bgCanvas = document.getElementById('bg');
+const bgCtx = bgCanvas.getContext('2d');
 
 let W, H;
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+function resizeBg() {
+  W = bgCanvas.width = window.innerWidth;
+  H = bgCanvas.height = window.innerHeight;
 }
-resize();
-window.addEventListener('resize', resize);
+resizeBg();
+window.addEventListener('resize', resizeBg);
 
-// Particles: sparse, dim, slow
 const PHI = (1 + Math.sqrt(5)) / 2;
-const N = 180;
+const N_PARTICLES = 120; // fewer than original
 const particles = [];
 
-for (let i = 0; i < N; i++) {
+for (let i = 0; i < N_PARTICLES; i++) {
   particles.push({
-    x: Math.random() * 2 - 1,   // normalised [-1, 1]
+    x: Math.random() * 2 - 1,
     y: Math.random() * 2 - 1,
     phase: Math.random() * Math.PI * 2,
-    freq: (0.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : PHI), // mode frequencies
-    radius: 0.5 + Math.random() * 1.5,
-    drift_x: (Math.random() - 0.5) * 0.0003,
-    drift_y: (Math.random() - 0.5) * 0.0002,
+    freq: (0.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : PHI),
+    radius: 0.4 + Math.random() * 1.0,
+    drift_x: (Math.random() - 0.5) * 0.00015,
+    drift_y: (Math.random() - 0.5) * 0.00012,
   });
 }
 
-// A few "tongue" bands — horizontal sine waves at rational frequencies
 const tongues = [
-  { p: 1, q: 2, amp: 0.15 },
-  { p: 1, q: 3, amp: 0.10 },
-  { p: 2, q: 5, amp: 0.08 },
-  { p: 1, q: 1, amp: 0.06 },
-  { p: 3, q: 5, amp: 0.07 },
+  { p: 1, q: 2, amp: 0.08 },
+  { p: 1, q: 3, amp: 0.05 },
+  { p: 2, q: 5, amp: 0.04 },
 ];
 
-let t = 0;
+let bgT = 0;
 
-function draw() {
-  ctx.clearRect(0, 0, W, H);
+function drawBg() {
+  bgCtx.clearRect(0, 0, W, H);
 
-  // tongue wave bands (very subtle horizontal perturbations)
+  // Tongue wave bands — very subtle
   for (const tg of tongues) {
     const yCenter = (tg.p / tg.q) * H;
     const omega = tg.p / tg.q * 0.4;
-    ctx.beginPath();
-    for (let x = 0; x < W; x += 3) {
-      const wave = Math.sin(x * 0.008 + t * omega) * tg.amp * 40;
+    bgCtx.beginPath();
+    for (let x = 0; x < W; x += 4) {
+      const wave = Math.sin(x * 0.008 + bgT * omega) * tg.amp * 30;
       const y = yCenter + wave;
-      const alpha = 0.025 * (1 + 0.5 * Math.sin(t * omega * 0.3));
-      ctx.fillStyle = `rgba(60, 80, 120, ${alpha})`;
-      ctx.fillRect(x, y - 0.5, 3, 1);
+      const alpha = 0.012 * (1 + 0.5 * Math.sin(bgT * omega * 0.3));
+      bgCtx.fillStyle = `rgba(60, 80, 120, ${alpha})`;
+      bgCtx.fillRect(x, y - 0.5, 4, 1);
     }
   }
 
-  // particles
+  // Particles — dimmer and slower
   for (const p of particles) {
-    p.phase += p.freq * 0.008;
+    p.phase += p.freq * 0.006;
     p.x += p.drift_x;
     p.y += p.drift_y;
 
-    // wrap
     if (p.x > 1.1) p.x = -1.1;
     if (p.x < -1.1) p.x = 1.1;
     if (p.y > 1.1) p.y = -1.1;
@@ -369,39 +491,306 @@ function draw() {
     const sx = (p.x + 1) * 0.5 * W;
     const sy = (p.y + 1) * 0.5 * H;
 
-    // brightness oscillates with phase (Kuramoto sync visual)
-    const brightness = 0.12 + 0.08 * Math.sin(p.phase);
-    const r = p.radius * (1 + 0.2 * Math.sin(p.phase * PHI));
+    const brightness = 0.06 + 0.04 * Math.sin(p.phase);
+    const r = p.radius * (1 + 0.15 * Math.sin(p.phase * PHI));
 
-    ctx.beginPath();
-    ctx.arc(sx, sy, r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(180, 190, 220, ${brightness})`;
-    ctx.fill();
+    bgCtx.beginPath();
+    bgCtx.arc(sx, sy, r, 0, Math.PI * 2);
+    bgCtx.fillStyle = `rgba(180, 190, 220, ${brightness})`;
+    bgCtx.fill();
   }
 
-  // Occasional coupling lines between nearby particles (very faint)
-  for (let i = 0; i < N; i += 3) {
+  // Coupling lines — even fainter
+  for (let i = 0; i < N_PARTICLES; i += 4) {
     const a = particles[i];
-    const b = particles[(i + 7) % N];
+    const b = particles[(i + 7) % N_PARTICLES];
     const dx = a.x - b.x;
     const dy = a.y - b.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 0.15) {
-      const alpha = 0.04 * (1 - dist / 0.15) * (0.5 + 0.5 * Math.cos(a.phase - b.phase));
-      ctx.beginPath();
-      ctx.moveTo((a.x + 1) * 0.5 * W, (a.y + 1) * 0.5 * H);
-      ctx.lineTo((b.x + 1) * 0.5 * W, (b.y + 1) * 0.5 * H);
-      ctx.strokeStyle = `rgba(100, 130, 200, ${alpha})`;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
+    if (dist < 0.12) {
+      const alpha = 0.02 * (1 - dist / 0.12) * (0.5 + 0.5 * Math.cos(a.phase - b.phase));
+      bgCtx.beginPath();
+      bgCtx.moveTo((a.x + 1) * 0.5 * W, (a.y + 1) * 0.5 * H);
+      bgCtx.lineTo((b.x + 1) * 0.5 * W, (b.y + 1) * 0.5 * H);
+      bgCtx.strokeStyle = `rgba(100, 130, 200, ${alpha})`;
+      bgCtx.lineWidth = 0.4;
+      bgCtx.stroke();
     }
   }
 
-  t += 1;
-  requestAnimationFrame(draw);
+  bgT += 1;
+  requestAnimationFrame(drawBg);
 }
 
-requestAnimationFrame(draw);
+requestAnimationFrame(drawBg);
+
+
+// ── Analog Clock with Stern-Brocot markings ─────────────────────────────
+const clockCanvas = document.getElementById('clock');
+const cCtx = clockCanvas.getContext('2d');
+const CW = clockCanvas.width;
+const CH = clockCanvas.height;
+const cx = CW / 2;
+const cy = CH / 2;
+const radius = CW * 0.42;
+
+// Stern-Brocot tree: generate fractions in (0, 1] up to a certain depth
+// These will serve as "hour" markings around the clock
+function sternBrocotLevel(maxDepth) {
+  // Build the Stern-Brocot tree and collect fractions at each depth
+  const fractions = [];
+  function mediant(a, b) { return [a[0] + b[0], a[1] + b[1]]; }
+
+  function recurse(left, right, depth) {
+    if (depth > maxDepth) return;
+    const m = mediant(left, right);
+    recurse(left, m, depth + 1);
+    fractions.push({ n: m[0], d: m[1], depth: depth });
+    recurse(m, right, depth + 1);
+  }
+
+  // Start with 0/1 and 1/0 (the Stern-Brocot root boundaries)
+  // 1/1 is the root mediant
+  recurse([0, 1], [1, 1], 1);
+  // Add 1/1 explicitly
+  fractions.push({ n: 1, d: 1, depth: 0 });
+
+  return fractions.sort((a, b) => (a.n / a.d) - (b.n / b.d));
+}
+
+const sbFractions = sternBrocotLevel(4);
+
+// Map fraction value to angle (0 at top, clockwise)
+function fracToAngle(n, d) {
+  return (n / d) * Math.PI * 2 - Math.PI / 2;
+}
+
+// Get CSS variable value for theming
+function getCSSVar(name, fallback) {
+  const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return val || fallback;
+}
+
+// Golden ratio spiral points (for decoration inside clock)
+function goldenSpiralPoints(cx, cy, maxR, numPoints) {
+  const points = [];
+  const goldenAngle = Math.PI * 2 * (1 - 1 / PHI); // ~137.5 degrees
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / numPoints;
+    const r = maxR * Math.sqrt(t);
+    const theta = i * goldenAngle;
+    points.push({
+      x: cx + r * Math.cos(theta),
+      y: cy + r * Math.sin(theta),
+    });
+  }
+  return points;
+}
+
+let clockTime = 0;
+
+function drawClock() {
+  cCtx.clearRect(0, 0, CW, CH);
+
+  const bg = getCSSVar('--m-bg', '#0d1117');
+  const text = getCSSVar('--m-text', '#e6edf3');
+  const muted = getCSSVar('--m-text-muted', '#8b949e');
+  const accent = getCSSVar('--m-accent', '#DE3373');
+  const accent2 = getCSSVar('--m-accent2', '#FCCA28');
+  const border = getCSSVar('--m-border', '#30363d');
+  const surface = getCSSVar('--m-surface', '#161b22');
+
+  // ── Golden ratio spiral (subtle background decoration) ──
+  const spiralPts = goldenSpiralPoints(cx, cy, radius * 0.85, 200);
+  cCtx.beginPath();
+  for (let i = 1; i < spiralPts.length; i++) {
+    const prev = spiralPts[i - 1];
+    const curr = spiralPts[i];
+    if (i === 1) cCtx.moveTo(prev.x, prev.y);
+    cCtx.lineTo(curr.x, curr.y);
+  }
+  cCtx.strokeStyle = border;
+  cCtx.globalAlpha = 0.15;
+  cCtx.lineWidth = 0.8;
+  cCtx.stroke();
+  cCtx.globalAlpha = 1;
+
+  // ── Clock face outline ──
+  cCtx.beginPath();
+  cCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+  cCtx.strokeStyle = border;
+  cCtx.lineWidth = 1.5;
+  cCtx.stroke();
+
+  // Inner circle
+  cCtx.beginPath();
+  cCtx.arc(cx, cy, radius * 0.92, 0, Math.PI * 2);
+  cCtx.strokeStyle = border;
+  cCtx.lineWidth = 0.5;
+  cCtx.globalAlpha = 0.3;
+  cCtx.stroke();
+  cCtx.globalAlpha = 1;
+
+  // ── Stern-Brocot tick marks ──
+  for (const frac of sbFractions) {
+    const angle = fracToAngle(frac.n, frac.d);
+    const value = frac.n / frac.d;
+
+    // Tick length based on depth (deeper = shorter)
+    const tickOuter = radius * 0.96;
+    const tickInner = radius * (0.96 - (0.12 / (frac.depth + 1)));
+    const labelR = radius * 1.06;
+
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    // Tick mark
+    cCtx.beginPath();
+    cCtx.moveTo(cx + tickInner * cos, cy + tickInner * sin);
+    cCtx.lineTo(cx + tickOuter * cos, cy + tickOuter * sin);
+    const tickAlpha = frac.depth <= 1 ? 0.8 : frac.depth <= 2 ? 0.4 : 0.2;
+    cCtx.strokeStyle = muted;
+    cCtx.globalAlpha = tickAlpha;
+    cCtx.lineWidth = frac.depth <= 1 ? 2 : 1;
+    cCtx.stroke();
+    cCtx.globalAlpha = 1;
+
+    // Labels for first 2 levels only
+    if (frac.depth <= 2 && frac.d <= 5) {
+      const labelText = `${frac.n}/${frac.d}`;
+      cCtx.font = frac.depth <= 1
+        ? '600 16px -apple-system, BlinkMacSystemFont, sans-serif'
+        : '13px -apple-system, BlinkMacSystemFont, sans-serif';
+      cCtx.fillStyle = frac.depth <= 1 ? text : muted;
+      cCtx.globalAlpha = frac.depth <= 1 ? 0.9 : 0.5;
+      cCtx.textAlign = 'center';
+      cCtx.textBaseline = 'middle';
+      cCtx.fillText(labelText, cx + labelR * cos, cy + labelR * sin);
+      cCtx.globalAlpha = 1;
+    }
+  }
+
+  // ── Ghost hand: 0.5 revolutions (the gap twin) ──
+  const ghostAngle = 0.5 * Math.PI * 2 - Math.PI / 2;
+  const ghostLen = radius * 0.7;
+  const ghostPulse = 0.4 + 0.1 * Math.sin(clockTime * 0.02);
+  cCtx.beginPath();
+  cCtx.moveTo(cx, cy);
+  cCtx.lineTo(cx + ghostLen * Math.cos(ghostAngle), cy + ghostLen * Math.sin(ghostAngle));
+  cCtx.strokeStyle = accent2;
+  cCtx.globalAlpha = ghostPulse;
+  cCtx.lineWidth = 2;
+  cCtx.setLineDash([6, 4]);
+  cCtx.stroke();
+  cCtx.setLineDash([]);
+  cCtx.globalAlpha = 1;
+
+  // Ghost hand label
+  cCtx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+  cCtx.fillStyle = accent2;
+  cCtx.globalAlpha = ghostPulse * 0.8;
+  cCtx.textAlign = 'center';
+  cCtx.fillText('gap twin (0.5)', cx + (ghostLen + 24) * Math.cos(ghostAngle), cy + (ghostLen + 24) * Math.sin(ghostAngle));
+  cCtx.globalAlpha = 1;
+
+  // ── Main hand: 0.95 revolutions (universe's progress) ──
+  // Slight tick forward over time for liveliness
+  const baseProgress = 0.95;
+  const tick = 0.0005 * Math.sin(clockTime * 0.005);
+  const mainAngle = (baseProgress + tick) * Math.PI * 2 - Math.PI / 2;
+  const handLen = radius * 0.78;
+
+  // Hand shadow
+  cCtx.beginPath();
+  cCtx.moveTo(cx + 1, cy + 1);
+  cCtx.lineTo(cx + 1 + handLen * Math.cos(mainAngle), cy + 1 + handLen * Math.sin(mainAngle));
+  cCtx.strokeStyle = 'rgba(0,0,0,0.3)';
+  cCtx.lineWidth = 4;
+  cCtx.stroke();
+
+  // Hand
+  cCtx.beginPath();
+  cCtx.moveTo(cx, cy);
+  cCtx.lineTo(cx + handLen * Math.cos(mainAngle), cy + handLen * Math.sin(mainAngle));
+  cCtx.strokeStyle = accent;
+  cCtx.lineWidth = 3;
+  cCtx.lineCap = 'round';
+  cCtx.stroke();
+
+  // Hand tip
+  const tipX = cx + handLen * Math.cos(mainAngle);
+  const tipY = cy + handLen * Math.sin(mainAngle);
+  cCtx.beginPath();
+  cCtx.arc(tipX, tipY, 4, 0, Math.PI * 2);
+  cCtx.fillStyle = accent;
+  cCtx.fill();
+
+  // Center cap
+  cCtx.beginPath();
+  cCtx.arc(cx, cy, 6, 0, Math.PI * 2);
+  cCtx.fillStyle = accent;
+  cCtx.fill();
+  cCtx.beginPath();
+  cCtx.arc(cx, cy, 3, 0, Math.PI * 2);
+  cCtx.fillStyle = bg;
+  cCtx.fill();
+
+  // ── Arc showing progress (0 to 0.95) ──
+  const arcStart = -Math.PI / 2;
+  const arcEnd = baseProgress * Math.PI * 2 - Math.PI / 2;
+  cCtx.beginPath();
+  cCtx.arc(cx, cy, radius * 0.85, arcStart, arcEnd);
+  cCtx.strokeStyle = accent;
+  cCtx.globalAlpha = 0.12;
+  cCtx.lineWidth = 8;
+  cCtx.stroke();
+  cCtx.globalAlpha = 1;
+
+  // ── "0.95" label near hand ──
+  const labelAngle = mainAngle + 0.08;
+  cCtx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
+  cCtx.fillStyle = accent;
+  cCtx.textAlign = 'center';
+  cCtx.fillText('0.95', cx + (handLen * 0.55) * Math.cos(labelAngle), cy + (handLen * 0.55) * Math.sin(labelAngle));
+
+  clockTime++;
+  requestAnimationFrame(drawClock);
+}
+
+requestAnimationFrame(drawClock);
+
+
+// ── Binary clock: 9 digits in binary ────────────────────────────────────
+// The 9 "computed digits" represented as binary columns
+// Using digits 1-9 as placeholders for the computed values
+const computedDigits = [3, 2, 3, 0, 6, 8, 4, 7, 0]; // d=3, q2=2, q3=3, etc — symbolic
+
+function buildBinaryClock() {
+  const container = document.getElementById('binary-clock');
+  container.innerHTML = '';
+
+  for (let i = 0; i < 9; i++) {
+    const col = document.createElement('div');
+    col.className = 'binary-digit';
+
+    // 4-bit representation (0-9 fits in 4 bits)
+    const val = computedDigits[i];
+    for (let bit = 3; bit >= 0; bit--) {
+      const dot = document.createElement('div');
+      dot.className = 'bit' + ((val >> bit) & 1 ? ' on' : '');
+      col.appendChild(dot);
+    }
+
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = `d${i + 1}`;
+    col.appendChild(label);
+
+    container.appendChild(col);
+  }
+}
+
+buildBinaryClock();
 </script>
 </body>
 </html>
