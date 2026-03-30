@@ -58,4 +58,8 @@ parts:
     chapters:
       - file: graph
         title: "Derivation Graph"
+      - file: equations
+        title: "Key Equations"
+      - file: visuals
+        title: "Visual Assets"
       - file: glossary

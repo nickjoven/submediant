@@ -786,11 +786,15 @@ def generate_toc():
             for f in all_files[1:]:
                 lines.append(f"          - file: {f}")
 
-    # Reference: graph + glossary adjacent
+    # Reference: graph, equations, visuals, glossary — all adjacent
     lines.append('  - caption: "Reference"')
     lines.append("    chapters:")
     lines.append('      - file: graph')
     lines.append('        title: "Derivation Graph"')
+    lines.append('      - file: equations')
+    lines.append('        title: "Key Equations"')
+    lines.append('      - file: visuals')
+    lines.append('        title: "Visual Assets"')
     lines.append("      - file: glossary")
 
     toc_path = BOOK_DIR / "_toc.yml"
@@ -811,7 +815,8 @@ execute:
   allow_errors: false
 
 repository:
-  url: https://github.com/nickjoven/submediant-site
+  url: https://github.com/nickjoven/harmonics
+  path_to_docs: ""
 
 html:
   use_issues_button: false
@@ -838,6 +843,10 @@ sphinx:
       collapse_navigation: true
       show_nav_level: 1
       navigation_depth: 2
+      icon_links:
+        - name: GitHub
+          url: https://github.com/nickjoven
+          icon: fa-brands fa-github
 """
     (BOOK_DIR / "_config.yml").write_text(config)
 
@@ -855,6 +864,14 @@ sphinx:
         if src.exists():
             shutil.copy2(src, static_dir / fname)
             print(f"  _static/{fname}")
+
+    # Copy reference pages (graph, equations, visuals, glossary)
+    ref_dir = SITE_DIR / "reference"
+    if ref_dir.exists():
+        for f in ref_dir.iterdir():
+            if f.suffix in (".md", ".html"):
+                shutil.copy2(f, BOOK_DIR / f.name)
+                print(f"  {f.name}")
     print("  _config.yml")
 
 
@@ -866,6 +883,8 @@ def generate_intro(manifest):
 # Submediant
 
 N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
+
+Source: [harmonics](https://github.com/nickjoven/harmonics)
 
 ---
 

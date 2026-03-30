@@ -183,13 +183,29 @@ function createMoonToggle() {
     btn.id = "mobius-moon-toggle";
     btn.setAttribute("aria-label", "Cycle theme");
     btn.title = "Click: cycle through 12 color phases (two passes)";
-    // Insert into nav if exists, otherwise fixed position
-    const nav = document.querySelector("nav, .navbar, .bd-header");
-    if (nav) {
-      nav.appendChild(btn);
+
+    // Try to place next to the PyData theme-switch-button in the secondary nav
+    const pyThemeBtn = document.querySelector(".theme-switch-button");
+    const secondaryNav = document.querySelector(
+      ".bd-header .secondary-nav, .article-header-buttons"
+    ) || (pyThemeBtn && pyThemeBtn.closest(".btn-group, .secondary-nav, .article-header-buttons, .bd-header-article__inner"));
+
+    if (pyThemeBtn && pyThemeBtn.parentNode) {
+      // Insert moon toggle right before the existing theme-switch-button
+      pyThemeBtn.parentNode.insertBefore(btn, pyThemeBtn);
+      // Hide the PyData toggle but keep it in the DOM so PyData JS doesn't break
+      pyThemeBtn.style.display = "none";
+    } else if (secondaryNav) {
+      secondaryNav.appendChild(btn);
     } else {
-      btn.style.cssText = "position:fixed;top:12px;right:12px;z-index:999;";
-      document.body.appendChild(btn);
+      // Fallback: look for any nav/header, otherwise use fixed positioning
+      const nav = document.querySelector("nav, .navbar, .bd-header");
+      if (nav) {
+        nav.appendChild(btn);
+      } else {
+        btn.style.cssText = "position:fixed;top:12px;right:12px;z-index:999;";
+        document.body.appendChild(btn);
+      }
     }
   }
 
@@ -199,10 +215,13 @@ function createMoonToggle() {
     state.mode = MODE_SEQUENCE[state.phase];
     save();
     applyPalette();
+    // Keep PyData theme-switch-button hidden after each click (in case PyData JS re-shows it)
+    var pyToggle = document.querySelector(".theme-switch-button");
+    if (pyToggle) pyToggle.style.display = "none";
   });
 
-  // Replace PyData theme toggle if present
-  const pyToggle = document.querySelector(".theme-switch-button");
+  // Also hide PyData toggle on initial load (covers case where btn already existed)
+  var pyToggle = document.querySelector(".theme-switch-button");
   if (pyToggle) pyToggle.style.display = "none";
 }
 
@@ -282,9 +301,12 @@ function initHoverNav() {
   hoverNav.className = "mobius-hover-nav";
   document.body.appendChild(hoverNav);
 
+  // Hover selectors — includes Jupyter Book / PyData Sphinx Theme containers
+  var hoverSelector = "[data-mobius-id], .card, .panel, section, h2, h3, .bd-content section, .bd-content .section, .bd-article-container";
+
   // Single delegated listener
   document.addEventListener("mouseover", function(e) {
-    var target = e.target.closest("[data-mobius-id], .card, .panel, section, h2, h3");
+    var target = e.target.closest(hoverSelector);
     if (!target) return;
     // Don't overlay canvas/plotly
     if (e.target.closest("canvas, .plotly-chart, .js-plotly-plot, svg")) return;
@@ -294,7 +316,7 @@ function initHoverNav() {
   });
 
   document.addEventListener("mouseout", function(e) {
-    if (e.relatedTarget && (hoverNav.contains(e.relatedTarget) || e.relatedTarget.closest("[data-mobius-id], .card, .panel, section"))) return;
+    if (e.relatedTarget && (hoverNav.contains(e.relatedTarget) || e.relatedTarget.closest(hoverSelector))) return;
     clearTimeout(hoverTimeout);
     hoverTimeout = setTimeout(function() { hoverNav.classList.remove("visible"); }, 800);
   });
@@ -377,8 +399,12 @@ function toggleExpand(el) {
 
 // ── Auto-annotate sections with Möbius IDs ───────────────────────────────
 function annotateContent() {
-  // Try to match existing sections to Möbius nodes by heading text
-  var headings = document.querySelectorAll("h2[id], h2");
+  // Try to match existing sections to Mobius nodes by heading text.
+  // Supports both standard sites (h2[id]) and Jupyter Book / PyData Sphinx Theme
+  // where sections carry the id directly (e.g. <section id="some-slug">).
+
+  // 1. Standard heading-based matching
+  var headings = document.querySelectorAll("h2[id], h2, h3[id], h3");
   headings.forEach(function(h) {
     var text = h.textContent.trim().toLowerCase();
     MOBIUS_NODES.forEach(function(node) {
@@ -390,6 +416,31 @@ function annotateContent() {
         }
       }
     });
+  });
+
+  // 2. Jupyter Book: sections with id attributes directly (bd-content sections)
+  var jbSections = document.querySelectorAll(".bd-content section[id], .bd-content .section[id]");
+  jbSections.forEach(function(sec) {
+    if (sec.dataset.mobiusId) return; // already annotated above
+    var secId = sec.id.toLowerCase();
+    MOBIUS_NODES.forEach(function(node) {
+      if (!sec.dataset.mobiusId &&
+          (node.id.includes(secId.slice(0, 6)) || secId.includes(node.id.slice(0, 6)))) {
+        sec.dataset.mobiusId = node.id;
+      }
+    });
+    // Also try matching via the first heading inside the section
+    if (!sec.dataset.mobiusId) {
+      var heading = sec.querySelector("h1, h2, h3, h4");
+      if (heading) {
+        var text = heading.textContent.trim().toLowerCase();
+        MOBIUS_NODES.forEach(function(node) {
+          if (!sec.dataset.mobiusId && text.includes(node.title.toLowerCase().slice(0, 8))) {
+            sec.dataset.mobiusId = node.id;
+          }
+        });
+      }
+    }
   });
 }
 
