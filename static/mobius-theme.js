@@ -154,12 +154,14 @@ function applyPalette() {
     if (btn) {
       btn.style.opacity = "1";
       btn.innerHTML = '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
-        '<circle cx="10" cy="10" r="4" fill="#FCCA28"/>' +
-        '<g stroke="#FCCA28" stroke-width="1.2" stroke-linecap="round">' +
-        '<line x1="10" y1="1" x2="10" y2="4"/><line x1="10" y1="16" x2="10" y2="19"/>' +
-        '<line x1="1" y1="10" x2="4" y2="10"/><line x1="16" y1="10" x2="19" y2="10"/>' +
-        '<line x1="3.5" y1="3.5" x2="5.5" y2="5.5"/><line x1="14.5" y1="14.5" x2="16.5" y2="16.5"/>' +
-        '<line x1="3.5" y1="16.5" x2="5.5" y2="14.5"/><line x1="14.5" y1="5.5" x2="16.5" y2="3.5"/>' +
+        '<defs><filter id="sun-glow"><feGaussianBlur stdDeviation="1.5" result="blur"/>' +
+        '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
+        '<circle cx="10" cy="10" r="4.5" fill="#FCCA28" filter="url(#sun-glow)"/>' +
+        '<g stroke="#FCCA28" stroke-width="1.8" stroke-linecap="round" opacity="0.9">' +
+        '<line x1="10" y1="0.5" x2="10" y2="3.5"/><line x1="10" y1="16.5" x2="10" y2="19.5"/>' +
+        '<line x1="0.5" y1="10" x2="3.5" y2="10"/><line x1="16.5" y1="10" x2="19.5" y2="10"/>' +
+        '<line x1="3" y1="3" x2="5.2" y2="5.2"/><line x1="14.8" y1="14.8" x2="17" y2="17"/>' +
+        '<line x1="3" y1="17" x2="5.2" y2="14.8"/><line x1="14.8" y1="5.2" x2="17" y2="3"/>' +
         '</g></svg>';
     }
     return;
