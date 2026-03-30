@@ -35,8 +35,8 @@ Gallery of all visual and interactive resources across the framework, organized 
 
 | File | Description |
 |---|---|
-| [minimum_self_predicting_universe.svg](https://github.com/nickjoven/harmonics/blob/main/minimum_self_predicting_universe.svg) | The minimum self-predicting universe. Schematic of the four-primitive alphabet and its compositions. |
-| [staircase_forming.svg](https://github.com/nickjoven/harmonics/blob/main/staircase_forming.svg) | Staircase formation. How Arnold tongues fill the frequency axis at increasing coupling. |
+| [minimum_self_predicting_universe.svg](https://github.com/nickjoven/harmonics/blob/main/sync_cost/minimum_self_predicting_universe.svg) | The minimum self-predicting universe. Schematic of the four-primitive alphabet and its compositions. |
+| [staircase_forming.svg](https://github.com/nickjoven/harmonics/blob/main/sync_cost/staircase_forming.svg) | Staircase formation. How Arnold tongues fill the frequency axis at increasing coupling. |
 
 ---
 

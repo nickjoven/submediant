@@ -89,6 +89,21 @@ function darken(hex) {
   return `rgb(${r*0.4|0},${g*0.4|0},${b*0.4|0})`;
 }
 
+// Lift dark colors for readability on dark backgrounds.
+// If a hex color's luminance is below threshold, brighten it.
+function liftForDark(hex) {
+  var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  // Relative luminance (simplified)
+  var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  if (lum > 0.4) return hex; // bright enough
+  // Lift: blend toward white proportional to how dark it is
+  var lift = 0.25 + (0.4 - lum) * 0.3;
+  r = Math.min(255, Math.round(r + (255 - r) * lift));
+  g = Math.min(255, Math.round(g + (255 - g) * lift));
+  b = Math.min(255, Math.round(b + (255 - b) * lift));
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 // ── State: linked-list Möbius cycle with accumulating half-twist ─────────
 //
 // Structure: 12 colors in a circular linked list.
@@ -185,18 +200,21 @@ function applyPalette() {
 
   var extras = goldenAccents(primary, secondary);
 
-  root.style.setProperty("--m-ref", PALETTE[primary]);
-  root.style.setProperty("--m-accent", PALETTE[primary]);
-  root.style.setProperty("--m-accent2", PALETTE[secondary]);
-  root.style.setProperty("--m-accent3", PALETTE[extras[0]]);
-  root.style.setProperty("--m-accent4", PALETTE[extras[1]]);
+  // In dark mode, lift colors that are too dark for readability
+  var lift = state.mode === "dark" ? liftForDark : function(c) { return c; };
+
+  root.style.setProperty("--m-ref", lift(PALETTE[primary]));
+  root.style.setProperty("--m-accent", lift(PALETTE[primary]));
+  root.style.setProperty("--m-accent2", lift(PALETTE[secondary]));
+  root.style.setProperty("--m-accent3", lift(PALETTE[extras[0]]));
+  root.style.setProperty("--m-accent4", lift(PALETTE[extras[1]]));
 
   root.setAttribute("data-mode", state.mode);
   root.setAttribute("data-theme", state.mode);
   root.style.colorScheme = state.mode;
 
   var moonPhase = Math.floor(state.step / 2) % 6;
-  if (btn) btn.innerHTML = moonSVG(moonPhase, PALETTE[primary]);
+  if (btn) btn.innerHTML = moonSVG(moonPhase, lift(PALETTE[primary]));
 }
 
 // ── Moon Toggle ──────────────────────────────────────────────────────────
