@@ -133,9 +133,12 @@ let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") || { phas
 // Clamp to valid range
 if (state.phase < 0 || state.phase >= 12) state.phase = 0;
 
-// Apply dark mode immediately (before DOMContentLoaded) to prevent flash
+// Apply mode immediately (before DOMContentLoaded) to prevent flash
+// Force both data-mode and data-theme so PyData theme respects our choice
 document.documentElement.setAttribute("data-mode", state.mode);
-if (state.mode === "dark") document.documentElement.setAttribute("data-theme", "dark");
+document.documentElement.setAttribute("data-theme", state.mode);
+// Override prefers-color-scheme by setting color-scheme explicitly
+document.documentElement.style.colorScheme = state.mode;
 
 function save() { localStorage.setItem("mobius-theme", JSON.stringify(state)); }
 
@@ -165,8 +168,8 @@ function applyPalette() {
 
   // Set mode
   root.setAttribute("data-mode", state.mode);
-  // PyData theme sync
-  if (root.dataset.theme !== undefined) root.dataset.theme = state.mode;
+  root.setAttribute("data-theme", state.mode);
+  root.style.colorScheme = state.mode;
 
   // Update moon icon — shape cycles through 6, repeats on second pass
   const moonPhase = state.phase % 6;
