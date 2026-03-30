@@ -330,22 +330,29 @@ function initHoverNav() {
   hoverNav.className = "mobius-hover-nav";
   document.body.appendChild(hoverNav);
 
-  // Hover selectors — includes Jupyter Book / PyData Sphinx Theme containers
-  var hoverSelector = "[data-mobius-id], .card, .panel, section, h2, h3, .bd-content section, .bd-content .section, .bd-article-container";
-
   // Single delegated listener
   document.addEventListener("mouseover", function(e) {
-    var target = e.target.closest(hoverSelector);
+    // Don't overlay canvas/plotly/nav
+    if (e.target.closest("canvas, .plotly-chart, .js-plotly-plot, svg, nav, .mobius-hover-nav")) return;
+
+    // Find the best anchor: a nearby block element of reasonable size
+    var target = e.target.closest("[data-mobius-id], .card, .panel, h2, h3, dt, p, blockquote, .admonition, li");
+    if (!target) {
+      // Fallback to section but only if viewport-height is reasonable
+      target = e.target.closest("section, .bd-content .section");
+      if (target && target.getBoundingClientRect().height > window.innerHeight * 0.8) {
+        // Section too large — find a child heading instead
+        target = e.target.closest("h1, h2, h3, h4, p, dt, dd, li, blockquote") || null;
+      }
+    }
     if (!target) return;
-    // Don't overlay canvas/plotly
-    if (e.target.closest("canvas, .plotly-chart, .js-plotly-plot, svg")) return;
 
     clearTimeout(hoverTimeout);
     hoverTimeout = setTimeout(function() { showNav(target); }, 100);
   });
 
   document.addEventListener("mouseout", function(e) {
-    if (e.relatedTarget && (hoverNav.contains(e.relatedTarget) || e.relatedTarget.closest(hoverSelector))) return;
+    if (e.relatedTarget && (hoverNav.contains(e.relatedTarget) || e.relatedTarget.closest("[data-mobius-id], .card, .panel, h2, h3, dt, p, section"))) return;
     clearTimeout(hoverTimeout);
     hoverTimeout = setTimeout(function() { hoverNav.classList.remove("visible"); }, 800);
   });
@@ -380,11 +387,17 @@ function showNav(el) {
 
   hoverNav.innerHTML = html;
 
-  // Position at bottom of element
+  // Position at bottom of element, clamped to content area
   var rect = el.getBoundingClientRect();
+  // Use the content container width if element is too narrow or too wide
+  var container = el.closest(".bd-content, .container, article, main") || document.body;
+  var containerRect = container.getBoundingClientRect();
+  var navWidth = Math.min(Math.max(rect.width, 300), containerRect.width, 600);
+  var navLeft = Math.max(rect.left, containerRect.left);
+
   hoverNav.style.top = (rect.bottom + window.scrollY + 4) + "px";
-  hoverNav.style.left = rect.left + "px";
-  hoverNav.style.width = Math.min(rect.width, 600) + "px";
+  hoverNav.style.left = navLeft + "px";
+  hoverNav.style.width = navWidth + "px";
   hoverNav.classList.add("visible");
 }
 
