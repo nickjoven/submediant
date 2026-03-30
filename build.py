@@ -829,6 +829,12 @@ sphinx:
   --pst-color-secondary: #7ee787;
 }
 """)
+    # Copy canonical Mobius theme files from repo root
+    for fname in ["mobius-theme.css", "mobius-theme.js"]:
+        src = SITE_DIR / "static" / fname
+        if src.exists():
+            shutil.copy2(src, static_dir / fname)
+            print(f"  _static/{fname}")
     print("  _config.yml")
 
 
