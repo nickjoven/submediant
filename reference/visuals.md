@@ -12,7 +12,7 @@ Gallery of all visual and interactive resources across the framework, organized 
 | [Ontology Viewer](https://github.com/nickjoven/harmonics/blob/main/sync_cost/applications/ontology.html) | Framework concept map. Visual index of how derivations, primitives, and predictions connect. |
 | [Mobius Views](https://github.com/nickjoven/harmonics/blob/main/sync_cost/applications/mobius_views.html) | Mobius strip visualizations. The non-orientable topology underlying the two-root structure. |
 | [Mobius Projector](https://github.com/nickjoven/harmonics/blob/main/sync_cost/applications/mobius_projector.html) | Projection tool for Mobius strip geometry. |
-| [Our Address](https://github.com/nickjoven/harmonics/blob/main/sync_cost/derivations/our_address.html) | Farey address locator. Find the Stern-Brocot coordinates of any rational. |
+| [Our Address](_static/our_address.html) | The universe's computational clock. Stern-Brocot coordinates, progress, and predictions. |
 | [Intersections](https://nickjoven.github.io/intersections/) | Stick-slip dynamics with interactive Plotly and Canvas visualizations. Lagrangian relaxation, Stribeck curves, and bifurcation thresholds. |
 | [Stribeck Optics](https://nickjoven.github.io/stribeck-optics/) | Optical friction visualization. Stribeck curve mapped to refractive phenomena. |
 | [Derivation Graph](graph) | Interactive D3 force-directed graph of the framework's derivation chain and repository structure. |
