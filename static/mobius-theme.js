@@ -146,12 +146,22 @@ function applyPalette() {
   var btn = document.getElementById("mobius-moon-toggle");
 
   if (state.step < 0) {
-    // Native dark: no color overrides, toggle hidden
+    // Native dark: no color overrides. Toggle is a bright sun — the invitation.
     state.mode = "dark";
     root.setAttribute("data-mode", "dark");
     root.setAttribute("data-theme", "dark");
     root.style.colorScheme = "dark";
-    if (btn) btn.style.opacity = "0";
+    if (btn) {
+      btn.style.opacity = "1";
+      btn.innerHTML = '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="10" cy="10" r="4" fill="#FCCA28"/>' +
+        '<g stroke="#FCCA28" stroke-width="1.2" stroke-linecap="round">' +
+        '<line x1="10" y1="1" x2="10" y2="4"/><line x1="10" y1="16" x2="10" y2="19"/>' +
+        '<line x1="1" y1="10" x2="4" y2="10"/><line x1="16" y1="10" x2="19" y2="10"/>' +
+        '<line x1="3.5" y1="3.5" x2="5.5" y2="5.5"/><line x1="14.5" y1="14.5" x2="16.5" y2="16.5"/>' +
+        '<line x1="3.5" y1="16.5" x2="5.5" y2="14.5"/><line x1="14.5" y1="5.5" x2="16.5" y2="3.5"/>' +
+        '</g></svg>';
+    }
     return;
   }
 
@@ -196,9 +206,7 @@ function createMoonToggle() {
     btn.id = "mobius-moon-toggle";
     btn.setAttribute("aria-label", "Cycle theme");
     btn.title = "Click: cycle through 12 color phases (two passes)";
-    // Hidden until first pairing (native dark shows no toggle)
-    btn.style.opacity = state.step < 0 ? "0" : "1";
-    btn.style.transition = "opacity 0.5s ease";
+    btn.style.transition = "opacity 0.3s ease";
 
     // Try to place next to the PyData theme-switch-button in the secondary nav
     const pyThemeBtn = document.querySelector(".theme-switch-button");
