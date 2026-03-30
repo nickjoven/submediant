@@ -131,7 +131,7 @@ table tbody tr:nth-child(even) th {
   .mobius-hover-nav { font-size: 0.7rem; padding: 3px 8px; }
 }
 
-/* ── Format accordion: progressive disclosure ── */
+/* ── Format accordion: expand / collapse ── */
 .fmt-section {
   margin: 1.5rem 0;
 }
@@ -141,23 +141,25 @@ table tbody tr:nth-child(even) th {
   max-height: 0;
 }
 .fmt-level.active {
-  max-height: 2000px;
+  max-height: 4000px;
 }
-.fmt-level-0 { padding-left: 0; }           /* conjecture: flush */
-.fmt-level-1 { padding-left: 1rem; }        /* visual: phi^-1 indent */
-.fmt-level-2 { padding-left: 1.618rem; }    /* math: phi indent */
-.fmt-level-3 { padding-left: 2.618rem; }    /* explanation: phi^2 indent */
+.fmt-level-0 { padding-left: 0; }
+.fmt-level-1 { padding-left: 1rem; }
+.fmt-level-2 { padding-left: 1.618rem; }
+.fmt-level-3 { padding-left: 2.618rem; }
 
-/* Expand trigger */
+/* Expand trigger — sits at the bottom of the visible content */
 .fmt-expand {
-  display: inline-block;
+  display: block;
   cursor: pointer;
   color: var(--m-text-muted);
   font-size: 0.8rem;
-  margin-top: 0.3rem;
+  margin-top: 0.6rem;
+  padding: 4px 0;
   user-select: none;
   opacity: 0.5;
   transition: opacity 0.2s, color 0.2s;
+  text-align: right;
 }
 .fmt-expand:hover { opacity: 1; color: var(--m-accent); }
 
