@@ -89,92 +89,89 @@ function darken(hex) {
   return `rgb(${r*0.4|0},${g*0.4|0},${b*0.4|0})`;
 }
 
-// ── State: 12 phases, two passes through 6 moon shapes ──────────────────
+// ── State: linked-list Möbius cycle with accumulating half-twist ─────────
 //
-// Pass 1 (states 0-5): direct palette walk
-//   🌑 Night  rose     → 🌒 Sun  gold    → 🌓 Night green
-//   🌔 Sun    orange   → 🌕 Night pink    → 🌖 Sun   red
+// Structure: 12 colors in a circular linked list.
+// Each cycle = 24 clicks: 12 Night pairings with Sun transitions between.
+// Night shows the pair (tortoise, hare). Sun shows the hare advancing.
+// The final Sun of each cycle hides a half-twist: the hare's offset
+// increments by 1, shifting all pairings for the next cycle.
 //
-// Pass 2 (states 6-11): gold is the reference point;
-//   slowest forward ascent through remaining colors back to rose
-//   🌑 Night  blue     → 🌒 Sun  purple  → 🌓 Night maroon
-//   🌔 Sun    salmon   → 🌕 Night teal    → 🌖 Sun   silver
-//   → wraps to state 0 (rose)
-//
-// Pass 1 reference for accents: rose (index 0)
-// Pass 2 reference for accents: gold (index 1)
+// Cycle 1 (twist=1): adjacent pairs — rose&gold, gold&green, ...
+// Cycle 2 (twist=2): skip-1 — rose&green, gold&orange, ...
+// Cycle 3 (twist=3): skip-2 — rose&orange, gold&pink, ...
+// After 6 cycles (twist=6): diametrically opposite pairs.
+// twist=7 through 11 mirrors 5 through 1 (same unordered pairs).
+// Total: 66 unique pairings across 6 full cycles. Then it repeats.
 
-const COLOR_SEQUENCE = [
-  // Pass 1: palette 0-5
-  0,  // rose
-  1,  // gold
-  2,  // green
-  3,  // orange
-  4,  // pink
-  5,  // red
-  // Pass 2: palette 6-11, forward from gold's neighborhood
-  6,  // blue
-  7,  // purple
-  8,  // maroon
-  9,  // salmon
-  10, // teal
-  11, // silver
-];
+let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") ||
+            { step: 0, twist: 1, mode: "dark" };
+// Migration from old format
+if (state.phase !== undefined) { state.step = state.phase || 0; delete state.phase; }
+if (!state.twist) state.twist = 1;
+if (state.step < 0 || state.step >= 24) state.step = 0;
+if (state.twist < 1 || state.twist > 6) state.twist = 1;
 
-const MODE_SEQUENCE = [
-  "dark", "light", "dark", "light", "dark", "light",  // pass 1
-  "dark", "light", "dark", "light", "dark", "light",  // pass 2
-];
-
-// Accent reference: pass 1 orbits rose(0), pass 2 orbits gold(1)
-const ACCENT_REF = [0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1];
-
-let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") || { phase: 0, mode: "dark" };
-// Clamp to valid range
-if (state.phase < 0 || state.phase >= 12) state.phase = 0;
-
-// Apply mode immediately (before DOMContentLoaded) to prevent flash
-// Force both data-mode and data-theme so PyData theme respects our choice
+// Apply mode immediately to prevent flash
 document.documentElement.setAttribute("data-mode", state.mode);
 document.documentElement.setAttribute("data-theme", state.mode);
-// Override prefers-color-scheme by setting color-scheme explicitly
 document.documentElement.style.colorScheme = state.mode;
 
 function save() { localStorage.setItem("mobius-theme", JSON.stringify(state)); }
 
-// Position accent colors relative to a reference using golden ratio spacing
-function goldenAccents(refIndex) {
-  const accents = [];
-  for (let i = 1; accents.length < 3; i++) {
-    const idx = Math.round((refIndex + i * PHI_INV * 12) % 12);
-    if (idx !== refIndex && !accents.includes(idx)) accents.push(idx);
+// Compute current pairing from step and twist
+function currentPairing() {
+  var pairIdx = Math.floor(state.step / 2); // which of the 12 pairings
+  var isSun = state.step % 2 === 1;         // odd steps are Sun transitions
+  var tortoise = pairIdx;
+  var hare = (pairIdx + state.twist) % 12;
+  return { tortoise: tortoise, hare: hare, isSun: isSun };
+}
+
+// Golden-ratio extras for accent3/accent4
+function goldenAccents(primary, secondary) {
+  var used = [primary, secondary];
+  var accents = [];
+  for (var i = 1; accents.length < 2; i++) {
+    var idx = Math.round((primary + i * PHI_INV * 12) % 12);
+    if (used.indexOf(idx) < 0 && accents.indexOf(idx) < 0) accents.push(idx);
   }
   return accents;
 }
 
 function applyPalette() {
-  const colorIdx = COLOR_SEQUENCE[state.phase];
-  const ref = PALETTE[colorIdx];
-  const accentRef = ACCENT_REF[state.phase];
-  const accents = goldenAccents(accentRef);
-  state.mode = MODE_SEQUENCE[state.phase];
-  const root = document.documentElement;
+  var pair = currentPairing();
+  var primary, secondary;
 
-  root.style.setProperty("--m-ref", ref);
-  root.style.setProperty("--m-accent", ref);
-  root.style.setProperty("--m-accent2", PALETTE[accents[0]]);
-  root.style.setProperty("--m-accent3", PALETTE[accents[1]]);
-  root.style.setProperty("--m-accent4", PALETTE[accents[2]]);
+  if (pair.isSun) {
+    // Sun transition: light mode, show hare advancing
+    state.mode = "light";
+    primary = pair.hare;
+    secondary = (pair.hare + 1) % 12; // hare's next position
+  } else {
+    // Night: dark mode, show the pairing
+    state.mode = "dark";
+    primary = pair.tortoise;
+    secondary = pair.hare;
+  }
 
-  // Set mode
+  var extras = goldenAccents(primary, secondary);
+  var root = document.documentElement;
+
+  root.style.setProperty("--m-ref", PALETTE[primary]);
+  root.style.setProperty("--m-accent", PALETTE[primary]);
+  root.style.setProperty("--m-accent2", PALETTE[secondary]);
+  root.style.setProperty("--m-accent3", PALETTE[extras[0]]);
+  root.style.setProperty("--m-accent4", PALETTE[extras[1]]);
+
   root.setAttribute("data-mode", state.mode);
   root.setAttribute("data-theme", state.mode);
   root.style.colorScheme = state.mode;
 
-  // Update moon icon — shape cycles through 6, repeats on second pass
-  const moonPhase = state.phase % 6;
-  const btn = document.getElementById("mobius-moon-toggle");
-  if (btn) btn.innerHTML = moonSVG(moonPhase, ref);
+  // Moon icon: 6 phases per cycle, based on pairing index
+  var moonPhase = Math.floor(state.step / 2) % 6;
+  var btn = document.getElementById("mobius-moon-toggle");
+  if (btn) btn.innerHTML = moonSVG(moonPhase, PALETTE[primary]);
 }
 
 // ── Moon Toggle ──────────────────────────────────────────────────────────
@@ -214,8 +211,13 @@ function createMoonToggle() {
 
   btn.addEventListener("click", function(e) {
     // Advance: 12 states total, two passes through 6 moon shapes
-    state.phase = (state.phase + 1) % 12;
-    state.mode = MODE_SEQUENCE[state.phase];
+    state.step = state.step + 1;
+    if (state.step >= 24) {
+      // End of cycle: half-twist increments the offset
+      state.step = 0;
+      state.twist = state.twist >= 6 ? 1 : state.twist + 1;
+    }
+    state.mode = state.step % 2 === 1 ? "light" : "dark";
     save();
     applyPalette();
     // Keep PyData theme-switch-button hidden after each click (in case PyData JS re-shows it)
