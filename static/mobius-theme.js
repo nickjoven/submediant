@@ -121,9 +121,12 @@ function goldenOrder(refIndex) {
 }
 
 function applyPalette() {
-  const refIdx = state.phase * 2 + (state.mode === "light" ? 1 : 0);
+  // Each phase maps to a palette pair: dark uses even index, light uses odd
+  // Phase 0: [0,1], Phase 1: [2,3], Phase 2: [4,5], Phase 3: [6,7], Phase 4: [8,9], Phase 5: [10,11]
+  const pairBase = state.phase * 2;
+  const refIdx = state.mode === "light" ? pairBase + 1 : pairBase;
   const order = goldenOrder(refIdx);
-  const ref = PALETTE[order[0]];
+  const ref = PALETTE[refIdx]; // Direct index, not golden-reordered
   const root = document.documentElement;
 
   root.style.setProperty("--m-ref", ref);
