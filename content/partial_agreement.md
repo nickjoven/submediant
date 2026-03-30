@@ -6,16 +6,16 @@
 
 Look at a spiral galaxy.
 
-Not at the math. Not yet. Just look at it.
+Google what's "wrong" with them. Note that for later.
 
-A hundred billion stars, each on its own orbit, each at its own
-speed — and somehow they don't fly apart. They don't collapse
+A hundred billion stars with unique orbits, speeds, localities.
+20th century physics identified tension. They don't collapse
 inward. They don't all lock into one rigid rotation like a wheel.
 
 They *spiral*.
 
 The inner stars orbit fast. The outer stars orbit slow. And the
-arms — the beautiful, luminous arms — are the *record of their
+arms — the rational, luminous arms — are the *record of their
 disagreement*. Each arm traces the phase difference between fast
 and slow, written in stars across a hundred thousand light-years.
 
@@ -25,7 +25,7 @@ A spiral galaxy is a system that learned to disagree gracefully.
 
 ## II.
 
-Now look at an earthquake.
+Observe an earthquake.
 
 For decades, the plates are locked. Friction holds them still.
 Stress builds. The seismograph shows nothing — but the nothing
