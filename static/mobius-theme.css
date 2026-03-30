@@ -20,8 +20,12 @@
   --m-accent4: #F5712A;
 }
 
-/* Light mode */
+/* Force dark by default — JS sets data-mode, but before JS loads this holds */
+html { color-scheme: dark; }
+
+/* Light mode — only when explicitly toggled */
 [data-mode="light"] {
+  color-scheme: light;
   --m-bg: #f6f8fa;
   --m-surface: #ffffff;
   --m-border: #d0d7de;
@@ -108,6 +112,43 @@ html[data-theme="light"], html[data-mode="light"] {
   opacity: 0.6; transition: opacity 0.2s;
 }
 .more-hint:hover { opacity: 1; color: var(--m-accent); }
+
+/* ── Table striping: readable in both modes ── */
+table tbody tr:nth-child(odd) {
+  background: var(--m-surface);
+}
+table tbody tr:nth-child(even) {
+  background: var(--m-bg);
+}
+table tbody tr:nth-child(odd) td,
+table tbody tr:nth-child(even) td,
+table tbody tr:nth-child(odd) th,
+table tbody tr:nth-child(even) th {
+  color: var(--m-text);
+}
+/* PyData theme table override */
+.bd-content table.table-striped tbody tr:nth-of-type(odd),
+.bd-content table tbody tr:nth-child(odd) {
+  background-color: var(--m-surface);
+  --pst-color-table-row-zebra-low: var(--m-surface);
+}
+.bd-content table.table-striped tbody tr:nth-of-type(even),
+.bd-content table tbody tr:nth-child(even) {
+  background-color: var(--m-bg);
+  --pst-color-table-row-zebra-high: var(--m-bg);
+}
+
+/* ── Hover nav: stay visible longer, larger hover target at 125%+ zoom ── */
+.mobius-hover-nav {
+  padding: 6px 12px;
+  margin-top: 2px;
+}
+.mobius-hover-nav::before {
+  /* Invisible bridge above the nav bar so cursor doesn't lose it */
+  content: "";
+  position: absolute;
+  top: -16px; left: 0; right: 0; height: 16px;
+}
 
 /* ── Responsive ── */
 @media (max-width: 600px) {

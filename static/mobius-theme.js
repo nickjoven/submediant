@@ -102,6 +102,10 @@ const PHASE_MODES = [
 ];
 let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") || { phase: 0, mode: "dark" };
 
+// Apply dark mode immediately (before DOMContentLoaded) to prevent flash
+document.documentElement.setAttribute("data-mode", state.mode);
+if (state.mode === "dark") document.documentElement.setAttribute("data-theme", "dark");
+
 function save() { localStorage.setItem("mobius-theme", JSON.stringify(state)); }
 
 // Position colors relative to reference using golden ratio
@@ -254,13 +258,13 @@ function initHoverNav() {
     if (e.target.closest("canvas, .plotly-chart, .js-plotly-plot, svg")) return;
 
     clearTimeout(hoverTimeout);
-    hoverTimeout = setTimeout(function() { showNav(target); }, 150);
+    hoverTimeout = setTimeout(function() { showNav(target); }, 100);
   });
 
   document.addEventListener("mouseout", function(e) {
     if (e.relatedTarget && (hoverNav.contains(e.relatedTarget) || e.relatedTarget.closest("[data-mobius-id], .card, .panel, section"))) return;
     clearTimeout(hoverTimeout);
-    hoverTimeout = setTimeout(function() { hoverNav.classList.remove("visible"); }, 300);
+    hoverTimeout = setTimeout(function() { hoverNav.classList.remove("visible"); }, 800);
   });
 }
 
