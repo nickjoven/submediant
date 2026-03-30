@@ -865,11 +865,14 @@ sphinx:
             shutil.copy2(src, static_dir / fname)
             print(f"  _static/{fname}")
 
-    # Copy reference pages (graph, equations, visuals, glossary)
+    # Copy reference pages — .md to book root, .html to _static for direct serving
     ref_dir = SITE_DIR / "reference"
     if ref_dir.exists():
         for f in ref_dir.iterdir():
-            if f.suffix in (".md", ".html"):
+            if f.suffix == ".html":
+                shutil.copy2(f, static_dir / f.name)
+                print(f"  _static/{f.name}")
+            elif f.suffix == ".md":
                 shutil.copy2(f, BOOK_DIR / f.name)
                 print(f"  {f.name}")
     print("  _config.yml")

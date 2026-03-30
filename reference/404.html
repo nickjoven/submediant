@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Lost on the Strip</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+canvas { display: block; }
+#overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none; z-index: 10;
+}
+#overlay h1 {
+  font-size: 4rem; font-weight: 300; color: #FCCA28;
+  text-shadow: 0 0 30px rgba(252,202,40,0.3);
+  margin-bottom: 0.5rem;
+}
+#overlay p {
+  font-size: 1.1rem; color: #8b949e;
+  margin-bottom: 2rem;
+}
+#overlay a {
+  color: #DE3373; text-decoration: none;
+  font-size: 0.9rem; pointer-events: auto;
+  padding: 8px 20px; border: 1px solid #DE3373;
+  border-radius: 6px; transition: all 0.2s;
+}
+#overlay a:hover { background: #DE3373; color: #0d1117; }
+#controls {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  color: #484f58; font-size: 0.75rem; z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <h1>404</h1>
+  <p>The page you're looking for is on the other side of the strip.</p>
+  <a href="intro.html">Back to the beginning</a>
+</div>
+
+<div id="controls">arrows or WASD to fly · space to fire · the strip wraps</div>
+
+<canvas id="game"></canvas>
+
+<script>
+(function() {
+"use strict";
+
+var PALETTE = [
+  "#DE3373", "#FCCA28", "#08A953", "#F5712A", "#F59EAF", "#EE1B3E",
+  "#1E76B8", "#7C2E87", "#7A0434", "#F98F81", "#37BA9B", "#C0C2C2"
+];
+var PHI = (1 + Math.sqrt(5)) / 2;
+
+var canvas = document.getElementById("game");
+var ctx = canvas.getContext("2d");
+var W, H;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener("resize", resize);
+
+// ── Möbius strip geometry ────────────────────────────────────────────
+// The playfield is a rectangle that wraps: exiting right returns from left,
+// but Y is inverted (the half-twist). Exiting top returns from bottom, normal.
+
+function wrapMobius(x, y) {
+  // Horizontal wrap with twist
+  if (x > W) { x -= W; y = H - y; }
+  if (x < 0) { x += W; y = H - y; }
+  // Vertical wrap (normal)
+  if (y > H) y -= H;
+  if (y < 0) y += H;
+  return [x, y];
+}
+
+// ── Ship ─────────────────────────────────────────────────────────────
+var ship = { x: W/2, y: H/2, vx: 0, vy: 0, angle: -Math.PI/2, thrust: false };
+var bullets = [];
+var asteroids = [];
+var particles = [];
+var score = 0;
+var gameStarted = false;
+
+// ── Asteroids: derivation nodes ──────────────────────────────────────
+var NAMES = ["D0","D1","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12",
+             "D13","D14","D15","D16","D17","D18","D19","D20","D21","D23",
+             "D24","D25","D26","D27","D28","D29"];
+
+function spawnAsteroid(size, x, y) {
+  size = size || 3;
+  var a = {
+    x: x !== undefined ? x : Math.random() * W,
+    y: y !== undefined ? y : Math.random() * H,
+    vx: (Math.random() - 0.5) * 1.5,
+    vy: (Math.random() - 0.5) * 1.5,
+    r: size * 12 + 8,
+    size: size,
+    color: PALETTE[Math.floor(Math.random() * 12)],
+    name: NAMES[Math.floor(Math.random() * NAMES.length)],
+    spin: (Math.random() - 0.5) * 0.02,
+    angle: Math.random() * Math.PI * 2,
+    // Irregular shape: vertices on a circle with golden-ratio perturbation
+    verts: (function() {
+      var n = 7 + Math.floor(Math.random() * 4);
+      var v = [];
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * Math.PI * 2;
+        var r = 1 + (((i * PHI) % 1) - 0.5) * 0.4;
+        v.push([Math.cos(a) * r, Math.sin(a) * r]);
+      }
+      return v;
+    })()
+  };
+  asteroids.push(a);
+}
+
+function initAsteroids() {
+  asteroids = [];
+  for (var i = 0; i < 6; i++) spawnAsteroid(3);
+}
+
+// ── Input ────────────────────────────────────────────────────────────
+var keys = {};
+document.addEventListener("keydown", function(e) {
+  keys[e.key] = true;
+  if (!gameStarted && (e.key === " " || e.key === "ArrowUp" || e.key === "w")) {
+    gameStarted = true;
+    initAsteroids();
+    document.getElementById("overlay").style.opacity = "0.15";
+  }
+});
+document.addEventListener("keyup", function(e) { keys[e.key] = false; });
+
+// ── Update ───────────────────────────────────────────────────────────
+var lastShot = 0;
+
+function update() {
+  if (!gameStarted) return;
+
+  // Rotation
+  if (keys["ArrowLeft"] || keys["a"]) ship.angle -= 0.06;
+  if (keys["ArrowRight"] || keys["d"]) ship.angle += 0.06;
+
+  // Thrust
+  if (keys["ArrowUp"] || keys["w"]) {
+    ship.vx += Math.cos(ship.angle) * 0.12;
+    ship.vy += Math.sin(ship.angle) * 0.12;
+    ship.thrust = true;
+    // Thrust particles
+    for (var i = 0; i < 2; i++) {
+      particles.push({
+        x: ship.x - Math.cos(ship.angle) * 12,
+        y: ship.y - Math.sin(ship.angle) * 12,
+        vx: -Math.cos(ship.angle) * (1 + Math.random()) + (Math.random()-0.5)*0.5,
+        vy: -Math.sin(ship.angle) * (1 + Math.random()) + (Math.random()-0.5)*0.5,
+        life: 20 + Math.random() * 10,
+        color: "#FCCA28"
+      });
+    }
+  } else {
+    ship.thrust = false;
+  }
+
+  // Friction
+  ship.vx *= 0.995;
+  ship.vy *= 0.995;
+  ship.x += ship.vx;
+  ship.y += ship.vy;
+  var wrapped = wrapMobius(ship.x, ship.y);
+  ship.x = wrapped[0]; ship.y = wrapped[1];
+
+  // Shoot
+  if (keys[" "] && Date.now() - lastShot > 200) {
+    lastShot = Date.now();
+    bullets.push({
+      x: ship.x + Math.cos(ship.angle) * 14,
+      y: ship.y + Math.sin(ship.angle) * 14,
+      vx: Math.cos(ship.angle) * 6 + ship.vx * 0.5,
+      vy: Math.sin(ship.angle) * 6 + ship.vy * 0.5,
+      life: 60,
+      color: PALETTE[Math.floor(Math.random() * 6)]
+    });
+  }
+
+  // Update bullets
+  for (var i = bullets.length - 1; i >= 0; i--) {
+    var b = bullets[i];
+    b.x += b.vx; b.y += b.vy; b.life--;
+    var bw = wrapMobius(b.x, b.y);
+    b.x = bw[0]; b.y = bw[1];
+    if (b.life <= 0) { bullets.splice(i, 1); continue; }
+
+    // Collision with asteroids
+    for (var j = asteroids.length - 1; j >= 0; j--) {
+      var a = asteroids[j];
+      var dx = b.x - a.x, dy = b.y - a.y;
+      if (dx*dx + dy*dy < a.r * a.r) {
+        // Hit!
+        bullets.splice(i, 1);
+        score += (4 - a.size) * 100;
+        // Explode particles
+        for (var k = 0; k < 8; k++) {
+          var angle = Math.random() * Math.PI * 2;
+          particles.push({
+            x: a.x, y: a.y,
+            vx: Math.cos(angle) * (1 + Math.random() * 2),
+            vy: Math.sin(angle) * (1 + Math.random() * 2),
+            life: 30 + Math.random() * 20,
+            color: a.color
+          });
+        }
+        // Split
+        if (a.size > 1) {
+          spawnAsteroid(a.size - 1, a.x + 10, a.y + 10);
+          spawnAsteroid(a.size - 1, a.x - 10, a.y - 10);
+        }
+        asteroids.splice(j, 1);
+        break;
+      }
+    }
+  }
+
+  // Update asteroids
+  for (var i = 0; i < asteroids.length; i++) {
+    var a = asteroids[i];
+    a.x += a.vx; a.y += a.vy; a.angle += a.spin;
+    var aw = wrapMobius(a.x, a.y);
+    a.x = aw[0]; a.y = aw[1];
+  }
+
+  // Respawn if empty
+  if (asteroids.length === 0) {
+    for (var i = 0; i < 6 + Math.floor(score / 1000); i++) spawnAsteroid(3);
+  }
+
+  // Update particles
+  for (var i = particles.length - 1; i >= 0; i--) {
+    var p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.life--;
+    p.vx *= 0.97; p.vy *= 0.97;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+// ── Draw ─────────────────────────────────────────────────────────────
+function draw() {
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle grid showing the Möbius wrap points
+  ctx.strokeStyle = "rgba(48, 54, 61, 0.3)";
+  ctx.setLineDash([4, 8]);
+  ctx.beginPath();
+  ctx.moveTo(0, H/2); ctx.lineTo(W, H/2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Twist indicator arrows at edges
+  ctx.fillStyle = "#30363d";
+  ctx.font = "10px sans-serif";
+  ctx.fillText("↕ twist", 4, H/2 - 4);
+  ctx.fillText("↕ twist", W - 44, H/2 - 4);
+
+  // Particles
+  for (var i = 0; i < particles.length; i++) {
+    var p = particles[i];
+    var alpha = p.life / 40;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Bullets
+  for (var i = 0; i < bullets.length; i++) {
+    var b = bullets[i];
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = b.color;
+    ctx.fill();
+  }
+
+  // Asteroids
+  for (var i = 0; i < asteroids.length; i++) {
+    var a = asteroids[i];
+    ctx.save();
+    ctx.translate(a.x, a.y);
+    ctx.rotate(a.angle);
+    ctx.beginPath();
+    for (var j = 0; j < a.verts.length; j++) {
+      var vx = a.verts[j][0] * a.r, vy = a.verts[j][1] * a.r;
+      if (j === 0) ctx.moveTo(vx, vy); else ctx.lineTo(vx, vy);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = a.color;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Label
+    ctx.fillStyle = a.color;
+    ctx.globalAlpha = 0.5;
+    ctx.font = (a.size * 4 + 6) + "px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(a.name, 0, a.size * 2);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // Ship
+  if (gameStarted) {
+    ctx.save();
+    ctx.translate(ship.x, ship.y);
+    ctx.rotate(ship.angle);
+    ctx.beginPath();
+    ctx.moveTo(14, 0);
+    ctx.lineTo(-8, -7);
+    ctx.lineTo(-5, 0);
+    ctx.lineTo(-8, 7);
+    ctx.closePath();
+    ctx.strokeStyle = "#e6edf3";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    if (ship.thrust) {
+      ctx.beginPath();
+      ctx.moveTo(-6, -3);
+      ctx.lineTo(-12 - Math.random() * 6, 0);
+      ctx.lineTo(-6, 3);
+      ctx.strokeStyle = "#FCCA28";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Score
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "13px sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("score: " + score, 12, 24);
+}
+
+// ── Loop ─────────────────────────────────────────────────────────────
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+})();
+</script>
+</body>
+</html>
