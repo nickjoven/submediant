@@ -89,18 +89,49 @@ function darken(hex) {
   return `rgb(${r*0.4|0},${g*0.4|0},${b*0.4|0})`;
 }
 
-// ── State ────────────────────────────────────────────────────────────────
-// Phase order: Night→Sun→Night→Sun→Night(+1/6)→Sun
-// Each phase has a fixed mode; clicking advances to the next phase+mode pair
-const PHASE_MODES = [
-  "dark",   // phase 0: 🌑 Night
-  "light",  // phase 1: 🌒 Sun
-  "dark",   // phase 2: 🌓 Night
-  "light",  // phase 3: 🌔 Sun
-  "dark",   // phase 4: 🌕 Night (+1/6 palette shift)
-  "light",  // phase 5: 🌖 Sun
+// ── State: 12 phases, two passes through 6 moon shapes ──────────────────
+//
+// Pass 1 (states 0-5): direct palette walk
+//   🌑 Night  rose     → 🌒 Sun  gold    → 🌓 Night green
+//   🌔 Sun    orange   → 🌕 Night pink    → 🌖 Sun   red
+//
+// Pass 2 (states 6-11): gold is the reference point;
+//   slowest forward ascent through remaining colors back to rose
+//   🌑 Night  blue     → 🌒 Sun  purple  → 🌓 Night maroon
+//   🌔 Sun    salmon   → 🌕 Night teal    → 🌖 Sun   silver
+//   → wraps to state 0 (rose)
+//
+// Pass 1 reference for accents: rose (index 0)
+// Pass 2 reference for accents: gold (index 1)
+
+const COLOR_SEQUENCE = [
+  // Pass 1: palette 0-5
+  0,  // rose
+  1,  // gold
+  2,  // green
+  3,  // orange
+  4,  // pink
+  5,  // red
+  // Pass 2: palette 6-11, forward from gold's neighborhood
+  6,  // blue
+  7,  // purple
+  8,  // maroon
+  9,  // salmon
+  10, // teal
+  11, // silver
 ];
+
+const MODE_SEQUENCE = [
+  "dark", "light", "dark", "light", "dark", "light",  // pass 1
+  "dark", "light", "dark", "light", "dark", "light",  // pass 2
+];
+
+// Accent reference: pass 1 orbits rose(0), pass 2 orbits gold(1)
+const ACCENT_REF = [0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1];
+
 let state = JSON.parse(localStorage.getItem("mobius-theme") || "null") || { phase: 0, mode: "dark" };
+// Clamp to valid range
+if (state.phase < 0 || state.phase >= 12) state.phase = 0;
 
 // Apply dark mode immediately (before DOMContentLoaded) to prevent flash
 document.documentElement.setAttribute("data-mode", state.mode);
@@ -108,41 +139,39 @@ if (state.mode === "dark") document.documentElement.setAttribute("data-theme", "
 
 function save() { localStorage.setItem("mobius-theme", JSON.stringify(state)); }
 
-// Position colors relative to reference using golden ratio
-function goldenOrder(refIndex) {
-  const order = [refIndex];
-  for (let i = 1; i < 12; i++) {
+// Position accent colors relative to a reference using golden ratio spacing
+function goldenAccents(refIndex) {
+  const accents = [];
+  for (let i = 1; accents.length < 3; i++) {
     const idx = Math.round((refIndex + i * PHI_INV * 12) % 12);
-    if (!order.includes(idx)) order.push(idx);
+    if (idx !== refIndex && !accents.includes(idx)) accents.push(idx);
   }
-  // Fill any gaps
-  for (let i = 0; i < 12; i++) { if (!order.includes(i)) order.push(i); }
-  return order;
+  return accents;
 }
 
 function applyPalette() {
-  // Each phase maps to a palette pair: dark uses even index, light uses odd
-  // Phase 0: [0,1], Phase 1: [2,3], Phase 2: [4,5], Phase 3: [6,7], Phase 4: [8,9], Phase 5: [10,11]
-  const pairBase = state.phase * 2;
-  const refIdx = state.mode === "light" ? pairBase + 1 : pairBase;
-  const order = goldenOrder(refIdx);
-  const ref = PALETTE[refIdx]; // Direct index, not golden-reordered
+  const colorIdx = COLOR_SEQUENCE[state.phase];
+  const ref = PALETTE[colorIdx];
+  const accentRef = ACCENT_REF[state.phase];
+  const accents = goldenAccents(accentRef);
+  state.mode = MODE_SEQUENCE[state.phase];
   const root = document.documentElement;
 
   root.style.setProperty("--m-ref", ref);
   root.style.setProperty("--m-accent", ref);
-  root.style.setProperty("--m-accent2", PALETTE[order[1]]);
-  root.style.setProperty("--m-accent3", PALETTE[order[2]]);
-  root.style.setProperty("--m-accent4", PALETTE[order[3]]);
+  root.style.setProperty("--m-accent2", PALETTE[accents[0]]);
+  root.style.setProperty("--m-accent3", PALETTE[accents[1]]);
+  root.style.setProperty("--m-accent4", PALETTE[accents[2]]);
 
   // Set mode
   root.setAttribute("data-mode", state.mode);
   // PyData theme sync
   if (root.dataset.theme !== undefined) root.dataset.theme = state.mode;
 
-  // Update moon icon
+  // Update moon icon — shape cycles through 6, repeats on second pass
+  const moonPhase = state.phase % 6;
   const btn = document.getElementById("mobius-moon-toggle");
-  if (btn) btn.innerHTML = moonSVG(state.phase, ref);
+  if (btn) btn.innerHTML = moonSVG(moonPhase, ref);
 }
 
 // ── Moon Toggle ──────────────────────────────────────────────────────────
@@ -153,7 +182,7 @@ function createMoonToggle() {
     btn = document.createElement("button");
     btn.id = "mobius-moon-toggle";
     btn.setAttribute("aria-label", "Cycle theme");
-    btn.title = "Click: next palette · Shift+click: toggle dark/light";
+    btn.title = "Click: cycle through 12 color phases (two passes)";
     // Insert into nav if exists, otherwise fixed position
     const nav = document.querySelector("nav, .navbar, .bd-header");
     if (nav) {
@@ -165,9 +194,9 @@ function createMoonToggle() {
   }
 
   btn.addEventListener("click", function(e) {
-    // Advance to next phase; mode follows the fixed sequence
-    state.phase = (state.phase + 1) % 6;
-    state.mode = PHASE_MODES[state.phase];
+    // Advance: 12 states total, two passes through 6 moon shapes
+    state.phase = (state.phase + 1) % 12;
+    state.mode = MODE_SEQUENCE[state.phase];
     save();
     applyPalette();
   });
