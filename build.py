@@ -943,7 +943,7 @@ numerically and produces all predictions from a single run.
   how one equation produces general relativity, uniquely
 - **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
   `python -m rfe --observables`
-- **Where are we?** [Our Address](our_address.html) —
+- **Where are we?** [Our Address](https://nickjoven.github.io/submediant-site/our_address.html) —
   the universe's computational clock on the Stern-Brocot tree
 
 ## Source
