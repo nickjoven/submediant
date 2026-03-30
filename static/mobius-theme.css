@@ -89,43 +89,6 @@ html[data-theme="light"], html[data-mode="light"] {
   stroke-width: 0.5;
 }
 
-/* ── Hover navigation bar ── */
-/* Unified with glossary toggle: off = no hover enrichment */
-html[data-glossary="off"] .mobius-hover-nav { display: none !important; }
-html[data-glossary="off"] .glossary-term { border-bottom: none !important; cursor: default !important; }
-
-.mobius-hover-nav {
-  position: absolute; z-index: 50;
-  display: none; align-items: center; gap: 0.6em;
-  padding: 4px 10px;
-  background: var(--m-surface); border: 1px solid var(--m-border);
-  border-radius: 6px; font-size: 0.78rem;
-  color: var(--m-text-muted);
-  opacity: 0; transition: opacity 0.2s ease;
-  pointer-events: auto; max-width: 100%;
-  overflow-x: auto; white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.mobius-hover-nav.visible { display: flex; opacity: 1; }
-.mobius-hover-nav a {
-  color: var(--m-accent); text-decoration: none;
-  font-size: 0.75rem; white-space: nowrap;
-}
-.mobius-hover-nav a:hover { text-decoration: underline; }
-.mobius-hover-nav a.twisted { font-style: italic; opacity: 0.7; }
-.mobius-hover-nav .sep { color: var(--m-border); }
-
-/* ── "m for more" expansion ── */
-.more-content { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
-.more-content.expanded { max-height: 2000px; }
-.more-hint {
-  display: inline-block; margin-top: 0.4em;
-  font-size: 0.72rem; color: var(--m-text-muted);
-  cursor: pointer; user-select: none;
-  opacity: 0.6; transition: opacity 0.2s;
-}
-.more-hint:hover { opacity: 1; color: var(--m-accent); }
-
 /* ── Table striping: readable in both modes ── */
 table tbody tr:nth-child(odd) {
   background: var(--m-surface);
