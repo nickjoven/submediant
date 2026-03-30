@@ -8,12 +8,23 @@
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+:root {
+  /* Golden-ratio type scale: each step = prev * phi */
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);  /* responsive base */
+  --fs-sm: calc(var(--fs-base) / var(--phi));    /* ~11-14px */
+  --fs-xs: calc(var(--fs-sm) / var(--phi));      /* ~7-9px */
+  --fs-lg: calc(var(--fs-base) * var(--phi));    /* ~26-36px */
+  --fs-xl: calc(var(--fs-lg) * var(--phi));      /* ~42-58px */
+  --sp: calc(var(--fs-base) * var(--phi));       /* golden spacing unit */
+}
+
 body {
   background: var(--m-bg, #0d1117);
   color: var(--m-text, #e6edf3);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--fs-base);
+  line-height: 1.8;
   overflow-x: hidden;
 }
 
@@ -29,9 +40,9 @@ canvas#bg {
 main {
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 0 32px 160px;
+  padding: 0 40px 160px;
 }
 
 /* phi-based vertical rhythm: sections placed at phi intervals */
@@ -56,14 +67,14 @@ main {
 }
 
 canvas#clock {
-  width: min(420px, 80vw);
-  height: min(420px, 80vw);
+  width: min(520px, 85vw);
+  height: min(520px, 85vw);
   border-radius: 50%;
 }
 
 .digital-readout {
   text-align: center;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   color: var(--m-text-muted, #8b949e);
   letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
@@ -95,8 +106,8 @@ canvas#clock {
 }
 
 .binary-digit .bit {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 2px;
   background: var(--m-border, #30363d);
   transition: background 0.3s;
@@ -108,7 +119,7 @@ canvas#clock {
 }
 
 .binary-digit .label {
-  font-size: 0.65rem;
+  font-size: var(--fs-sm);
   color: var(--m-text-muted, #8b949e);
   margin-top: 2px;
 }
@@ -127,7 +138,7 @@ canvas#clock {
 
 .return-address {
   text-align: left;
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--m-text-muted, #8b949e);
   margin-bottom: 48px;
   line-height: 1.8;
@@ -139,11 +150,11 @@ canvas#clock {
   color: var(--m-text, #e6edf3);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
 }
 
 .main-address {
-  font-size: 1.05rem;
+  font-size: var(--fs-base);
   line-height: 2.2;
   color: var(--m-text, #e6edf3);
 }
@@ -158,7 +169,7 @@ canvas#clock {
 
 .main-address .muted {
   color: var(--m-text-muted, #8b949e);
-  font-size: 0.85em;
+  font-size: var(--fs-sm);
 }
 
 /* ── Stamp ── */
@@ -184,7 +195,7 @@ section {
 }
 
 .section-label {
-  font-size: 0.65rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--m-text-muted, #8b949e);
@@ -192,7 +203,7 @@ section {
 }
 
 .section-title {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   color: var(--m-text, #e6edf3);
   font-weight: 500;
   margin-bottom: 16px;
@@ -205,14 +216,14 @@ section {
   border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
 }
 
-.row .label { color: var(--m-text-muted, #8b949e); font-size: 0.9em; }
-.row .value { color: var(--m-text, #e6edf3); text-align: right; font-size: 0.9em; }
+.row .label { color: var(--m-text-muted, #8b949e); font-size: var(--fs-base); }
+.row .value { color: var(--m-text, #e6edf3); text-align: right; font-size: var(--fs-base); }
 .row .value .derived { color: var(--m-accent, #DE3373); }
-.row .value .dim { color: var(--m-text-muted, #8b949e); font-size: 0.85em; }
+.row .value .dim { color: var(--m-text-muted, #8b949e); font-size: var(--fs-sm); }
 
 .note {
   color: var(--m-text-muted, #8b949e);
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   font-style: italic;
   margin-top: 8px;
   opacity: 0.7;
@@ -229,12 +240,12 @@ hr.divider {
   display: grid;
   grid-template-columns: 52px 60px 1fr;
   gap: 4px 16px;
-  font-size: 0.85rem;
+  font-size: var(--fs-base);
 }
 
 .pred-grid .hdr {
   color: var(--m-text-muted, #8b949e);
-  font-size: 0.65rem;
+  font-size: var(--fs-sm);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding-bottom: 8px;
@@ -248,7 +259,7 @@ hr.divider {
 .closing {
   text-align: center;
   color: var(--m-text-muted, #8b949e);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   line-height: 2;
 }
 
@@ -420,6 +431,23 @@ hr.divider {
   The universe knows itself. We are reading the printout.
 </div>
 
+<div class="phi-spacer-sm"></div>
+
+<!-- The Minimum Self-Predicting Universe -->
+<section style="text-align:center;">
+  <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted,#8b949e); font-weight:300; margin-bottom:var(--sp);">
+    The Minimum Self-Predicting Universe
+  </h2>
+  <img src="https://raw.githubusercontent.com/nickjoven/harmonics/main/sync_cost/minimum_self_predicting_universe.svg"
+       alt="The minimum self-predicting universe: four primitives (integers, mediant, fixed-point, parabola) and their compositions into the circle, devil's staircase, Arnold tongues, and the Born rule"
+       style="width:100%; max-width:700px; border-radius:8px; opacity:0.9;">
+  <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1rem;">
+    Four primitives. Their compositions. Everything else is accounting.
+  </p>
+</section>
+
+<div class="phi-spacer"></div>
+
 </main>
 
 <script src="mobius-theme.js"></script>
@@ -567,8 +595,8 @@ function drawSternBrocotTree(ctx, W, H) {
     var r = isLeft ? 222 : 8;
     var g = isLeft ? 51 : 169;
     var bl = isLeft ? 115 : 83;
-    var branchAlpha = 0.07 - level * 0.008;
-    if (branchAlpha < 0.015) branchAlpha = 0.015;
+    var branchAlpha = 0.18 - level * 0.025;
+    if (branchAlpha < 0.04) branchAlpha = 0.04;
 
     // Draw branch from parent
     if (parentX !== undefined) {
@@ -583,12 +611,12 @@ function drawSternBrocotTree(ctx, W, H) {
     // Node dot
     ctx.beginPath();
     ctx.arc(nx, ny, Math.max(1, 3 - level * 0.4), 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (branchAlpha + 0.02) + ")";
+    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (branchAlpha + 0.05) + ")";
     ctx.fill();
 
     // Fraction label (barely visible)
     if (level <= 3) {
-      ctx.fillStyle = "rgba(200,200,200,0.04)";
+      ctx.fillStyle = "rgba(200,200,200,0.12)";
       ctx.font = Math.max(8, 12 - level * 2) + "px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(p + "/" + q, nx, ny - 5);
@@ -604,9 +632,9 @@ function drawSternBrocotTree(ctx, W, H) {
   // Draw root node
   ctx.beginPath();
   ctx.arc(rootX, rootY, 2, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(200,200,200,0.06)";
+  ctx.fillStyle = "rgba(200,200,200,0.2)";
   ctx.fill();
-  ctx.fillStyle = "rgba(200,200,200,0.04)";
+  ctx.fillStyle = "rgba(200,200,200,0.15)";
   ctx.font = "11px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("1/1", rootX, rootY - 6);
