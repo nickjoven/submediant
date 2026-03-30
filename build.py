@@ -804,6 +804,7 @@ html:
   extra_css:
     - _static/custom.css
     - _static/glossary.css
+    - _static/mobius-theme.css
 
 sphinx:
   config:
@@ -814,6 +815,7 @@ sphinx:
           "NN": "\\\\mathbb{N}"
     html_js_files:
       - glossary.js
+      - mobius-theme.js
     html_theme_options:
       navigation_with_keys: false
 """
