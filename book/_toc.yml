@@ -1,0 +1,60 @@
+format: jb-book
+root: intro
+parts:
+  - caption: "The Story"
+    chapters:
+      - file: 00_narrative/partial_agreement
+        title: "The Mathematics of Partial Agreement"
+  - caption: "The Alphabet"
+    chapters:
+      - file: 01_alphabet/10_minimum_alphabet
+        title: "The Minimum Alphabet"
+      - file: 01_alphabet/14_three_dimensions
+        title: "Three Dimensions from the Mediant"
+  - caption: "The Field Equation"
+    chapters:
+      - file: 02_field_equation/11_rational_field_equation
+        title: "The Rational Field Equation"
+  - caption: "K = 1: Einstein"
+    chapters:
+      - file: 03_einstein/13_einstein_from_kuramoto
+        title: "Einstein from the Rational Field Equation"
+      - file: 03_einstein/12_continuum_limits
+        title: "The Two Continuum Limits"
+  - caption: "K < 1: Schrödinger"
+    chapters:
+      - file: 04_schrodinger/04_schrodinger_intro
+        title: "Schrödinger"
+  - caption: "Predictions"
+    chapters:
+      - file: 05_predictions/01_born_rule
+        title: "Born Rule from Basin Measure"
+      - file: 05_predictions/04_spectral_tilt_reframed
+        title: "Spectral Tilt from Mode-Locking"
+      - file: 05_predictions/08_high_z_mond
+        title: "High-Redshift Test of a₀(z)"
+      - file: 05_predictions/09_fidelity_bound
+        title: "The Self-Referential Fidelity Bound"
+  - caption: "Evidence"
+    chapters:
+      - file: 06_evidence/RESULTS
+        title: "Bifurcation Sweep Results"
+      - file: 06_evidence/FRAMEWORK
+        title: "Synchronization Cost Framework"
+      - file: 06_evidence/03_a0_threshold
+        title: "a₀ from Cost Threshold"
+      - file: 06_evidence/06_planck_scale
+        title: "Planck Scale from Self-Sustaining Threshold"
+      - file: 06_evidence/07_measurement_collapse
+        title: "Measurement Collapse from Tongue Traversal"
+  - caption: "Prior Work"
+    chapters:
+      - file: 07_prior_work/proslambenomenos
+        title: "The Proslambenomenos"
+      - file: 07_prior_work/joven_unifying_framework
+        title: "Gravity as Synchronization in a Frictional Medium"
+      - file: 07_prior_work/joven_stick_slip_dark_matter
+        title: "Stick-Slip Dynamics and the Dark Matter Dual"
+  - caption: "Reference"
+    chapters:
+      - file: glossary
