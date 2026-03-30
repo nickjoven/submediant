@@ -490,8 +490,8 @@ function annotateContent() {
 
 // ── Init ─────────────────────────────────────────────────────────────────
 function init() {
+  createMoonToggle();  // button must exist before applyPalette sets its icon
   applyPalette();
-  createMoonToggle();
   annotateContent();
   initHoverNav();
   initExpand();
