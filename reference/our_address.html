@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Our Address on the Tree</title>
 <link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -322,6 +326,15 @@ hr.divider {
 
 <div class="phi-spacer"></div>
 
+<!-- Steps: expandable -->
+<div class="fmt-section">
+<div class="fmt-level fmt-level-0">
+  <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted); font-weight:300; margin-bottom:0.5rem;">The Computation</h2>
+  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 steps from first principles to predictions. 9 digits of $|r|$ computed so far.</p>
+  <span class="fmt-expand">expand</span>
+</div>
+<div class="fmt-level fmt-level-1">
+
 <!-- Step 1 -->
 <section>
   <div class="section-label">Step 1 — Self-similarity rate</div>
@@ -424,6 +437,9 @@ hr.divider {
   </div>
 </section>
 
+</div><!-- /fmt-level-1 -->
+</div><!-- /fmt-section -->
+
 <div class="phi-spacer"></div>
 
 <div class="closing">
@@ -455,7 +471,7 @@ hr.divider {
     <div class="fmt-level fmt-level-2">
       <span class="fmt-tag fmt-tag-math">math</span>
       <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        mediant(<em>a</em>/<em>b</em>, <em>c</em>/<em>d</em>) = (<em>a</em>+<em>c</em>) / (<em>b</em>+<em>d</em>)
+        $\text{mediant}\!\left(\frac{a}{b},\;\frac{c}{d}\right) = \frac{a+c}{b+d}$
       </p>
     </div>
     <div class="fmt-level fmt-level-3">
@@ -483,14 +499,14 @@ hr.divider {
     <div class="fmt-level fmt-level-2">
       <span class="fmt-tag fmt-tag-math">math</span>
       <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        width(<em>p</em>/<em>q</em>) &prop; K<sup>q</sup> / q<sup>2</sup>
+        $\text{width}(p/q) \propto K^q / q^2$
       </p>
     </div>
     <div class="fmt-level fmt-level-3">
       <span class="fmt-tag fmt-tag-explanation">explanation</span>
       <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
         18.7% of the frequency axis remains unlocked. The gap twin at 1/&phi; accumulates phase
-        at 10<sup>-59</sup> radians per oscillation.
+        at $10^{-59}$ radians per oscillation.
       </p>
     </div>
   </div>
@@ -530,13 +546,13 @@ hr.divider {
       <span class="fmt-tag fmt-tag-math">math</span>
       <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
         3 observable + 1 dark = (3,1)<br>
-        <span style="font-size:var(--fs-sm);">i<sup>2</sup> = &minus;1 = J<sup>2</sup> = double half-twist</span>
+        <span style="font-size:var(--fs-sm);">$i^2 = -1 = J^2$ = double half-twist</span>
       </p>
     </div>
     <div class="fmt-level fmt-level-3">
       <span class="fmt-tag fmt-tag-explanation">explanation</span>
       <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        Three generations = three spatial dimensions = 2<sup>2</sup>&minus;1.
+        Three generations = three spatial dimensions = $2^2 - 1$.
         The dark state is not missing matter &mdash; it's the unobservable fourth phase.
       </p>
     </div>
@@ -558,7 +574,7 @@ hr.divider {
     <div class="fmt-level fmt-level-2">
       <span class="fmt-tag fmt-tag-math">math</span>
       <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        sin<sup>2</sup>&theta;<sub>W</sub> = 8/35 = 0.2286
+        $\sin^2\theta_W = 8/35 = 0.2286$
       </p>
     </div>
     <div class="fmt-level fmt-level-3">
@@ -590,13 +606,13 @@ hr.divider {
             </tr>
           </thead>
           <tbody>
-            <tr><td style="padding:4px 8px; color:#08A953;">&Omega;<sub>&Lambda;</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.6847</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.07&sigma;</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">&alpha;<sub>s</sub>/&alpha;<sub>2</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">27/8 = 3.375</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.3&sigma;</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">sin<sup>2</sup>&theta;<sub>W</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">8/35 = 0.2286</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.2&sigma;</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">n<sub>s</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.965</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.1&sigma;</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">$\Omega_\Lambda$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.6847</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.07$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">$\alpha_s/\alpha_2$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">27/8 = 3.375</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.3$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">sin<sup>2</sup>&theta;<sub>W</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">8/35 = 0.2286</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.2$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">$n_s$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.965</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.1$\sigma$</td></tr>
             <tr><td style="padding:4px 8px; color:#08A953;">d</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
             <tr><td style="padding:4px 8px; color:#08A953;">generations</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
-            <tr><td style="padding:4px 8px; color:var(--m-text-muted,#8b949e); opacity:0.5;">hierarchy R</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">6&times;13<sup>54</sup></td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">15 digits</td></tr>
+            <tr><td style="padding:4px 8px; color:var(--m-text-muted,#8b949e); opacity:0.5;">hierarchy R</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">$6 \times 13^{54}$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">15 digits</td></tr>
           </tbody>
         </table>
       </div>
@@ -604,8 +620,8 @@ hr.divider {
     <div class="fmt-level fmt-level-2">
       <span class="fmt-tag fmt-tag-math">math</span>
       <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        &Omega;<sub>&Lambda;</sub> = (11 + 2w*) / (16 + 3w*) = 0.6847<br>
-        <span style="font-size:var(--fs-sm);">&alpha;<sub>s</sub> / &alpha;<sub>2</sub> = 27/8</span>
+        $\Omega_\Lambda$ = (11 + 2w*) / (16 + 3w*) = 0.6847<br>
+        <span style="font-size:var(--fs-sm);">$\alpha_s / \alpha_2 = 27/8$</span>
       </p>
     </div>
     <div class="fmt-level fmt-level-3">
