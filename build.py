@@ -447,7 +447,7 @@ per-level variance $\\sigma^2(d) \\sim \\phi^{-4d}$ sums to a convergent
 constant $D_{\\text{eff}} = D_0 / (1 - \\phi^{-4})$.
 
 The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/12_continuum_limits.md),
-Part II (§156 ff.).
+Part II.
 
 ## Three regimes, one equation
 
