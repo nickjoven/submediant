@@ -231,12 +231,25 @@ a:hover { text-decoration: underline; }
 <section id="table">
   <div class="section-title">The Sequence</div>
   <p>
-    Each term is a ratio of consecutive Fibonacci numbers. The oscillation
-    damps by a factor of $\varphi$ per step. By $n = 8$, the first 3 digits
-    have settled. By $n = 47$, 9 digits are fixed.
+    Each term feeds the next: $x_{n+1} = 1/(1 + x_n)$. The oscillation
+    damps by $\varphi$ per step. Terms above $1/\varphi$ alternate with terms below.
   </p>
   <div class="phi-spacer-sm"></div>
-  <div id="fib-table" class="fib-table"></div>
+
+  <!-- Horizontal recursion chain -->
+  <div id="seq-chain" style="position:relative; overflow-x:auto; padding:2rem 0;">
+    <canvas id="seq-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    <div id="seq-nodes" style="position:relative; z-index:1; display:flex; align-items:center; gap:0; min-width:max-content; padding:0 1rem;"></div>
+  </div>
+
+  <!-- Settled value -->
+  <div style="text-align:center; margin-top:0.5rem;">
+    <span style="color:var(--m-text-muted); font-size:var(--fs-sm);">⋯ damps by $\varphi$ each step ⋯</span>
+    <div style="margin-top:0.8rem; font-size:var(--fs-lg); color:#FCCA28; font-weight:300;">
+      $n = 47$: <strong>0.618033988</strong><span style="opacity:0.4;">749894…</span>
+      <span style="font-size:var(--fs-sm); color:var(--m-text-muted); margin-left:0.5rem;">9 digits settled</span>
+    </div>
+  </div>
 </section>
 
 <div class="phi-spacer-lg"></div>
@@ -427,45 +440,92 @@ const SEQ = [1];
 for (let i = 1; i <= 47; i++) SEQ.push(1 / (1 + SEQ[i-1]));
 
 // ── Section 2: Fibonacci table ────────────────────────────────────────
-function buildFibTable() {
-  const el = document.getElementById('fib-table');
-  if (!el) return;
+function buildSequenceChain() {
+  var container = document.getElementById("seq-chain");
+  var nodesEl = document.getElementById("seq-nodes");
+  var canvas = document.getElementById("seq-canvas");
+  if (!container || !nodesEl || !canvas) return;
 
-  // Show: first 8 steps (the oscillation), then where it settles
-  const show = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  const target = '0.618033988749894';
-  let lines = [];
+  var show = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  var PHI_INV_VAL = (Math.sqrt(5) - 1) / 2;
 
-  for (const n of show) {
-    const num = FIB_BIG[n + 1];
-    const den = FIB_BIG[n + 2];
-    const frac = num.toString() + '/' + den.toString();
-    const val = SEQ[n].toFixed(15);
-    // Count matching digits
-    let matched = 0;
-    for (let k = 0; k < Math.min(val.length, target.length); k++) {
-      if (val[k] === target[k]) matched = k + 1; else break;
+  // Build node elements
+  var html = "";
+  for (var i = 0; i < show.length; i++) {
+    var n = show[i];
+    var num = FIB_BIG[n + 1].toString();
+    var den = FIB_BIG[n + 2].toString();
+    var val = SEQ[n];
+    var above = val > PHI_INV_VAL;
+    // Vertical offset: distance from 1/φ, scaled
+    var offset = (val - PHI_INV_VAL) * 120;
+    var color = PALETTE[n % 12];
+
+    html += '<div class="seq-node" data-n="' + n + '" style="' +
+      'display:inline-flex; flex-direction:column; align-items:center; ' +
+      'min-width:70px; padding:0.3rem; ' +
+      'transform:translateY(' + (-offset) + 'px);">' +
+      '<div style="font-size:9px; color:' + color + '; opacity:0.6;">n=' + n + '</div>' +
+      '<div style="font-size:13px; color:' + color + '; font-weight:500;">' + num + '/' + den + '</div>' +
+      '<div style="font-size:10px; color:var(--m-text-muted);">' + val.toFixed(4) + '</div>' +
+      '</div>';
+
+    // Arrow between nodes
+    if (i < show.length - 1) {
+      html += '<div style="color:var(--m-text-muted); opacity:0.3; font-size:18px; align-self:center;">→</div>';
     }
-    const nStr = String(n).padStart(2, ' ');
-    const padFrac = frac.padEnd(12, ' ');
-    const matchNote = matched >= 4 ? ' <span class="settled">' + matched + ' digits</span>' : '';
-    lines.push('<span class="muted">n=' + nStr + '</span>   ' + padFrac + ' = ' + val.slice(0, Math.max(matched + 2, 6)) + matchNote);
   }
 
-  // Ellipsis
-  lines.push('<span class="muted">        \u22EE</span>');
-  lines.push('<span class="muted">        (each step damps by \u03C6)</span>');
-  lines.push('<span class="muted">        \u22EE</span>');
+  // Ellipsis arrow to settled value
+  html += '<div style="color:var(--m-text-muted); opacity:0.3; font-size:14px; align-self:center; padding:0 0.5rem;">⋯→</div>';
 
-  // Final settled value
-  const n47 = 47;
-  const num47 = FIB_BIG[48];
-  const den47 = FIB_BIG[49];
-  const val47 = SEQ[47].toFixed(15);
-  lines.push('<span class="muted">n=47</span>   ' + num47.toString() + '/' + den47.toString());
-  lines.push('       = <strong>0.618033988</strong>749894\u2026 <span class="settled">\u2190 9 digits settled</span>');
+  nodesEl.innerHTML = html;
 
-  el.innerHTML = lines.join('\n');
+  // Draw the golden line through the chain
+  var ctx = canvas.getContext("2d");
+  var dpr = window.devicePixelRatio || 1;
+
+  function drawLine() {
+    var rect = container.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Golden ratio line: horizontal at the vertical center (where offset = 0)
+    var nodes = nodesEl.querySelectorAll(".seq-node");
+    if (nodes.length < 2) return;
+    var first = nodes[0].getBoundingClientRect();
+    var last = nodes[nodes.length - 1].getBoundingClientRect();
+    var cRect = container.getBoundingClientRect();
+
+    // The center line is where val = PHI_INV, which is translateY(0)
+    // Find the baseline by averaging the untranslated centers
+    var baseY = rect.height / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(0, baseY);
+    ctx.lineTo(rect.width, baseY);
+    ctx.strokeStyle = "#FCCA28";
+    ctx.globalAlpha = 0.15;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // Label
+    ctx.fillStyle = "#FCCA28";
+    ctx.globalAlpha = 0.3;
+    ctx.font = "9px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText("1/\u03C6", rect.width - 4, baseY - 4);
+    ctx.globalAlpha = 1;
+  }
+
+  drawLine();
+  window.addEventListener("resize", drawLine);
 }
 
 // ── Section 4: Stern-Brocot path ──────────────────────────────────────
@@ -903,7 +963,7 @@ function initBackground() {
 
 // ── Init ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  buildFibTable();
+  buildSequenceChain();
   buildSBPath();
   drawConvergencePlot();
   initBackground();
