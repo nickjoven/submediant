@@ -327,9 +327,11 @@ function initFormatAccordion() {
 
 // ── Curved space: subtle perspective warp on scroll (JB pages) ───────────
 function initCurvedSpace() {
-  // Only apply to pages with .bd-content (Jupyter Book) or .main content
-  var content = document.querySelector(".bd-content, .bd-article-container, main");
+  // Only apply to Jupyter Book pages — NOT standalone HTML pages with a fixed canvas
+  var content = document.querySelector(".bd-content");
   if (!content) return;
+  // Skip if page has a fixed background canvas (standalone pages)
+  if (document.querySelector("canvas#bg")) return;
 
   // Set up perspective on the content's parent
   var wrapper = content.parentElement || content;
