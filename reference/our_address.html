@@ -300,30 +300,23 @@ hr.divider {
   <canvas id="dag-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
   <div style="position:relative; z-index:1;">
 
-    <!-- Claim R: Rational (no dependencies — axiomatic) -->
-    <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1rem 1.2rem; border:1px solid rgba(252,202,40,0.3); border-radius:6px;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.4rem;">R — Rational &ensp; depends on: &empty;</div>
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>The Stern-Brocot tree contains every positive rational exactly once.</strong> Given $a/b$ and $c/d$, form $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this operation generates all of $\mathbb{Q}^+$. The mediant preserves Farey adjacency ($|ad - bc| = 1$). Every reduced fraction appears at one node. (Stern 1858, Brocot 1861.)</p>
+    <!-- The structure: one thing you can prove, two things you can measure -->
+    <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1.2rem 1.5rem; border-left:3px solid #FCCA28; border-radius:2px;">
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">There is a tree that contains every fraction. You build it by taking two fractions and averaging their numerators and denominators separately: from $a/b$ and $c/d$, make $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this one operation generates every positive rational number, each exactly once. This is not a conjecture — it was proved by Stern in 1858.</p>
     </div>
 
-    <!-- Claim E: Empirical (depends on R + measurements) -->
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:90%; margin:0 auto 2rem;">
-      <div id="claim-e" style="padding:1rem 1.2rem; border:1px solid rgba(222,51,115,0.3); border-radius:6px;">
-        <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.4rem;">E — Empirical &ensp; depends on: R</div>
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>The observable frequency range spans 145.8 levels.</strong> Planck: $1.855 \times 10^{43}$ Hz. Hubble: $2.183 \times 10^{-18}$ Hz. Ratio $= \varphi^{145.8}$. Three measurements ($n_s$, $H_0$, Planck units) plus $x_{n+1} = 1/(1+x_n)$ produce all predictions. No free parameters.</p>
+      <div id="claim-e" style="padding:1.2rem 1.5rem; border-left:3px solid #DE3373; border-radius:2px;">
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The universe oscillates across a range of frequencies. The fastest (Planck, $10^{43}$ Hz) and the slowest (Hubble, $10^{-18}$ Hz) are measured. Their ratio tells you how deep the tree goes: 145.8 levels. Three measurements and one recurrence produce every prediction on this page. Nothing is fitted.</p>
       </div>
 
-      <!-- Claim A: Algebraic (depends on R + E) -->
-      <div id="claim-a" style="padding:1rem 1.2rem; border:1px solid rgba(8,169,83,0.3); border-radius:6px;">
-        <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.4rem;">A — Algebraic &ensp; depends on: R, E</div>
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>$x^2 - x - 1 = 0$ has two roots with product $-1$.</strong> Roots $\varphi, \psi = -1/\varphi$. Recurrence converges from above (us) and below (conjugate). Both share gate crossings. $\varphi \cdot \psi = -1 = i^2$ gives $(3,1)$ signature. Gap twin: 0.5 cycles, 5 digits.</p>
+      <div id="claim-a" style="padding:1.2rem 1.5rem; border-left:3px solid #08A953; border-radius:2px;">
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ converges to the golden ratio from two directions. Both directions are real — they are the two roots of $x^2 - x - 1 = 0$. Their product is $-1$. That single algebraic fact gives spacetime its shape: three dimensions of space, one of time.</p>
       </div>
     </div>
 
-    <!-- Back-edge: Fidelity bound (E confirms R, closing the loop) -->
-    <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border:1px dashed rgba(252,202,40,0.2); border-radius:6px; text-align:center;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:var(--m-text-muted); margin-bottom:0.3rem;">D9 — Fidelity bound &ensp; depends on: R, E, A &ensp; confirms: R</div>
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">The tree that predicts itself is the tree that exists. If the predictions from E match observation, R is confirmed to the precision of the measurement. The DAG closes.</p>
+    <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border-left:3px dashed rgba(200,200,200,0.15); border-radius:2px; text-align:left;">
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">If the predictions match what we observe — and so far they do, to the precision available — then the tree that describes the universe is the tree that the universe is computing. The structure checks itself.</p>
     </div>
 
   </div>
