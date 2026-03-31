@@ -291,76 +291,52 @@ hr.divider {
 
 <h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:calc(var(--sp) * 0.5);">Our Address on the Tree</h1>
 
-<!-- Three-column entrypoints as a tree: words are nodes, columns are branches -->
-<div id="entry-tree" style="position:relative; margin-bottom:var(--sp); min-height:500px;">
-  <canvas id="entry-tree-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
-  <div id="tree-nodes" style="position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.4); padding-top:3rem;">
+<!-- DAG claims: nodes with directed dependency edges -->
+<div id="claim-dag" style="position:relative; margin-bottom:var(--sp); min-height:480px;">
+  <canvas id="dag-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+  <div style="position:relative; z-index:1;">
 
-    <!-- Root node (centered above) -->
-    <div id="node-root" style="grid-column:1/4; text-align:center; margin-bottom:1.5rem;">
-      <span style="font-size:var(--fs-lg); color:var(--m-text); font-weight:300;">$x^2 - x - 1 = 0$</span>
+    <!-- Claim R: Rational (no dependencies — axiomatic) -->
+    <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1rem 1.2rem; border:1px solid rgba(252,202,40,0.3); border-radius:6px;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.4rem;">R — Rational &ensp; depends on: &empty;</div>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>The Stern-Brocot tree contains every positive rational exactly once.</strong> Given $a/b$ and $c/d$, form $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this operation generates all of $\mathbb{Q}^+$. The mediant preserves Farey adjacency ($|ad - bc| = 1$). Every reduced fraction appears at one node. (Stern 1858, Brocot 1861.)</p>
     </div>
 
-    <!-- Branch 1: Rational -->
-    <div id="node-rational" style="text-align:left;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.5rem;">Rational · $\theta = 0$</div>
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The Stern-Brocot tree contains every positive rational exactly once.</strong> Construction: given $a/b$ and $c/d$, form $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this single operation generates all of $\mathbb{Q}^+$ as a binary tree. <em>Proof:</em> the mediant preserves Farey adjacency ($|ad - bc| = 1$), and every reduced fraction appears at exactly one node (Stern 1858, Brocot 1861).</p>
+    <!-- Claim E: Empirical (depends on R + measurements) -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:90%; margin:0 auto 2rem;">
+      <div id="claim-e" style="padding:1rem 1.2rem; border:1px solid rgba(222,51,115,0.3); border-radius:6px;">
+        <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.4rem;">E — Empirical &ensp; depends on: R</div>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>The observable frequency range spans 145.8 levels.</strong> Planck: $1.855 \times 10^{43}$ Hz. Hubble: $2.183 \times 10^{-18}$ Hz. Ratio $= \varphi^{145.8}$. Three measurements ($n_s$, $H_0$, Planck units) plus $x_{n+1} = 1/(1+x_n)$ produce all predictions. No free parameters.</p>
+      </div>
+
+      <!-- Claim A: Algebraic (depends on R + E) -->
+      <div id="claim-a" style="padding:1rem 1.2rem; border:1px solid rgba(8,169,83,0.3); border-radius:6px;">
+        <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.4rem;">A — Algebraic &ensp; depends on: R, E</div>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;"><strong>$x^2 - x - 1 = 0$ has two roots with product $-1$.</strong> Roots $\varphi, \psi = -1/\varphi$. Recurrence converges from above (us) and below (conjugate). Both share gate crossings. $\varphi \cdot \psi = -1 = i^2$ gives $(3,1)$ signature. Gap twin: 0.5 cycles, 5 digits.</p>
+      </div>
     </div>
 
-    <!-- Branch 2: Empirical -->
-    <div id="node-empirical" style="text-align:left;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.5rem;">Empirical · $\theta = \pi/2$</div>
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The observable frequency range spans 145.8 Stern-Brocot levels.</strong> The Planck frequency is $1.855 \times 10^{43}$ Hz. The Hubble frequency is $2.183 \times 10^{-18}$ Hz. Their ratio $8.497 \times 10^{60}$ equals $\varphi^{145.8}$ in Fibonacci steps. Three measurements ($n_s = 0.9649$, $H_0 = 67.36$ km/s/Mpc, Planck units) plus the recurrence $x_{n+1} = 1/(1+x_n)$ produce all predictions below. No free parameters.</p>
+    <!-- Back-edge: Fidelity bound (E confirms R, closing the loop) -->
+    <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border:1px dashed rgba(252,202,40,0.2); border-radius:6px; text-align:center;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:var(--m-text-muted); margin-bottom:0.3rem;">D9 — Fidelity bound &ensp; depends on: R, E, A &ensp; confirms: R</div>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">The tree that predicts itself is the tree that exists. If the predictions from E match observation, R is confirmed to the precision of the measurement. The DAG closes.</p>
     </div>
 
-    <!-- Branch 3: Algebraic -->
-    <div id="node-algebraic" style="text-align:left;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.5rem;">Algebraic · $\theta = \pi$</div>
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The polynomial $x^2 - x - 1 = 0$ has two roots whose product is $-1$.</strong> The roots are $\varphi = (1+\sqrt{5})/2$ and $\psi = -1/\varphi$. The recurrence converges to $1/\varphi$ from above (our root) and from below (the conjugate). Both roots undergo the same gate crossings. The product $\varphi \cdot \psi = -1 = i^2$ gives spacetime its $(3,1)$ Minkowski signature. The conjugate root is the gap twin, identifiable by its period: 0.5 Hubble cycles, 5 settled digits.</p>
-    </div>
   </div>
 </div>
 
 <style>
 @media (max-width: 800px) {
-  #tree-nodes { grid-template-columns: 1fr !important; }
-  #node-root { grid-column: 1 !important; }
+  #claim-dag div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
 }
 </style>
 
-<!-- Tree branches: canvas draws curves from root to each node, settles when observed -->
+<!-- DAG edges: canvas draws directed arrows between claim nodes -->
 <script>
 (function() {
-  var container = document.getElementById("entry-tree");
-  var canvas = document.getElementById("entry-tree-canvas");
+  var container = document.getElementById("claim-dag");
+  var canvas = document.getElementById("dag-canvas");
   var ctx = canvas.getContext("2d");
-  var PHI = (1 + Math.sqrt(5)) / 2;
-  var t0 = performance.now();
-
-  // Observation state: how much of the tree is in viewport
-  var observed = 0; // 0 = offscreen, 1 = fully visible
-  var scrollSpeed = 0;
-  var lastScrollY = window.scrollY;
-
-  // IntersectionObserver: tree settles when viewed
-  var observer = new IntersectionObserver(function(entries) {
-    observed = entries[0].intersectionRatio;
-  }, { threshold: [0, 0.25, 0.5, 0.75, 1.0] });
-  observer.observe(container);
-
-  // Track scroll speed for excitation
-  window.addEventListener("scroll", function() {
-    var delta = Math.abs(window.scrollY - lastScrollY);
-    lastScrollY = window.scrollY;
-    scrollSpeed = Math.min(1, delta * 0.01);
-  }, { passive: true });
-
-  // Branch state: each branch oscillates, damped by observation
-  var branches = [
-    { color: "#FCCA28", freq: 1,         phase: 0,      cx: 0, cy: 0 },
-    { color: "#DE3373", freq: PHI,       phase: Math.PI/2, cx: 0, cy: 0 },
-    { color: "#08A953", freq: PHI * PHI, phase: Math.PI,   cx: 0, cy: 0 }
-  ];
 
   function resize() {
     var rect = container.getBoundingClientRect();
@@ -374,79 +350,70 @@ hr.divider {
   resize();
   window.addEventListener("resize", resize);
 
-  function draw() {
-    var t = (performance.now() - t0) / 1000;
-    var W = container.offsetWidth;
-    var H = container.offsetHeight;
+  function center(el) {
+    var r = el.getBoundingClientRect();
+    var c = container.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - c.left, y: r.top + r.height / 2 - c.top, t: r.top - c.top, b: r.bottom - c.top };
+  }
 
-    // Damping: observed = high → movement damps toward 0
-    // scrollSpeed adds excitation
-    var damping = 1 - observed * 0.95; // 0.05 when fully observed, 1.0 when offscreen
-    var excitation = scrollSpeed * observed; // only excite while visible
-    scrollSpeed *= 0.95; // decay scroll speed
-
-    var amplitude = damping * 0.3 + excitation * 0.5; // pixels of sway
-
-    ctx.clearRect(0, 0, W, H);
-
-    // Find node positions from DOM
-    var root = document.getElementById("node-root");
-    var nodes = [
-      document.getElementById("node-rational"),
-      document.getElementById("node-empirical"),
-      document.getElementById("node-algebraic")
-    ];
-
-    if (!root || !nodes[0]) { requestAnimationFrame(draw); return; }
-
-    var containerRect = container.getBoundingClientRect();
-    var rootRect = root.getBoundingClientRect();
-    var rootX = rootRect.left + rootRect.width / 2 - containerRect.left;
-    var rootY = rootRect.top + rootRect.height - containerRect.top;
-
-    // Draw branches from root to each node
-    for (var i = 0; i < 3; i++) {
-      var nodeRect = nodes[i].getBoundingClientRect();
-      var nodeX = nodeRect.left + nodeRect.width / 2 - containerRect.left;
-      var nodeY = nodeRect.top - containerRect.top;
-
-      var b = branches[i];
-      // Oscillation offset — settles to zero when observed
-      var osc = Math.sin(2 * Math.PI * b.freq * t * 0.2 + b.phase) * amplitude * 20;
-
-      // Control point for quadratic curve
-      var cpX = (rootX + nodeX) / 2 + osc;
-      var cpY = (rootY + nodeY) / 2;
-
-      ctx.beginPath();
-      ctx.moveTo(rootX, rootY);
-      ctx.quadraticCurveTo(cpX, cpY, nodeX, nodeY);
-      ctx.strokeStyle = b.color;
-      ctx.globalAlpha = 0.25 + observed * 0.15;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // Small node dot at the top of each column
-      ctx.beginPath();
-      ctx.arc(nodeX, nodeY + 4, 3, 0, Math.PI * 2);
-      ctx.fillStyle = b.color;
-      ctx.globalAlpha = 0.4 + observed * 0.3;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-
-    // Root node dot
+  function arrow(x1, y1, x2, y2, color, dashed) {
     ctx.beginPath();
-    ctx.arc(rootX, rootY - 4, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "var(--m-text, #e6edf3)";
-    ctx.globalAlpha = 0.3 + observed * 0.4;
+    ctx.moveTo(x1, y1);
+    // Quadratic curve for organic feel
+    var cpx = (x1 + x2) / 2 + (y2 - y1) * 0.1;
+    var cpy = (y1 + y2) / 2;
+    ctx.quadraticCurveTo(cpx, cpy, x2, y2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.4;
+    ctx.lineWidth = 1.2;
+    if (dashed) ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // Arrowhead
+    var angle = Math.atan2(y2 - cpy, x2 - cpx);
+    var hl = 7;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - hl * Math.cos(angle - 0.4), y2 - hl * Math.sin(angle - 0.4));
+    ctx.lineTo(x2 - hl * Math.cos(angle + 0.4), y2 - hl * Math.sin(angle + 0.4));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.5;
     ctx.fill();
     ctx.globalAlpha = 1;
-
-    requestAnimationFrame(draw);
   }
-  requestAnimationFrame(draw);
+
+  function draw() {
+    var W = container.offsetWidth;
+    var H = container.offsetHeight;
+    ctx.clearRect(0, 0, W, H);
+
+    var R = document.getElementById("claim-r");
+    var E = document.getElementById("claim-e");
+    var A = document.getElementById("claim-a");
+    var F = document.getElementById("claim-f");
+    if (!R || !E || !A || !F) return;
+
+    var rC = center(R), eC = center(E), aC = center(A), fC = center(F);
+
+    // R → E (rational enables empirical)
+    arrow(rC.x - 60, rC.b, eC.x, eC.t, "#FCCA28", false);
+    // R → A (rational enables algebraic)
+    arrow(rC.x + 60, rC.b, aC.x, aC.t, "#FCCA28", false);
+    // E → A (empirical constrains algebraic)
+    arrow(eC.x + eC.x * 0.02, eC.y, aC.x - aC.x * 0.02, aC.y, "#DE3373", false);
+    // R,E,A → F (all feed fidelity bound)
+    arrow(eC.x, eC.b, fC.x - 30, fC.t, "#DE3373", false);
+    arrow(aC.x, aC.b, fC.x + 30, fC.t, "#08A953", false);
+    // F → R (back-edge: fidelity confirms rational — dashed)
+    arrow(fC.x, fC.b, rC.x, rC.b + 20, "#FCCA28", true);
+  }
+
+  draw();
+  window.addEventListener("resize", function() { resize(); draw(); });
+  // Redraw after MathJax renders (layout may shift)
+  setTimeout(draw, 1000);
+  setTimeout(draw, 3000);
 })();
 </script>
 
