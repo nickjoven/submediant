@@ -126,6 +126,11 @@ table tbody tr:nth-child(even) th {
   top: -16px; left: 0; right: 0; height: 16px;
 }
 
+/* ── Mobile containment: prevent horizontal scroll ── */
+html { overflow-x: clip; }
+main { overflow-wrap: break-word; }
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
 /* ── Responsive: mobile / vertical readers ── */
 @media (max-width: 768px) {
   /* Nav bar: tighter spacing, smaller text */
