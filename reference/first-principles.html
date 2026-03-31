@@ -25,7 +25,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 }
 
 body {
-  background: var(--m-bg, #000000);
+  --m-bg: #000000; background: var(--m-bg);
   color: var(--m-text, #e6edf3);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--fs-base);
@@ -133,7 +133,7 @@ section p strong {
 }
 
 .derive-table tbody tr:nth-child(odd) { background: var(--m-surface, #161b22); }
-.derive-table tbody tr:nth-child(even) { background: var(--m-bg, #000000); }
+.derive-table tbody tr:nth-child(even) { --m-bg: #000000; background: var(--m-bg); }
 
 .derive-table td:first-child { color: var(--m-text, #e6edf3); font-weight: 500; }
 
@@ -671,8 +671,8 @@ revealSections();
 <script src="_static/mobius-theme.js"></script>
 
 <nav id="page-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:100;
-  background:rgba(22,27,34,0.95); backdrop-filter:blur(10px);
-  border-top:1px solid rgba(200,200,200,0.15);
+  background:rgba(30,35,44,0.97); backdrop-filter:blur(10px);
+  border-top:1px solid rgba(200,200,200,0.25);
   display:flex; justify-content:center; align-items:center; gap:2rem; padding:10px 16px;
   font-size:0.8rem; font-family:sans-serif;">
   <a href="first-principles.html" style="color:var(--m-accent,#DE3373); font-weight:600; text-decoration:none;">First Principles</a>
