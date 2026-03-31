@@ -290,94 +290,165 @@ hr.divider {
 
 <h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:calc(var(--sp) * 0.5);">Our Address on the Tree</h1>
 
-<!-- Three-column entrypoints with rhythmic pulse -->
-<style>
-.col-pulse {
-  border-left-width: 2px;
-  border-left-style: solid;
-  padding-left: 1rem;
-  transition: border-left-width 0.1s ease, opacity 0.1s ease;
-}
-</style>
-<div id="three-columns" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.6); margin-bottom:var(--sp); font-size:var(--fs-base); line-height:1.8;">
+<!-- Three-column entrypoints as a tree: words are nodes, columns are branches -->
+<div id="entry-tree" style="position:relative; margin-bottom:var(--sp); min-height:500px;">
+  <canvas id="entry-tree-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+  <div id="tree-nodes" style="position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.4); padding-top:3rem;">
 
-  <!-- Column 1: Rational — phase 0, frequency 1 -->
-  <div class="col-pulse" id="col-rational" style="border-left-color:#FCCA28;" data-freq="1" data-phase="0">
-    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.3rem;">Rational · $\theta = 0$</div>
-    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A tree that contains a universe</div>
-    <p style="color:var(--m-text-muted);">The Stern-Brocot tree is a binary tree containing every positive rational number exactly once. It is constructed by one operation: the mediant. Given fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$. This is a theorem, not a hypothesis. The tree exists because the integers exist and the mediant is well-defined.</p>
+    <!-- Root node (centered above) -->
+    <div id="node-root" style="grid-column:1/4; text-align:center; margin-bottom:1.5rem;">
+      <span style="font-size:var(--fs-lg); color:var(--m-text); font-weight:300;">$x^2 - x - 1 = 0$</span>
+    </div>
+
+    <!-- Branch 1: Rational -->
+    <div id="node-rational" style="text-align:center;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.3rem;">Rational · $\theta = 0$</div>
+      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A tree that contains a universe</div>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The Stern-Brocot tree is a binary tree containing every positive rational number exactly once. It is constructed by one operation: the mediant. Given fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$. This is a theorem, not a hypothesis. The tree exists because the integers exist and the mediant is well-defined.</p>
+    </div>
+
+    <!-- Branch 2: Empirical -->
+    <div id="node-empirical" style="text-align:center;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.3rem;">Empirical · $\theta = \pi/2$</div>
+      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A universe derivable from the tree</div>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The observable universe spans frequencies from the Planck scale ($1.855 \times 10^{43}$ Hz) to the Hubble scale ($2.183 \times 10^{-18}$ Hz), a ratio of $8.497 \times 10^{60}$ — corresponding to 145.8 Stern-Brocot levels. This page computes the physical predictions that follow from that depth using three measurements ($n_s$, $H_0$, Planck units) and the recurrence $x_{n+1} = 1/(1+x_n)$. No free parameters. Whether the predictions match observation is an empirical question.</p>
+    </div>
+
+    <!-- Branch 3: Algebraic -->
+    <div id="node-algebraic" style="text-align:center;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.3rem;">Algebraic · $\theta = \pi$</div>
+      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">Time as an imaginary thread</div>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The polynomial $x^2 - x - 1 = 0$ has two roots: $\varphi$ and $\psi = -1/\varphi$. Their product is $-1$. This algebraic fact — that the product of the two convergence directions equals the square of the imaginary unit — is what gives spacetime its $(3,1)$ signature. The recurrence approaches $1/\varphi$ from above (our root) and from below (the conjugate). Both roots share every gate crossing. The difference between them is the phase: the part of history that survives only in relationships, not in records.</p>
+    </div>
   </div>
-
-  <!-- Column 2: Empirical — phase π/2, frequency φ -->
-  <div class="col-pulse" id="col-empirical" style="border-left-color:#DE3373;" data-freq="1.618" data-phase="1.5708">
-    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.3rem;">Empirical · $\theta = \pi/2$</div>
-    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A universe derivable from the tree</div>
-    <p style="color:var(--m-text-muted);">The observable universe spans frequencies from the Planck scale ($1.855 \times 10^{43}$ Hz) to the Hubble scale ($2.183 \times 10^{-18}$ Hz), a ratio of $8.497 \times 10^{60}$ — corresponding to 145.8 Stern-Brocot levels. This page computes the physical predictions that follow from that depth using three measurements ($n_s$, $H_0$, Planck units) and the recurrence $x_{n+1} = 1/(1+x_n)$. No free parameters. Whether the predictions match observation is an empirical question.</p>
-  </div>
-
-  <!-- Column 3: Algebraic — phase π, frequency φ² -->
-  <div class="col-pulse" id="col-algebraic" style="border-left-color:#08A953;" data-freq="2.618" data-phase="3.1416">
-    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.3rem;">Algebraic · $\theta = \pi$</div>
-    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">Time as an imaginary thread</div>
-    <p style="color:var(--m-text-muted);">The polynomial $x^2 - x - 1 = 0$ has two roots: $\varphi$ and $\psi = -1/\varphi$. Their product is $-1$. This algebraic fact — that the product of the two convergence directions equals the square of the imaginary unit — is what gives spacetime its $(3,1)$ signature. The recurrence approaches $1/\varphi$ from above (our root) and from below (the conjugate). Both roots share every gate crossing. The difference between them is the phase: the part of history that survives only in relationships, not in records.</p>
-  </div>
-
 </div>
 
-<!-- Responsive: stack on narrow screens -->
 <style>
 @media (max-width: 800px) {
-  #three-columns { grid-template-columns: 1fr !important; }
+  #tree-nodes { grid-template-columns: 1fr !important; }
+  #node-root { grid-column: 1 !important; }
 }
 </style>
 
-<!-- Column pulse: frequencies 1, φ, φ² — stable at rest, excited on scroll -->
+<!-- Tree branches: canvas draws curves from root to each node, settles when observed -->
 <script>
 (function() {
-  var cols = document.querySelectorAll(".col-pulse");
+  var container = document.getElementById("entry-tree");
+  var canvas = document.getElementById("entry-tree-canvas");
+  var ctx = canvas.getContext("2d");
+  var PHI = (1 + Math.sqrt(5)) / 2;
   var t0 = performance.now();
-  var scrollExcitation = 0; // 0 = still, 1 = actively scrolling
-  var lastScrollY = 0;
-  var scrollDecay = null;
 
+  // Observation state: how much of the tree is in viewport
+  var observed = 0; // 0 = offscreen, 1 = fully visible
+  var scrollSpeed = 0;
+  var lastScrollY = window.scrollY;
+
+  // IntersectionObserver: tree settles when viewed
+  var observer = new IntersectionObserver(function(entries) {
+    observed = entries[0].intersectionRatio;
+  }, { threshold: [0, 0.25, 0.5, 0.75, 1.0] });
+  observer.observe(container);
+
+  // Track scroll speed for excitation
   window.addEventListener("scroll", function() {
     var delta = Math.abs(window.scrollY - lastScrollY);
     lastScrollY = window.scrollY;
-    // Excitation proportional to scroll speed, capped at 1
-    scrollExcitation = Math.min(1, scrollExcitation + delta * 0.005);
-    // Decay after scrolling stops
-    clearTimeout(scrollDecay);
-    scrollDecay = setTimeout(function decayStep() {
-      scrollExcitation *= 0.92;
-      if (scrollExcitation > 0.01) scrollDecay = setTimeout(decayStep, 30);
-      else scrollExcitation = 0;
-    }, 60);
+    scrollSpeed = Math.min(1, delta * 0.01);
   }, { passive: true });
 
-  function pulse() {
-    var t = (performance.now() - t0) / 1000;
-    var ex = scrollExcitation; // 0 at rest, up to 1 while scrolling
-    cols.forEach(function(col) {
-      var freq = parseFloat(col.dataset.freq);
-      var phase = parseFloat(col.dataset.phase);
-      var v = Math.sin(2 * Math.PI * freq * t * 0.3 + phase);
-      // At rest: opacity barely moves (0.95–1.0). Border width fixed at 2px.
-      // On scroll: opacity range widens (0.6–1.0), border color brightens.
-      var o = 1.0 - (1 - (0.5 + 0.5 * v)) * ex * 0.4; // rest: ~1.0, scroll: 0.6–1.0
-      col.style.opacity = o;
-      // Border color: at rest = solid, on scroll = pulsing brightness
-      var baseColor = col.style.borderLeftColor || col.dataset.color || "#888";
-      var bright = 1.0 - (1 - (0.5 + 0.5 * v)) * ex * 0.5;
-      col.style.borderLeftColor = baseColor; // keep color stable
-      col.style.filter = "brightness(" + (0.8 + bright * 0.4) + ")";
-    });
-    requestAnimationFrame(pulse);
+  // Branch state: each branch oscillates, damped by observation
+  var branches = [
+    { color: "#FCCA28", freq: 1,         phase: 0,      cx: 0, cy: 0 },
+    { color: "#DE3373", freq: PHI,       phase: Math.PI/2, cx: 0, cy: 0 },
+    { color: "#08A953", freq: PHI * PHI, phase: Math.PI,   cx: 0, cy: 0 }
+  ];
+
+  function resize() {
+    var rect = container.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  // Store base border colors
-  cols.forEach(function(col) {
-    col.dataset.color = getComputedStyle(col).borderLeftColor;
-  });
-  requestAnimationFrame(pulse);
+  resize();
+  window.addEventListener("resize", resize);
+
+  function draw() {
+    var t = (performance.now() - t0) / 1000;
+    var W = container.offsetWidth;
+    var H = container.offsetHeight;
+
+    // Damping: observed = high → movement damps toward 0
+    // scrollSpeed adds excitation
+    var damping = 1 - observed * 0.95; // 0.05 when fully observed, 1.0 when offscreen
+    var excitation = scrollSpeed * observed; // only excite while visible
+    scrollSpeed *= 0.95; // decay scroll speed
+
+    var amplitude = damping * 0.3 + excitation * 0.5; // pixels of sway
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Find node positions from DOM
+    var root = document.getElementById("node-root");
+    var nodes = [
+      document.getElementById("node-rational"),
+      document.getElementById("node-empirical"),
+      document.getElementById("node-algebraic")
+    ];
+
+    if (!root || !nodes[0]) { requestAnimationFrame(draw); return; }
+
+    var containerRect = container.getBoundingClientRect();
+    var rootRect = root.getBoundingClientRect();
+    var rootX = rootRect.left + rootRect.width / 2 - containerRect.left;
+    var rootY = rootRect.top + rootRect.height - containerRect.top;
+
+    // Draw branches from root to each node
+    for (var i = 0; i < 3; i++) {
+      var nodeRect = nodes[i].getBoundingClientRect();
+      var nodeX = nodeRect.left + nodeRect.width / 2 - containerRect.left;
+      var nodeY = nodeRect.top - containerRect.top;
+
+      var b = branches[i];
+      // Oscillation offset — settles to zero when observed
+      var osc = Math.sin(2 * Math.PI * b.freq * t * 0.2 + b.phase) * amplitude * 20;
+
+      // Control point for quadratic curve
+      var cpX = (rootX + nodeX) / 2 + osc;
+      var cpY = (rootY + nodeY) / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(rootX, rootY);
+      ctx.quadraticCurveTo(cpX, cpY, nodeX, nodeY);
+      ctx.strokeStyle = b.color;
+      ctx.globalAlpha = 0.25 + observed * 0.15;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Small node dot at the top of each column
+      ctx.beginPath();
+      ctx.arc(nodeX, nodeY + 4, 3, 0, Math.PI * 2);
+      ctx.fillStyle = b.color;
+      ctx.globalAlpha = 0.4 + observed * 0.3;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // Root node dot
+    ctx.beginPath();
+    ctx.arc(rootX, rootY - 4, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "var(--m-text, #e6edf3)";
+    ctx.globalAlpha = 0.3 + observed * 0.4;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
 })();
 </script>
 
