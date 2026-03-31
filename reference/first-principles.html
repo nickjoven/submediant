@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First Principles: sin(wt) to Einstein</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+  --gold: #FCCA28;
+}
+
+body {
+  background: var(--m-bg, #0d1117);
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 40px 160px;
+}
+
+/* phi-based vertical rhythm */
+.phi-spacer-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer { height: calc(61.8px * var(--phi)); }
+.phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
+.phi-spacer-sm { height: 61.8px; }
+
+#mobius-moon-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+/* section titles */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  font-size: var(--fs-lg);
+  font-weight: 300;
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1.618em;
+}
+
+.section-num {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.618em;
+  opacity: 0.7;
+}
+
+/* equation blocks */
+.equation-block {
+  margin: 1.618em 0;
+  padding: 1em 0;
+  text-align: center;
+  font-size: var(--fs-lg);
+}
+
+/* prose */
+section p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+}
+
+section p strong {
+  color: var(--m-text, #e6edf3);
+}
+
+/* tables */
+.derive-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  margin: 1.618em 0;
+}
+
+.derive-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--gold);
+  padding: 0.618em 1em;
+  border-bottom: 1px solid var(--m-border, #30363d);
+  white-space: nowrap;
+}
+
+.derive-table td {
+  padding: 0.618em 1em;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
+  color: var(--m-text-muted, #8b949e);
+}
+
+.derive-table tbody tr:nth-child(odd) { background: var(--m-surface, #161b22); }
+.derive-table tbody tr:nth-child(even) { background: var(--m-bg, #0d1117); }
+
+.derive-table td:first-child { color: var(--m-text, #e6edf3); font-weight: 500; }
+
+/* prediction table: highlight residual column */
+.predict-table td:nth-child(4) { color: var(--gold); font-weight: 500; }
+
+/* dictionary mapping */
+.dict-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  padding: 0.4em 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 30%, transparent);
+  font-size: var(--fs-sm);
+}
+
+.dict-lhs { color: var(--gold); min-width: 120px; text-align: right; font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
+.dict-arrow { color: var(--m-text-muted, #8b949e); }
+.dict-rhs { color: var(--m-text, #e6edf3); }
+.dict-gloss { color: var(--m-text-muted, #8b949e); font-size: var(--fs-xs); margin-left: 0.5em; }
+
+/* links */
+a { color: var(--m-accent, #DE3373); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* coda styling */
+.coda {
+  text-align: center;
+  padding: 4em 0;
+}
+
+.coda p {
+  color: var(--m-text-muted, #8b949e);
+  font-style: italic;
+  font-size: var(--fs-sm);
+}
+
+/* fade-in on scroll */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HERO -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-hero">
+  <div style="text-align:center;">
+    <div class="section-title" style="font-weight:100; letter-spacing:0.15em;">First Principles</div>
+    <p style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); max-width:500px; margin:0 auto;">
+      Everything between the first equation and the last is accounting.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 1. ONE OSCILLATION -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s1">
+  <span class="section-num">I</span>
+  <h2 class="section-title">One oscillation</h2>
+  <div class="equation-block">
+    $$\theta(t) = \omega\, t$$
+  </div>
+  <p>
+    A thing that cycles. That's all. No mass, no space, no force. Just a phase
+    advancing at rate $\omega$. This is the irreducible starting point.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 2. TWO OSCILLATIONS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s2">
+  <span class="section-num">II</span>
+  <h2 class="section-title">Two oscillations</h2>
+  <div class="equation-block">
+    $$\dot{\theta}_1 = \omega_1, \qquad \dot{\theta}_2 = \omega_2$$
+  </div>
+  <p>
+    Now there's a relationship: the frequency ratio $\omega_1 / \omega_2$.
+    If rational ($p/q$), they eventually align. If irrational, they never do.
+    The question <strong>"do they align?"</strong> generates the entire number
+    theory of rationals.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 3. COUPLING -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s3">
+  <span class="section-num">III</span>
+  <h2 class="section-title">Coupling</h2>
+  <div class="equation-block">
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_j \sin(\theta_j - \theta_i)$$
+  </div>
+  <p>
+    The Kuramoto model. Each oscillator feels a pull toward the others.
+    The pull is proportional to the sine of the phase difference &mdash;
+    the simplest periodic coupling. $K$ is the coupling strength.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 4. THE CIRCLE MAP -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s4">
+  <span class="section-num">IV</span>
+  <h2 class="section-title">The circle map</h2>
+  <div class="equation-block">
+    $$\theta_{n+1} = \theta_n + \Omega - \frac{K}{2\pi}\sin(2\pi\theta_n)$$
+  </div>
+  <p>
+    Discretize time. Now the dynamics are a map on the circle. This single
+    equation generates: <strong>Arnold tongues</strong>, the <strong>devil's
+    staircase</strong>, <strong>mode-locking</strong>, the <strong>Stern-Brocot
+    tree</strong>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 5. THE FOUR PRIMITIVES -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s5">
+  <span class="section-num">V</span>
+  <h2 class="section-title">The four primitives</h2>
+  <table class="derive-table">
+    <thead>
+      <tr><th>Primitive</th><th>What it provides</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Integers $\mathbb{Z}$</td>
+        <td>Counting, cycles, winding numbers</td>
+      </tr>
+      <tr>
+        <td>Mediant $\frac{a+c}{b+d}$</td>
+        <td>Rational structure without division</td>
+      </tr>
+      <tr>
+        <td>Fixed point $x = f(x)$</td>
+        <td>Self-reference, iteration, dynamics</td>
+      </tr>
+      <tr>
+        <td>Parabola $x^2 + \mu = 0$</td>
+        <td>Nonlinearity, bifurcation, orientation</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The circle map contains all four, and all four are needed. The <strong>Born
+    rule</strong> (parabola), the <strong>spectral tilt</strong> (fixed point),
+    the <strong>tree</strong> (mediant), the <strong>counting</strong> (integers).
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 6. SELF-CONSISTENCY -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s6">
+  <span class="section-num">VI</span>
+  <h2 class="section-title">Self-consistency</h2>
+  <div class="equation-block">
+    $$N(p/q) = N_{\text{total}} \times g(p/q) \times w\!\bigl(p/q,\; K_0\, F[N]\bigr)$$
+  </div>
+  <p>
+    The rational field equation. The population at each rational frequency is
+    determined by the population at every other frequency. The equation refers
+    to itself. This is where physics emerges &mdash; not from postulates, but
+    from the demand that <strong>the system's description of itself is
+    consistent</strong>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 7. K = 1: EINSTEIN -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s7">
+  <span class="section-num">VII</span>
+  <h2 class="section-title">K = 1: Einstein</h2>
+  <div class="equation-block">
+    $$G_{\mu\nu} + \Lambda\, g_{\mu\nu} = 8\pi G\, T_{\mu\nu}$$
+  </div>
+  <p>
+    The continuum limit of the rational field equation at maximum coupling.
+    <strong>Lovelock's theorem (1971)</strong>: in 4D, this is the
+    <em>unique</em> divergence-free symmetric rank-2 tensor equation built from
+    the metric and its first two derivatives. The framework doesn't choose
+    Einstein. Einstein is the only option.
+  </p>
+
+  <div class="phi-spacer-sm"></div>
+  <p class="section-subtitle">The dictionary</p>
+
+  <div class="dict-row">
+    <span class="dict-lhs">$r(x,t)$</span>
+    <span class="dict-arrow">&rarr;</span>
+    <span class="dict-rhs">$N$</span>
+    <span class="dict-gloss">lapse = coherence = clock rate</span>
+  </div>
+  <div class="dict-row">
+    <span class="dict-lhs">$\partial_i \psi$</span>
+    <span class="dict-arrow">&rarr;</span>
+    <span class="dict-rhs">$N^i$</span>
+    <span class="dict-gloss">phase gradient = shift = coordinate drift</span>
+  </div>
+  <div class="dict-row">
+    <span class="dict-lhs">$C_{ij}$</span>
+    <span class="dict-arrow">&rarr;</span>
+    <span class="dict-rhs">$\gamma_{ij}$</span>
+    <span class="dict-gloss">coherence tensor = spatial metric</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 8. K < 1: SCHRODINGER -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s8">
+  <span class="section-num">VIII</span>
+  <h2 class="section-title">K &lt; 1: Schr&ouml;dinger</h2>
+  <div class="equation-block">
+    $$i\hbar\frac{\partial\Psi}{\partial t} = -\frac{\hbar^2}{2m}\nabla^2\Psi + V\Psi$$
+  </div>
+  <p>
+    The continuum limit at subcritical coupling. The <strong>Madelung
+    transform</strong>: write $\Psi = \sqrt{\rho}\; e^{iS/\hbar}$.
+    This <em>is</em> the Kuramoto order parameter in the partially synchronized
+    regime. Quantum mechanics is synchronization that hasn't fully locked.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 9. THE PREDICTIONS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s9">
+  <span class="section-num">IX</span>
+  <h2 class="section-title">The predictions</h2>
+  <table class="derive-table predict-table">
+    <thead>
+      <tr><th>What</th><th>Predicted</th><th>Observed</th><th>Residual</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>$n_s$</td>
+        <td>0.965</td>
+        <td>$0.9649 \pm 0.0042$</td>
+        <td>0.2%</td>
+      </tr>
+      <tr>
+        <td>Born rule</td>
+        <td>$|\psi|^2$</td>
+        <td>$|\psi|^2$</td>
+        <td>exact</td>
+      </tr>
+      <tr>
+        <td>$a_0$</td>
+        <td>$1.25 \times 10^{-10}$</td>
+        <td>$1.2 \times 10^{-10}$</td>
+        <td>4%</td>
+      </tr>
+      <tr>
+        <td>$d$</td>
+        <td>3</td>
+        <td>3</td>
+        <td>exact</td>
+      </tr>
+      <tr>
+        <td>$\Omega_\Lambda$</td>
+        <td>$13/19 = 0.6842$</td>
+        <td>$0.6847 \pm 0.0073$</td>
+        <td>$0.07\sigma$</td>
+      </tr>
+      <tr>
+        <td>$N_{\text{efolds}}$</td>
+        <td>61.3</td>
+        <td>TBD</td>
+        <td>CMB-S4 ~2028</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 10. sin(wt) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s10">
+  <span class="section-num">X</span>
+  <h2 class="section-title">sin(&omega;t)</h2>
+  <div class="equation-block">
+    $$\theta(t) = \omega\, t$$
+  </div>
+  <div class="coda">
+    <p>The same equation. Everything between was accounting.</p>
+  </div>
+</section>
+
+<div class="phi-spacer-lg"></div>
+<div class="phi-spacer-lg"></div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- BACKGROUND CANVAS: evolving waveform -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+"use strict";
+
+// ── 12-color palette ────────────────────────────────────────────────────
+const PALETTE = [
+  "#DE3373", "#FCCA28", "#08A953", "#F5712A", "#F59EAF", "#EE1B3E",
+  "#1E76B8", "#7C2E87", "#7A0434", "#F98F81", "#37BA9B", "#C0C2C2"
+];
+const GOLD = "#FCCA28";
+
+// ── Fibonacci ratios for wave frequencies ───────────────────────────────
+// F(n)/F(n+1) converging to 1/phi
+const FIB = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,
+             4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,
+             514229,832040,1346269,2178309,3524578,5702887,9227465,
+             14930352,24157817,39088169,63245986,102334155,165580141,
+             267914296,433494437,701408733,1134903170,1836311903,2971215073];
+
+function fibRatio(n) {
+  var i = n % (FIB.length - 1);
+  return FIB[i] / FIB[i + 1];
+}
+
+// ── Canvas setup ────────────────────────────────────────────────────────
+var canvas = document.getElementById("bg");
+var ctx = canvas.getContext("2d");
+var W, H;
+var phase = 0;
+var startTime = performance.now();
+
+function resize() {
+  var dpr = window.devicePixelRatio || 1;
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+// ── Scroll fraction ────────────────────────────────────────────────────
+function scrollFraction() {
+  var max = document.body.scrollHeight - window.innerHeight;
+  if (max <= 0) return 0;
+  return Math.min(1, Math.max(0, window.scrollY / max));
+}
+
+// ── Draw frame ─────────────────────────────────────────────────────────
+function draw(timestamp) {
+  var dt = (timestamp - startTime) / 1000;
+  var sf = scrollFraction();
+
+  // Number of active waves: 1 at top, 47 at bottom
+  var numWaves = Math.max(1, Math.round(1 + sf * 46));
+
+  // Coupling strength: 0 at top, 1 at bottom
+  var coupling = sf;
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+
+  // Center line
+  var cy = H * 0.5;
+  var amplitude = H * 0.12;
+
+  // Devil's staircase emergence: at mid-scroll, quantize the superposition
+  var staircaseBlend = Math.max(0, Math.min(1, (sf - 0.35) / 0.3));
+
+  // Kuramoto landscape: at high scroll, show the full landscape
+  var landscapeBlend = Math.max(0, Math.min(1, (sf - 0.7) / 0.3));
+
+  // Compute the superposed wave at each x pixel
+  var step = 2;
+  var points = Math.ceil(W / step) + 1;
+
+  // For the devil's staircase: compute winding number profile
+  // For the landscape: compute coherence field
+
+  // Draw individual waves with decreasing opacity
+  for (var w = 0; w < numWaves; w++) {
+    var freq = fibRatio(w);
+    var wavePhase = dt * (0.5 + freq * 1.2) + w * 0.618;
+
+    // Color from palette, cycling
+    var color = w === 0 ? GOLD : PALETTE[w % PALETTE.length];
+
+    // Opacity: first wave bright, others fade
+    var baseAlpha = w === 0 ? 0.5 : 0.15 / (1 + w * 0.08);
+
+    // Coupling: waves close in frequency bend toward each other
+    var couplingPhaseShift = 0;
+    if (w > 0 && coupling > 0) {
+      // Pull toward the mean phase of nearby waves
+      var nearbyPhase = dt * 0.5; // the fundamental
+      var phaseDiff = Math.sin(nearbyPhase - wavePhase);
+      couplingPhaseShift = coupling * phaseDiff * 0.5;
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = w === 0 ? 1.8 : 0.8;
+    ctx.globalAlpha = baseAlpha;
+
+    for (var i = 0; i <= points; i++) {
+      var x = i * step;
+      var xNorm = x / W;
+
+      // Base sine
+      var y = Math.sin(2 * Math.PI * freq * xNorm * 3 + wavePhase + couplingPhaseShift);
+
+      // At higher coupling, waves flatten into plateaus (mode-locking)
+      if (staircaseBlend > 0 && w > 0) {
+        // Quantize toward nearest rational plateau
+        var quantized = Math.round(y * 3) / 3;
+        y = y + (quantized - y) * staircaseBlend * 0.6;
+      }
+
+      // Scale
+      var py = cy + y * amplitude * (1 - landscapeBlend * 0.3);
+
+      // Landscape mode: spread waves vertically across full screen
+      if (landscapeBlend > 0) {
+        var landscapeY = H * (0.1 + 0.8 * (w / Math.max(1, numWaves - 1)));
+        var smallAmp = amplitude * 0.15;
+        var landscapePy = landscapeY + Math.sin(2 * Math.PI * freq * xNorm * 3 + wavePhase) * smallAmp;
+        py = py * (1 - landscapeBlend) + landscapePy * landscapeBlend;
+      }
+
+      if (i === 0) ctx.moveTo(x, py);
+      else ctx.lineTo(x, py);
+    }
+
+    ctx.stroke();
+  }
+
+  // Superposition line: sum of all active waves
+  if (numWaves > 1) {
+    ctx.beginPath();
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = 0.25 + sf * 0.15;
+
+    for (var i = 0; i <= points; i++) {
+      var x = i * step;
+      var xNorm = x / W;
+      var sum = 0;
+
+      for (var w = 0; w < numWaves; w++) {
+        var freq = fibRatio(w);
+        var wavePhase = dt * (0.5 + freq * 1.2) + w * 0.618;
+        var couplingShift = 0;
+        if (w > 0 && coupling > 0) {
+          var nearbyPhase = dt * 0.5;
+          couplingShift = coupling * Math.sin(nearbyPhase - wavePhase) * 0.5;
+        }
+        var contribution = Math.sin(2 * Math.PI * freq * xNorm * 3 + wavePhase + couplingShift);
+
+        if (staircaseBlend > 0 && w > 0) {
+          var quantized = Math.round(contribution * 3) / 3;
+          contribution = contribution + (quantized - contribution) * staircaseBlend * 0.6;
+        }
+
+        sum += contribution / numWaves;
+      }
+
+      var py;
+      if (landscapeBlend > 0) {
+        // In landscape mode, the superposition line stays centered
+        py = cy + sum * amplitude * 0.5;
+      } else {
+        py = cy + sum * amplitude;
+      }
+
+      if (i === 0) ctx.moveTo(x, py);
+      else ctx.lineTo(x, py);
+    }
+
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+
+// ── Scroll-triggered section fade-in ────────────────────────────────────
+function revealSections() {
+  var sections = document.querySelectorAll("section");
+  var trigger = window.innerHeight * 0.82;
+  for (var i = 0; i < sections.length; i++) {
+    var rect = sections[i].getBoundingClientRect();
+    if (rect.top < trigger) {
+      sections[i].classList.add("visible");
+    }
+  }
+}
+
+window.addEventListener("scroll", revealSections, { passive: true });
+revealSections();
+
+})();
+</script>
+
+<!-- Mobius theme: moon toggle -->
+<script src="_static/mobius-theme.js"></script>
+</body>
+</html>
