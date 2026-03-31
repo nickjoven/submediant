@@ -288,12 +288,42 @@ hr.divider {
 
 <main>
 
-<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:0.5rem;">Our Address on the Tree</h1>
-<div style="font-size:var(--fs-base); color:var(--m-text-muted); margin-bottom:var(--sp); line-height:1.8;">
-<p>The Stern-Brocot tree is a binary tree that contains every positive rational number exactly once. It is constructed by repeated application of the mediant: given two fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$.</p>
-<p style="margin-top:0.8rem;">The observable universe spans a frequency range from the Planck frequency ($1.855 \times 10^{43}$ Hz) to the Hubble frequency ($2.183 \times 10^{-18}$ Hz). Their ratio is $8.497 \times 10^{60}$, which corresponds to 145.8 levels of the Stern-Brocot tree when measured in Fibonacci steps.</p>
-<p style="margin-top:0.8rem;">This page computes our position on the tree using three measured quantities — the CMB spectral tilt $n_s = 0.9649$, the Hubble constant $H_0 = 67.36$ km/s/Mpc, and the Planck units $\hbar$, $G$, $c$ — together with the recurrence $x_{n+1} = 1/(1+x_n)$, whose fixed point is the golden ratio conjugate $1/\varphi = (\sqrt{5}-1)/2$. The computation has no free parameters. Every derived quantity below follows from these inputs and this recurrence.</p>
+<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:calc(var(--sp) * 0.5);">Our Address on the Tree</h1>
+
+<!-- Three-column entrypoints -->
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.6); margin-bottom:var(--sp); font-size:var(--fs-base); line-height:1.8;">
+
+  <!-- Column 1: Rational claim (mathematics) -->
+  <div style="border-left:2px solid #FCCA28; padding-left:1rem;">
+    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.3rem;">Rational</div>
+    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A tree that contains a universe</div>
+    <p style="color:var(--m-text-muted);">The Stern-Brocot tree is a binary tree containing every positive rational number exactly once. It is constructed by one operation: the mediant. Given fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$. This is a theorem, not a hypothesis. The tree exists because the integers exist and the mediant is well-defined.</p>
+  </div>
+
+  <!-- Column 2: Irrational claim (physics) -->
+  <div style="border-left:2px solid #DE3373; padding-left:1rem;">
+    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.3rem;">Empirical</div>
+    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A universe derivable from the tree</div>
+    <p style="color:var(--m-text-muted);">The observable universe spans frequencies from the Planck scale ($1.855 \times 10^{43}$ Hz) to the Hubble scale ($2.183 \times 10^{-18}$ Hz), a ratio of $8.497 \times 10^{60}$ — corresponding to 145.8 Stern-Brocot levels. This page computes the physical predictions that follow from that depth using three measurements ($n_s$, $H_0$, Planck units) and the recurrence $x_{n+1} = 1/(1+x_n)$. No free parameters. Whether the predictions match observation is an empirical question.</p>
+  </div>
+
+  <!-- Column 3: Rational claim about an irrational thing -->
+  <div style="border-left:2px solid #08A953; padding-left:1rem;">
+    <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.3rem;">Algebraic</div>
+    <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">Time as an imaginary thread</div>
+    <p style="color:var(--m-text-muted);">The polynomial $x^2 - x - 1 = 0$ has two roots: $\varphi$ and $\psi = -1/\varphi$. Their product is $-1$. This algebraic fact — that the product of the two convergence directions equals the square of the imaginary unit — is what gives spacetime its $(3,1)$ signature. The recurrence approaches $1/\varphi$ from above (our root) and from below (the conjugate). Both roots share every gate crossing. The difference between them is the phase: the part of history that survives only in relationships, not in records.</p>
+  </div>
+
 </div>
+
+<!-- Responsive: stack on narrow screens -->
+<style>
+@media (max-width: 800px) {
+  div[style*="grid-template-columns:1fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
 
 <!-- Hero: The Clock -->
 <div class="phi-spacer-1">
