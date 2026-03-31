@@ -1286,152 +1286,167 @@ function drawBg() {
   requestAnimationFrame(drawBg);
 }
 
-// ── Stern-Brocot tree: Möbius loop with inaccessible root ──
-// The root (1/1) is a void — you can't reach it from within.
-// Branches grow downward, then curve back up through a half-twist.
-// The loop restart point oscillates slowly (the universe breathing).
-function drawSternBrocotTree(ctx, W, H) {
+// ── Stern-Brocot tree: fixed to viewport, curved branches, shuffling ──
+// Time is always a curve. The tree reshuffles continuously.
+// The root is inaccessible. Leaves loop back through a half-twist.
+
+// Pre-compute tree nodes once, then animate their positions
+var treeNodes = [];
+var treeEdges = [];
+var treeInited = false;
+
+function initTreeNodes() {
+  treeNodes = [];
+  treeEdges = [];
   var depth = 5;
-  var treeTop = H * 0.08;
-  var treeBot = H * 0.48;
-  var treeH = treeBot - treeTop;
 
-  // Oscillating restart phase — the half-twist walks
-  var twistPhase = Math.sin(bgT * 0.003) * 0.15; // slow breathe
-
-  // Collect leaf positions for the loop-back curves
-  var leaves = [];
-
-  function drawNode(a, b, c, d, level, parentX, parentY) {
+  function addNode(a, b, c, d, level, parentIdx) {
     if (level > depth) return;
-
-    var p = a + c;
-    var q = b + d;
+    var p = a + c, q = b + d;
     var frac = p / q;
+    var idx = treeNodes.length;
+    treeNodes.push({
+      frac: frac, level: level, p: p, q: q,
+      isLeft: frac < 0.5,
+      // Base position (will be perturbed)
+      baseX: frac, baseY: level / depth,
+      // Current animated position
+      x: 0, y: 0,
+      // Shuffle offset (unique per node, evolves slowly)
+      seed: idx * PHI
+    });
+    if (parentIdx >= 0) {
+      treeEdges.push([parentIdx, idx]);
+    }
+    addNode(a, b, p, q, level + 1, idx);
+    addNode(p, q, c, d, level + 1, idx);
+  }
 
-    var nx = W * (0.08 + 0.84 * frac);
-    var ny = treeTop + (level / depth) * treeH;
+  // Root (inaccessible, index 0)
+  treeNodes.push({
+    frac: 1, level: 0, p: 1, q: 1, isLeft: false, isRoot: true,
+    baseX: 0.5, baseY: 0, x: 0, y: 0, seed: 0
+  });
+  addNode(0, 1, 1, 1, 1, 0);
+  addNode(1, 1, 1, 0, 1, 0);
+  treeInited = true;
+}
 
-    var isLeft = frac < 0.5;
+function drawSternBrocotTree(ctx, W, H) {
+  if (!treeInited) initTreeNodes();
+
+  var treeTop = H * 0.06;
+  var treeBot = H * 0.52;
+  var treeH = treeBot - treeTop;
+  var t = bgT * 0.001; // slow time
+
+  // Update node positions: shuffle + curve
+  for (var i = 0; i < treeNodes.length; i++) {
+    var n = treeNodes[i];
+    // Shuffle: each node drifts on a unique Lissajous path
+    var sx = Math.sin(t * 0.7 + n.seed * 2.3) * 0.02;
+    var sy = Math.sin(t * 0.5 + n.seed * 1.7) * 0.015;
+    n.x = W * (0.08 + 0.84 * (n.baseX + sx));
+    n.y = treeTop + (n.baseY + sy) * treeH;
+  }
+
+  // Draw edges as quadratic curves (time is always curved)
+  for (var i = 0; i < treeEdges.length; i++) {
+    var parent = treeNodes[treeEdges[i][0]];
+    var child = treeNodes[treeEdges[i][1]];
+    var isLeft = child.isLeft;
     var r = isLeft ? 222 : 8;
     var g = isLeft ? 51 : 169;
     var bl = isLeft ? 115 : 83;
-    var branchAlpha = 0.16 - level * 0.02;
-    if (branchAlpha < 0.04) branchAlpha = 0.04;
+    var alpha = 0.14 - child.level * 0.018;
+    if (alpha < 0.03) alpha = 0.03;
 
-    // Branch from parent
-    if (parentX !== undefined) {
-      ctx.beginPath();
-      ctx.moveTo(parentX, parentY);
-      ctx.lineTo(nx, ny);
-      ctx.strokeStyle = "rgba(" + r + "," + g + "," + bl + "," + branchAlpha + ")";
-      ctx.lineWidth = Math.max(0.4, 1.5 - level * 0.2);
-      ctx.stroke();
-    }
+    // Curve control point: offset horizontally for organic feel
+    var cpx = (parent.x + child.x) / 2 + Math.sin(t + i * 0.3) * 15;
+    var cpy = (parent.y + child.y) / 2;
 
-    // Node dot
     ctx.beginPath();
-    ctx.arc(nx, ny, Math.max(1, 2.5 - level * 0.3), 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (branchAlpha + 0.05) + ")";
-    ctx.fill();
-
-    // Label (top 3 levels only)
-    if (level <= 3) {
-      ctx.fillStyle = "rgba(200,200,200,0.10)";
-      ctx.font = Math.max(8, 11 - level * 2) + "px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(p + "/" + q, nx, ny - 5);
-    }
-
-    // Collect deepest leaves for the loop-back
-    if (level === depth) {
-      leaves.push({ x: nx, y: ny, frac: frac, isLeft: isLeft });
-    }
-
-    drawNode(a, b, p, q, level + 1, nx, ny);
-    drawNode(p, q, c, d, level + 1, nx, ny);
+    ctx.moveTo(parent.x, parent.y);
+    ctx.quadraticCurveTo(cpx, cpy, child.x, child.y);
+    ctx.strokeStyle = "rgba(" + r + "," + g + "," + bl + "," + alpha + ")";
+    ctx.lineWidth = Math.max(0.4, 1.4 - child.level * 0.18);
+    ctx.stroke();
   }
 
-  // ── The inaccessible root: a void at top center ──
-  var rootX = W * 0.5;
-  var rootY = treeTop;
+  // Draw nodes
+  for (var i = 0; i < treeNodes.length; i++) {
+    var n = treeNodes[i];
+    var isLeft = n.isLeft;
+    var r = isLeft ? 222 : 8;
+    var g = isLeft ? 51 : 169;
+    var bl = isLeft ? 115 : 83;
+    var alpha = 0.15 - n.level * 0.02;
+    if (alpha < 0.04) alpha = 0.04;
 
-  // Draw the void — a ring, not a filled circle
-  ctx.beginPath();
-  ctx.arc(rootX, rootY, 4, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(252,202,40,0.12)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  // Dashed circle indicating inaccessibility
-  ctx.setLineDash([2, 3]);
-  ctx.beginPath();
-  ctx.arc(rootX, rootY, 8, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(252,202,40,0.06)";
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Label
-  ctx.fillStyle = "rgba(252,202,40,0.08)";
-  ctx.font = "9px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("1/1", rootX, rootY - 12);
-
-  // Draw tree (no direct connection to root — branches start at level 1)
-  leaves = [];
-  drawNode(0, 1, 1, 1, 1, rootX, rootY);
-  drawNode(1, 1, 1, 0, 1, rootX, rootY);
-
-  // ── The half-twist loop-back ──
-  // Deepest leaves curve back up to the OTHER side (y-inverted),
-  // forming the Möbius half-twist. The restart point oscillates.
-  if (leaves.length > 0) {
-    // Sort leaves by x position
-    leaves.sort(function(a, b) { return a.x - b.x; });
-
-    // Draw loop-back curves: each leaf connects to its "twisted twin"
-    // Twin = leaf on the opposite side (1 - frac), one level up from bottom
-    for (var i = 0; i < leaves.length; i++) {
-      var leaf = leaves[i];
-      // Twisted target: opposite fraction, with oscillating phase shift
-      var twinFrac = 1 - leaf.frac + twistPhase;
-      if (twinFrac > 1) twinFrac -= 1;
-      if (twinFrac < 0) twinFrac += 1;
-      var twinX = W * (0.08 + 0.84 * twinFrac);
-      var twinY = treeTop + treeH * 0.2; // arrives near top (but not at root)
-
-      // Bezier curve: leaf → down → across → up (the half-twist path)
-      var midY = treeBot + H * 0.06; // dips below the tree
-      var cpX = (leaf.x + twinX) / 2;
-
+    if (n.isRoot) {
+      // Inaccessible root: void ring
       ctx.beginPath();
-      ctx.moveTo(leaf.x, leaf.y);
-      ctx.bezierCurveTo(
-        leaf.x, midY,        // control 1: straight down
-        twinX, midY,         // control 2: across at bottom
-        twinX, twinY         // end: up to twisted position
-      );
-
-      var loopAlpha = 0.03 + 0.015 * Math.sin(bgT * 0.005 + i * 0.5);
-      ctx.strokeStyle = leaf.isLeft
-        ? "rgba(222,51,115," + loopAlpha + ")"
-        : "rgba(8,169,83," + loopAlpha + ")";
-      ctx.lineWidth = 0.5;
-      ctx.setLineDash([2, 4]);
+      ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(252,202,40,0.12)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(252,202,40,0.06)";
       ctx.stroke();
       ctx.setLineDash([]);
+      continue;
     }
 
-    // Draw the "restart point" — a small pulsing dot that walks along the twist
-    var restartFrac = 0.5 + twistPhase;
-    var restartX = W * (0.08 + 0.84 * restartFrac);
-    var restartY = treeTop + treeH * 0.2;
-    var restartR = 2 + Math.sin(bgT * 0.02) * 0.8;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, Math.max(1, 2.5 - n.level * 0.3), 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (alpha + 0.04) + ")";
+    ctx.fill();
+
+    if (n.level <= 2) {
+      ctx.fillStyle = "rgba(200,200,200,0.09)";
+      ctx.font = Math.max(8, 11 - n.level * 2) + "px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(n.p + "/" + n.q, n.x, n.y - 5);
+    }
+  }
+
+  // ── Half-twist loop-back: deepest leaves curve to twisted twins ──
+  var twistPhase = Math.sin(t * 3) * 0.12;
+  for (var i = 0; i < treeNodes.length; i++) {
+    var n = treeNodes[i];
+    if (n.level !== 5) continue;
+
+    var twinFrac = 1 - n.frac + twistPhase;
+    if (twinFrac > 1) twinFrac -= 1;
+    if (twinFrac < 0) twinFrac += 1;
+    var twinX = W * (0.08 + 0.84 * twinFrac);
+    var twinY = treeTop + treeH * 0.18;
+    var midY = treeBot + H * 0.04;
 
     ctx.beginPath();
-    ctx.arc(restartX, restartY, restartR, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(252,202,40," + (0.1 + 0.05 * Math.sin(bgT * 0.02)) + ")";
-    ctx.fill();
+    ctx.moveTo(n.x, n.y);
+    ctx.bezierCurveTo(n.x, midY, twinX, midY, twinX, twinY);
+    var la = 0.025 + 0.01 * Math.sin(t * 5 + i * 0.5);
+    ctx.strokeStyle = n.isLeft
+      ? "rgba(222,51,115," + la + ")"
+      : "rgba(8,169,83," + la + ")";
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([2, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
+
+  // Restart point
+  var restartFrac = 0.5 + twistPhase;
+  var restartX = W * (0.08 + 0.84 * restartFrac);
+  var restartY = treeTop + treeH * 0.18;
+  var rr = 2 + Math.sin(t * 20) * 0.8;
+  ctx.beginPath();
+  ctx.arc(restartX, restartY, rr, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(252,202,40," + (0.08 + 0.04 * Math.sin(t * 20)) + ")";
+  ctx.fill();
 }
 
 requestAnimationFrame(drawBg);
