@@ -231,8 +231,9 @@ a:hover { text-decoration: underline; }
 <section id="table">
   <div class="section-title">The Sequence</div>
   <p>
-    Each term is a ratio of consecutive Fibonacci numbers. By $n = 47$, the
-    first 9 decimal digits have settled to <strong>0.618033988...</strong>
+    Each term is a ratio of consecutive Fibonacci numbers. The oscillation
+    damps by a factor of $\varphi$ per step. By $n = 8$, the first 3 digits
+    have settled. By $n = 47$, 9 digits are fixed.
   </p>
   <div class="phi-spacer-sm"></div>
   <div id="fib-table" class="fib-table"></div>
@@ -429,27 +430,41 @@ for (let i = 1; i <= 47; i++) SEQ.push(1 / (1 + SEQ[i-1]));
 function buildFibTable() {
   const el = document.getElementById('fib-table');
   if (!el) return;
+
+  // Show: first 8 steps (the oscillation), then where it settles
+  const show = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const target = '0.618033988749894';
   let lines = [];
-  for (let n = 0; n <= 47; n++) {
-    const nStr = String(n).padStart(2, ' ');
-    // F(n+1) / F(n+2)
+
+  for (const n of show) {
     const num = FIB_BIG[n + 1];
     const den = FIB_BIG[n + 2];
     const frac = num.toString() + '/' + den.toString();
-    const val = SEQ[n];
-    const valStr = val.toFixed(15);
-    // How many leading digits match 0.618033988749894...?
-    const target = '0.618033988749894';
-    let matchLen = 0;
-    for (let k = 0; k < Math.min(valStr.length, target.length); k++) {
-      if (valStr[k] === target[k]) matchLen = k + 1;
-      else break;
+    const val = SEQ[n].toFixed(15);
+    // Count matching digits
+    let matched = 0;
+    for (let k = 0; k < Math.min(val.length, target.length); k++) {
+      if (val[k] === target[k]) matched = k + 1; else break;
     }
-    const padFrac = frac.padEnd(32, ' ');
-    const isSettled = n >= 47;
-    const line = `<span class="muted">n=${nStr}</span>   ${padFrac} = ${valStr}${isSettled ? ' <span class="settled">&larr; 9 digits settled</span>' : ''}`;
-    lines.push(line);
+    const nStr = String(n).padStart(2, ' ');
+    const padFrac = frac.padEnd(12, ' ');
+    const matchNote = matched >= 4 ? ' <span class="settled">' + matched + ' digits</span>' : '';
+    lines.push('<span class="muted">n=' + nStr + '</span>   ' + padFrac + ' = ' + val.slice(0, Math.max(matched + 2, 6)) + matchNote);
   }
+
+  // Ellipsis
+  lines.push('<span class="muted">        \u22EE</span>');
+  lines.push('<span class="muted">        (each step damps by \u03C6)</span>');
+  lines.push('<span class="muted">        \u22EE</span>');
+
+  // Final settled value
+  const n47 = 47;
+  const num47 = FIB_BIG[48];
+  const den47 = FIB_BIG[49];
+  const val47 = SEQ[47].toFixed(15);
+  lines.push('<span class="muted">n=47</span>   ' + num47.toString() + '/' + den47.toString());
+  lines.push('       = <strong>0.618033988</strong>749894\u2026 <span class="settled">\u2190 9 digits settled</span>');
+
   el.innerHTML = lines.join('\n');
 }
 
