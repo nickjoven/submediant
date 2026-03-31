@@ -301,24 +301,21 @@ hr.divider {
     </div>
 
     <!-- Branch 1: Rational -->
-    <div id="node-rational" style="text-align:center;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.3rem;">Rational · $\theta = 0$</div>
-      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A tree that contains a universe</div>
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The Stern-Brocot tree is a binary tree containing every positive rational number exactly once. It is constructed by one operation: the mediant. Given fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$. This is a theorem, not a hypothesis. The tree exists because the integers exist and the mediant is well-defined.</p>
+    <div id="node-rational" style="text-align:left;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.5rem;">Rational · $\theta = 0$</div>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The Stern-Brocot tree contains every positive rational exactly once.</strong> Construction: given $a/b$ and $c/d$, form $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this single operation generates all of $\mathbb{Q}^+$ as a binary tree. <em>Proof:</em> the mediant preserves Farey adjacency ($|ad - bc| = 1$), and every reduced fraction appears at exactly one node (Stern 1858, Brocot 1861).</p>
     </div>
 
     <!-- Branch 2: Empirical -->
-    <div id="node-empirical" style="text-align:center;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.3rem;">Empirical · $\theta = \pi/2$</div>
-      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A universe derivable from the tree</div>
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The observable universe spans frequencies from the Planck scale ($1.855 \times 10^{43}$ Hz) to the Hubble scale ($2.183 \times 10^{-18}$ Hz), a ratio of $8.497 \times 10^{60}$ — corresponding to 145.8 Stern-Brocot levels. This page computes the physical predictions that follow from that depth using three measurements ($n_s$, $H_0$, Planck units) and the recurrence $x_{n+1} = 1/(1+x_n)$. No free parameters. Whether the predictions match observation is an empirical question.</p>
+    <div id="node-empirical" style="text-align:left;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.5rem;">Empirical · $\theta = \pi/2$</div>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The observable frequency range spans 145.8 Stern-Brocot levels.</strong> The Planck frequency is $1.855 \times 10^{43}$ Hz. The Hubble frequency is $2.183 \times 10^{-18}$ Hz. Their ratio $8.497 \times 10^{60}$ equals $\varphi^{145.8}$ in Fibonacci steps. Three measurements ($n_s = 0.9649$, $H_0 = 67.36$ km/s/Mpc, Planck units) plus the recurrence $x_{n+1} = 1/(1+x_n)$ produce all predictions below. No free parameters.</p>
     </div>
 
     <!-- Branch 3: Algebraic -->
-    <div id="node-algebraic" style="text-align:center;">
-      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.3rem;">Algebraic · $\theta = \pi$</div>
-      <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">Time as an imaginary thread</div>
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; text-align:left;">The polynomial $x^2 - x - 1 = 0$ has two roots: $\varphi$ and $\psi = -1/\varphi$. Their product is $-1$. This algebraic fact — that the product of the two convergence directions equals the square of the imaginary unit — is what gives spacetime its $(3,1)$ signature. The recurrence approaches $1/\varphi$ from above (our root) and from below (the conjugate). Both roots share every gate crossing. The difference between them is the phase: the part of history that survives only in relationships, not in records.</p>
+    <div id="node-algebraic" style="text-align:left;">
+      <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.5rem;">Algebraic · $\theta = \pi$</div>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8;"><strong>The polynomial $x^2 - x - 1 = 0$ has two roots whose product is $-1$.</strong> The roots are $\varphi = (1+\sqrt{5})/2$ and $\psi = -1/\varphi$. The recurrence converges to $1/\varphi$ from above (our root) and from below (the conjugate). Both roots undergo the same gate crossings. The product $\varphi \cdot \psi = -1 = i^2$ gives spacetime its $(3,1)$ Minkowski signature. The conjugate root is the gap twin, identifiable by its period: 0.5 Hubble cycles, 5 settled digits.</p>
     </div>
   </div>
 </div>
@@ -1335,9 +1332,15 @@ const bgCanvas = document.getElementById('bg');
 const bgCtx = bgCanvas.getContext('2d');
 
 let W, H;
+var bgDpr = window.devicePixelRatio || 1;
 function resizeBg() {
-  W = bgCanvas.width = window.innerWidth;
-  H = bgCanvas.height = window.innerHeight;
+  W = window.innerWidth;
+  H = window.innerHeight;
+  bgCanvas.width = W * bgDpr;
+  bgCanvas.height = H * bgDpr;
+  bgCanvas.style.width = W + "px";
+  bgCanvas.style.height = H + "px";
+  bgCtx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0);
 }
 resizeBg();
 window.addEventListener('resize', resizeBg);

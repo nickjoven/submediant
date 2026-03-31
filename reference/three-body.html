@@ -349,11 +349,8 @@ function hexToRgb(hex) {
 
 var COLORS = [BODY1, BODY2, BODY3];
 var COLORS_RGB = COLORS.map(hexToRgb);
-var BLEND_COLORS = [
-  blendColors(BODY1, BODY2),
-  blendColors(BODY2, BODY3),
-  blendColors(BODY1, BODY3)
-];
+// Coupling lines use silver (BODY4) — neutral, no blue bias
+var BLEND_COLORS = [BODY4, BODY4, BODY4];
 
 // Simulation time tracking
 var simTime = 0;
@@ -387,7 +384,14 @@ function draw(timestamp) {
   }
 
   // ── Drawing ──
-  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+
+  // Fill with consistent dark background
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, W, H);
 
   var cx = W / 2;
   var cy = H / 2;
