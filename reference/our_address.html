@@ -290,25 +290,33 @@ hr.divider {
 
 <h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:calc(var(--sp) * 0.5);">Our Address on the Tree</h1>
 
-<!-- Three-column entrypoints -->
-<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.6); margin-bottom:var(--sp); font-size:var(--fs-base); line-height:1.8;">
+<!-- Three-column entrypoints with rhythmic pulse -->
+<style>
+.col-pulse {
+  border-left-width: 2px;
+  border-left-style: solid;
+  padding-left: 1rem;
+  transition: border-left-width 0.1s ease, opacity 0.1s ease;
+}
+</style>
+<div id="three-columns" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:calc(var(--sp) * 0.6); margin-bottom:var(--sp); font-size:var(--fs-base); line-height:1.8;">
 
-  <!-- Column 1: Rational claim (mathematics) — phase 0 -->
-  <div style="border-left:2px solid #FCCA28; padding-left:1rem;">
+  <!-- Column 1: Rational — phase 0, frequency 1 -->
+  <div class="col-pulse" id="col-rational" style="border-left-color:#FCCA28;" data-freq="1" data-phase="0">
     <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#FCCA28; margin-bottom:0.3rem;">Rational · $\theta = 0$</div>
     <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A tree that contains a universe</div>
     <p style="color:var(--m-text-muted);">The Stern-Brocot tree is a binary tree containing every positive rational number exactly once. It is constructed by one operation: the mediant. Given fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$. This is a theorem, not a hypothesis. The tree exists because the integers exist and the mediant is well-defined.</p>
   </div>
 
-  <!-- Column 2: Empirical claim (physics) — phase π/2, the crossing -->
-  <div style="border-left:2px solid #DE3373; padding-left:1rem;">
+  <!-- Column 2: Empirical — phase π/2, frequency φ -->
+  <div class="col-pulse" id="col-empirical" style="border-left-color:#DE3373;" data-freq="1.618" data-phase="1.5708">
     <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#DE3373; margin-bottom:0.3rem;">Empirical · $\theta = \pi/2$</div>
     <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">A universe derivable from the tree</div>
     <p style="color:var(--m-text-muted);">The observable universe spans frequencies from the Planck scale ($1.855 \times 10^{43}$ Hz) to the Hubble scale ($2.183 \times 10^{-18}$ Hz), a ratio of $8.497 \times 10^{60}$ — corresponding to 145.8 Stern-Brocot levels. This page computes the physical predictions that follow from that depth using three measurements ($n_s$, $H_0$, Planck units) and the recurrence $x_{n+1} = 1/(1+x_n)$. No free parameters. Whether the predictions match observation is an empirical question.</p>
   </div>
 
-  <!-- Column 3: Algebraic claim about the conjugate — phase π, the half-twist -->
-  <div style="border-left:2px solid #08A953; padding-left:1rem;">
+  <!-- Column 3: Algebraic — phase π, frequency φ² -->
+  <div class="col-pulse" id="col-algebraic" style="border-left-color:#08A953;" data-freq="2.618" data-phase="3.1416">
     <div style="font-size:var(--fs-xs); text-transform:uppercase; letter-spacing:0.1em; color:#08A953; margin-bottom:0.3rem;">Algebraic · $\theta = \pi$</div>
     <div style="font-size:var(--fs-base); color:var(--m-text); font-weight:500; margin-bottom:0.5rem;">Time as an imaginary thread</div>
     <p style="color:var(--m-text-muted);">The polynomial $x^2 - x - 1 = 0$ has two roots: $\varphi$ and $\psi = -1/\varphi$. Their product is $-1$. This algebraic fact — that the product of the two convergence directions equals the square of the imaginary unit — is what gives spacetime its $(3,1)$ signature. The recurrence approaches $1/\varphi$ from above (our root) and from below (the conjugate). Both roots share every gate crossing. The difference between them is the phase: the part of history that survives only in relationships, not in records.</p>
@@ -319,11 +327,34 @@ hr.divider {
 <!-- Responsive: stack on narrow screens -->
 <style>
 @media (max-width: 800px) {
-  div[style*="grid-template-columns:1fr 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
+  #three-columns { grid-template-columns: 1fr !important; }
 }
 </style>
+
+<!-- Column pulse: frequencies 1, φ, φ² — never sync, always beat -->
+<script>
+(function() {
+  var cols = document.querySelectorAll(".col-pulse");
+  var PHI = (1 + Math.sqrt(5)) / 2;
+  var t0 = performance.now();
+
+  function pulse() {
+    var t = (performance.now() - t0) / 1000; // seconds
+    cols.forEach(function(col) {
+      var freq = parseFloat(col.dataset.freq);
+      var phase = parseFloat(col.dataset.phase);
+      // Sine oscillation: border width pulses 2px–5px, opacity 0.7–1.0
+      var v = Math.sin(2 * Math.PI * freq * t * 0.3 + phase);
+      var w = 2 + v * 1.5;  // 0.5px to 3.5px
+      var o = 0.75 + v * 0.25; // 0.5 to 1.0
+      col.style.borderLeftWidth = w + "px";
+      col.style.opacity = o;
+    });
+    requestAnimationFrame(pulse);
+  }
+  requestAnimationFrame(pulse);
+})();
+</script>
 
 <!-- Hero: The Clock -->
 <div class="phi-spacer-1">
