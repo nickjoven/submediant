@@ -24,7 +24,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 }
 
 body {
-  background: var(--m-bg, #0d1117);
+  background: var(--m-bg, #000000);
   color: var(--m-text, #e6edf3);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--fs-base);
@@ -86,7 +86,7 @@ canvas.plot {
   height: 380px;
   border: 1px solid var(--m-border, #30363d);
   border-radius: 2px;
-  background: color-mix(in srgb, var(--m-bg, #0d1117) 80%, transparent);
+  background: color-mix(in srgb, var(--m-bg, #000000) 80%, transparent);
   backdrop-filter: blur(4px);
 }
 
@@ -541,7 +541,7 @@ function drawConvergencePlot() {
     var now = performance.now();
     var elapsed = now - startTime;
 
-    var bg = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
+    var bg = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#000000';
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
@@ -646,8 +646,6 @@ function initBackground() {
     H = window.innerHeight;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     // Regenerate stars for new dimensions
     if (stars.length > 0) { stars.length = 0; generateSBStars(); }
@@ -768,7 +766,7 @@ function initBackground() {
     }
 
     // Clear
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#000000';
     ctx.fillRect(0, 0, W, H);
 
     const t = (now - startTime) / 1000;
