@@ -20,9 +20,9 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
   --fs-lg: calc(var(--fs-base) * var(--phi));
   --fs-xl: calc(var(--fs-lg) * var(--phi));
   --sp: calc(var(--fs-base) * var(--phi));
-  --rose: #DE3373;
-  --gold: #FCCA28;
-  --green: #08A953;
+  --body1: #7A0434;
+  --body2: #F98F81;
+  --body3: #37BA9B;
 }
 
 body {
@@ -70,7 +70,7 @@ main {
 .section-num {
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--gold);
+  color: var(--body2);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   display: block;
@@ -223,10 +223,11 @@ var canvas = document.getElementById("bg");
 var ctx = canvas.getContext("2d");
 var W, H;
 
-// Colors
-var ROSE  = "#DE3373";
-var GOLD  = "#FCCA28";
-var GREEN = "#08A953";
+// Colors: last 4 of the palette (maroon, salmon, teal, silver)
+var BODY1 = "#A45474";  // maroon (lifted for dark bg visibility)
+var BODY2 = "#F98F81";  // salmon
+var BODY3 = "#37BA9B";  // teal
+var BODY4 = "#C0C2C2";  // silver (coupling lines)
 
 function resize() {
   var dpr = window.devicePixelRatio || 1;
@@ -346,12 +347,12 @@ function hexToRgb(hex) {
   return [r, g, b];
 }
 
-var COLORS = [ROSE, GOLD, GREEN];
+var COLORS = [BODY1, BODY2, BODY3];
 var COLORS_RGB = COLORS.map(hexToRgb);
 var BLEND_COLORS = [
-  blendColors(ROSE, GOLD),
-  blendColors(GOLD, GREEN),
-  blendColors(ROSE, GREEN)
+  blendColors(BODY1, BODY2),
+  blendColors(BODY2, BODY3),
+  blendColors(BODY1, BODY3)
 ];
 
 // Simulation time tracking
