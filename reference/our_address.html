@@ -1334,7 +1334,9 @@ const tongues = [
 let bgT = 0;
 
 function drawBg() {
-  bgCtx.clearRect(0, 0, W, H);
+  var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
+  bgCtx.fillStyle = bgColor;
+  bgCtx.fillRect(0, 0, W, H);
 
   // Tongue wave bands — very subtle
   for (const tg of tongues) {

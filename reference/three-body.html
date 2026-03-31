@@ -394,8 +394,9 @@ function draw(timestamp) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.restore();
 
-  // Fill with black background
-  ctx.fillStyle = "#000000";
+  // Fill with theme background
+  var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, W, H);
 
   var cx = W / 2;
