@@ -223,17 +223,17 @@ section.visible {
     $$\ddot{\mathbf{r}}_i = -G\sum_{j \neq i} m_j \frac{\mathbf{r}_i - \mathbf{r}_j}{|\mathbf{r}_i - \mathbf{r}_j|^3}$$
   </div>
   <p>
-    The simulation above solves this equation. It works &mdash; the figure-8 orbit closes. But the equation encodes five assumptions that nature does not share:
+    The simulation above solves this equation. It works &mdash; the figure-8 orbit closes. But the equation bakes in five things that aren't true:
   </p>
   <ul>
-    <li><strong>Instantaneous action.</strong> The force between bodies propagates at infinite speed. Change a mass and every body in the universe knows immediately.</li>
-    <li><strong>No back-reaction.</strong> Bodies curve nothing. Space is a fixed stage, indifferent to the masses moving through it.</li>
-    <li><strong>Singular at contact.</strong> As $r \to 0$, the force diverges: $F \to \infty$. Newton gives no mechanism to regulate the collision.</li>
-    <li><strong>No radiation.</strong> Accelerating masses emit no gravitational waves. Energy is conserved exactly, forever. The orbit never decays.</li>
-    <li><strong>Absolute time.</strong> Every body shares the same clock. There is no frame-dependent tick rate, no time dilation between the three.</li>
+    <li><strong>Instantaneous action.</strong> Gravity travels at infinite speed. Move a mass and every other mass knows immediately. Nothing actually works this way.</li>
+    <li><strong>No back-reaction.</strong> Masses don't affect space. Space is a fixed stage that doesn't care what's on it.</li>
+    <li><strong>Singular at contact.</strong> As $r \to 0$, force goes to infinity. The equation has no way to handle a collision.</li>
+    <li><strong>No radiation.</strong> Accelerating masses don't emit gravitational waves. Energy is conserved exactly, forever. The orbit never decays.</li>
+    <li><strong>Absolute time.</strong> All three bodies share one clock. There's no difference in tick rate between them, no matter how fast they move or how deep they sit in each other's gravity.</li>
   </ul>
   <p>
-    Each of these is not a minor correction. Each is a <strong>qualitative</strong> failure &mdash; a place where the Newtonian model doesn't approximate reality but describes a fundamentally different universe.
+    These aren't small corrections. Each one is a place where Newton's model doesn't just approximate badly &mdash; it describes a <strong>different universe</strong>.
   </p>
 </section>
 
@@ -245,16 +245,16 @@ section.visible {
   <span class="section-num">VI</span>
   <h2 class="section-title">Where the Loop Breaks</h2>
   <p>
-    Section IV established the triangle: the state of body 1 depends on 2, which depends on 3, which depends on 1. That circular dependency <strong>is</strong> the fixed-point condition $x = f(x)$.
+    Section IV set up the triangle: body 1 depends on 2, 2 depends on 3, 3 depends on 1. That loop is the fixed-point condition $x = f(x)$.
   </p>
   <p>
-    Newton's gravity doesn't respect this loop. It computes all forces simultaneously from a single global snapshot &mdash; an omniscient view that no body actually has. The information each body <strong>actually receives</strong> travels at $c$, arriving from where the other bodies <em>were</em>, not where they <em>are</em>.
+    Newton's equation doesn't respect this loop. It computes all forces at once from a single global snapshot &mdash; a god's-eye view that no body actually has. Each body only gets information from where the others <em>were</em>, not where they <em>are</em>, because that information travels at $c$.
   </p>
   <div class="equation-block">
     $$\text{Newton: } \mathbf{r}_j(t) \quad \longrightarrow \quad \text{Reality: } \mathbf{r}_j\!\left(t - \frac{|\mathbf{r}_i - \mathbf{r}_j|}{c}\right)$$
   </div>
   <p>
-    For the figure-8 orbit this delay is negligible &mdash; roughly $10^{-8}$ seconds for solar-mass bodies at these separations. But the <em>conceptual</em> error is total. The coupling loop doesn't close instantaneously. The self-consistency condition $x = f(x)$ must account for the delay, and when it does, it <strong>forces</strong> the field to carry its own dynamics. The field becomes a participant, not a backdrop.
+    For the figure-8 orbit the delay is tiny &mdash; about $10^{-8}$ seconds at solar-mass scales. But the conceptual error is total. The coupling loop doesn't close instantly. Once $x = f(x)$ has to account for the delay, the field has to carry its own dynamics. It stops being a backdrop and starts being a participant.
   </p>
 </section>
 
@@ -272,14 +272,14 @@ section.visible {
     $$N(p/q) = N_{\text{total}} \times g(p/q) \times w\!\bigl(p/q,\; K_0\, F[N]\bigr)$$
   </div>
   <p>
-    This equation refers to itself. The population at each frequency depends on the coupling, which depends on all other populations. Self-consistency &mdash; demanding the system's description of itself is consistent &mdash; resolves every Newtonian pathology:
+    This equation refers to itself. The population at each frequency depends on the coupling, and the coupling depends on all the populations. Requiring that to be consistent fixes every problem Newton had:
   </p>
   <ul>
-    <li><strong>Finite propagation.</strong> The fixed-point iteration converges at a finite rate. No signal outruns the iteration speed. At the continuum limit this becomes $c$.</li>
-    <li><strong>Back-reaction.</strong> The coupling strength $K_0\, F[N]$ depends on $N$ itself. The field shapes the sources that shape the field. This mutual dependency <strong>is</strong> the content of $G_{\mu\nu} = 8\pi G\, T_{\mu\nu}$.</li>
-    <li><strong>Regulated contact.</strong> Two oscillators at the same frequency lock &mdash; they don't diverge. The mediant $\frac{a+c}{b+d}$ interpolates; it never produces a pole. The $r \to 0$ singularity has no analogue in the discrete framework.</li>
-    <li><strong>Radiation.</strong> The coupling loop has a finite relaxation time. Perturbations propagate as waves in the coherence field &mdash; gravitational waves, with the quadrupole structure forced by the rank-2 nature of $\gamma_{ij}$.</li>
-    <li><strong>Relative time.</strong> Each oscillator's clock is its own phase $\theta_i(t)$. The coherence tensor $C_{ij} \to \gamma_{ij}$ defines local time. Different bodies in different coherence regions tick at different rates. This <strong>is</strong> gravitational time dilation.</li>
+    <li><strong>Finite propagation.</strong> The fixed-point iteration converges at a finite rate. Nothing outruns it. In the continuum limit, that rate is $c$.</li>
+    <li><strong>Back-reaction.</strong> The coupling $K_0\, F[N]$ depends on $N$. The field shapes the sources and the sources shape the field. That mutual dependency is what $G_{\mu\nu} = 8\pi G\, T_{\mu\nu}$ says.</li>
+    <li><strong>Regulated contact.</strong> Two oscillators at the same frequency lock &mdash; they don't blow up. The mediant $\frac{a+c}{b+d}$ interpolates; it never produces a pole. There is no $r \to 0$ singularity in the discrete framework.</li>
+    <li><strong>Radiation.</strong> The coupling loop takes time to relax. Perturbations travel through the coherence field as waves &mdash; gravitational waves, with quadrupole structure forced by the rank-2 nature of $\gamma_{ij}$.</li>
+    <li><strong>Relative time.</strong> Each oscillator keeps its own clock via its phase $\theta_i(t)$. The coherence tensor $C_{ij} \to \gamma_{ij}$ sets local time. Different bodies in different regions tick at different rates. That's gravitational time dilation.</li>
   </ul>
 </section>
 
@@ -291,22 +291,22 @@ section.visible {
   <span class="section-num">VIII</span>
   <h2 class="section-title">The Three-Body Correction</h2>
   <p>
-    Return to the simulation. The Chenciner&ndash;Montgomery figure-8 is a solution of <em>Newton's</em> equations. In full general relativity, the orbit doesn't close. The correction has three layers:
+    Back to the simulation. The Chenciner&ndash;Montgomery figure-8 solves <em>Newton's</em> equations. In general relativity, the orbit doesn't close. There are three corrections:
   </p>
   <div class="equation-block">
     $$\Delta\phi = \frac{6\pi G M}{c^2 a(1-e^2)}$$
   </div>
   <p>
-    The first layer is <strong>perihelion precession</strong>. Each body's closest approach to the center of mass shifts by $\Delta\phi$ per orbit &mdash; the same formula that resolved Mercury's anomalous 43 arcseconds per century. For three equal masses on the figure-8, the precession accumulates symmetrically: all three orbits precess together, preserving the choreography but rotating it.
+    First: <strong>perihelion precession</strong>. Each body's closest approach to the center of mass shifts by $\Delta\phi$ per orbit. Same formula that explained Mercury's extra 43 arcseconds per century. For three equal masses on the figure-8, the precession is symmetric: all three orbits rotate together, keeping the choreography but drifting it.
   </p>
   <p>
-    The second layer is <strong>gravitational radiation</strong>. Three bodies on the figure-8 are three accelerating masses with a time-varying quadrupole moment. They radiate energy. The orbit slowly inspirals. Newton predicts eternal stability; self-consistency predicts decay.
+    Second: <strong>gravitational radiation</strong>. Three accelerating masses with a changing quadrupole moment radiate energy. The orbit shrinks. Newton says it lasts forever. Self-consistency says it decays.
   </p>
   <p>
-    The third layer is the deepest. In Newton's formulation the three-body problem is <em>chaotic</em> &mdash; Poincar&eacute;'s result &mdash; meaning initial conditions determine the outcome with unbounded sensitivity. But in the framework, the coupling loop has a finite relaxation time. Chaos persists, but the <strong>Lyapunov exponent is bounded</strong> by the propagation speed. Information about instability cannot spread faster than $c$. The chaos is real but <em>causal</em>.
+    Third, and most important: In Newton's version the three-body problem is chaotic (Poincar&eacute;'s result) &mdash; tiny changes in initial conditions lead to unboundedly different outcomes. In the framework, the coupling loop has a finite relaxation time, so chaos still exists but the <strong>Lyapunov exponent is bounded</strong> by the propagation speed. Instability can't spread faster than $c$. The chaos is real but causal.
   </p>
   <p>
-    This is the essential correction: the three-body problem in Newton's gravity is a system that <em>refers to itself</em> but has no mechanism to enforce consistency of that self-reference. The first-principles framework supplies exactly that mechanism &mdash; the self-consistency condition $x = f(x)$ realized as the field equations. The three-body problem is not solved by general relativity. It is <strong>regulated</strong> by it.
+    That's the core point. Newton's three-body problem is a system that refers to itself but has no rule enforcing that the self-reference be consistent. The first-principles framework provides that rule: $x = f(x)$ realized as the field equations. General relativity doesn't solve the three-body problem. It <strong>regulates</strong> it.
   </p>
 </section>
 
