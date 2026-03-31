@@ -919,7 +919,7 @@ and that the MOND acceleration scale is $a_0 = 1.25 \\times 10^{{-10}}$ m/s$^2$
 
 The frequency distribution $g(\\omega)$ — the one remaining free input —
 determines itself: the distribution that produces dynamics reproducing
-that distribution is unique. Zero free parameters. Zero free functions.
+that distribution is unique. The framework introduces no free parameters and no free functions — every quantity is determined by the recurrence and the boundary conditions.
 
 This site walks through the derivation chain, starting from the polynomial
 and arriving at known physics:
