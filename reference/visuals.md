@@ -15,6 +15,8 @@ Gallery of all visual and interactive resources across the framework, organized 
 | [Our Address](https://nickjoven.github.io/submediant-site/our_address.html) | The universe's computational clock. Stern-Brocot coordinates, progress, and predictions. |
 | [Intersections](https://nickjoven.github.io/intersections/) | Stick-slip dynamics with interactive Plotly and Canvas visualizations. Lagrangian relaxation, Stribeck curves, and bifurcation thresholds. |
 | [Stribeck Optics](https://nickjoven.github.io/stribeck-optics/) | Optical friction visualization. Stribeck curve mapped to refractive phenomena. |
+| [First Principles](https://nickjoven.github.io/submediant-site/first-principles.html) | sin(ωt) to Einstein. The complete derivation in 10 steps, with an evolving waveform background. |
+| [Oscillations](https://nickjoven.github.io/submediant-site/oscillations.html) | 47 oscillations of f(x) = 1/(1+x). Pipes screensaver, Fibonacci sequence, pure math of 1/φ. |
 | [Derivation Graph](graph) | Interactive D3 force-directed graph of the framework's derivation chain and repository structure. |
 
 ---
