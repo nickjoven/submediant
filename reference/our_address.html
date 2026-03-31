@@ -331,27 +331,52 @@ hr.divider {
 }
 </style>
 
-<!-- Column pulse: frequencies 1, φ, φ² — never sync, always beat -->
+<!-- Column pulse: frequencies 1, φ, φ² — stable at rest, excited on scroll -->
 <script>
 (function() {
   var cols = document.querySelectorAll(".col-pulse");
-  var PHI = (1 + Math.sqrt(5)) / 2;
   var t0 = performance.now();
+  var scrollExcitation = 0; // 0 = still, 1 = actively scrolling
+  var lastScrollY = 0;
+  var scrollDecay = null;
+
+  window.addEventListener("scroll", function() {
+    var delta = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+    // Excitation proportional to scroll speed, capped at 1
+    scrollExcitation = Math.min(1, scrollExcitation + delta * 0.005);
+    // Decay after scrolling stops
+    clearTimeout(scrollDecay);
+    scrollDecay = setTimeout(function decayStep() {
+      scrollExcitation *= 0.92;
+      if (scrollExcitation > 0.01) scrollDecay = setTimeout(decayStep, 30);
+      else scrollExcitation = 0;
+    }, 60);
+  }, { passive: true });
 
   function pulse() {
-    var t = (performance.now() - t0) / 1000; // seconds
+    var t = (performance.now() - t0) / 1000;
+    var ex = scrollExcitation; // 0 at rest, up to 1 while scrolling
     cols.forEach(function(col) {
       var freq = parseFloat(col.dataset.freq);
       var phase = parseFloat(col.dataset.phase);
-      // Sine oscillation: border width pulses 2px–5px, opacity 0.7–1.0
       var v = Math.sin(2 * Math.PI * freq * t * 0.3 + phase);
-      var w = 2 + v * 1.5;  // 0.5px to 3.5px
-      var o = 0.75 + v * 0.25; // 0.5 to 1.0
-      col.style.borderLeftWidth = w + "px";
+      // At rest: opacity barely moves (0.95–1.0). Border width fixed at 2px.
+      // On scroll: opacity range widens (0.6–1.0), border color brightens.
+      var o = 1.0 - (1 - (0.5 + 0.5 * v)) * ex * 0.4; // rest: ~1.0, scroll: 0.6–1.0
       col.style.opacity = o;
+      // Border color: at rest = solid, on scroll = pulsing brightness
+      var baseColor = col.style.borderLeftColor || col.dataset.color || "#888";
+      var bright = 1.0 - (1 - (0.5 + 0.5 * v)) * ex * 0.5;
+      col.style.borderLeftColor = baseColor; // keep color stable
+      col.style.filter = "brightness(" + (0.8 + bright * 0.4) + ")";
     });
     requestAnimationFrame(pulse);
   }
+  // Store base border colors
+  cols.forEach(function(col) {
+    col.dataset.color = getComputedStyle(col).borderLeftColor;
+  });
   requestAnimationFrame(pulse);
 })();
 </script>
