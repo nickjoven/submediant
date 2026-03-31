@@ -12,6 +12,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: hidden; }
 
 :root {
   /* Golden-ratio type scale: each step = prev * phi */
@@ -239,10 +240,13 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
+/* MathJax overflow containment */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
 .pred-grid {
   display: grid;
-  grid-template-columns: 52px 60px 1fr;
-  gap: 4px 16px;
+  grid-template-columns: auto auto 1fr;
+  gap: 4px 12px;
   font-size: var(--fs-base);
 }
 
@@ -273,11 +277,12 @@ hr.divider {
 
 /* ── Responsive ── */
 @media (max-width: 520px) {
-  main { padding: 0 20px 100px; }
+  main { padding: 0 16px 100px; }
   canvas#clock { width: 85vw; height: 85vw; }
-  .address-envelope { padding: 32px 20px; }
+  .address-envelope { padding: 32px 16px; }
   .stamp { display: none; }
-  .phi-spacer-1 { height: 50vh; min-height: 260px; }
+  .phi-spacer-1 { height: 50vh; height: 50dvh; min-height: 260px; }
+  .pred-grid { font-size: var(--fs-sm); gap: 4px 8px; }
 }
 </style>
 </head>
