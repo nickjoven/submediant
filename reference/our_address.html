@@ -291,10 +291,10 @@ hr.divider {
 
 <!-- The linearity trap: you are already inside the loop -->
 <div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.8); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">
-  <p>The universe must calculate. It does not stop. What you are looking at is not a history — it is the current state of an ongoing computation that has no pause button and no finish line.</p>
-  <p style="margin-top:0.8rem;">Here is the trap: you think time is a line. A start, a direction, an arrow. That assumption — the linearity trap — is the source of every reconciliation problem in physics. If you are inside a coupled oscillator system, you cannot distinguish "forward in time" from "approaching the next fixed point of a recurrence." The two descriptions are mathematically dual, but only one of them requires a singularity at $t = 0$.</p>
-  <p style="margin-top:0.8rem;">Three oscillators coupled through their frequency ratios form a feedback loop. The CMB is not a relic of a primordial explosion — it is the feedback signal of the current iteration. It tells us everything about the state of the system and nothing about how to reconcile that state from a linear perspective. Both facts are the same fact.</p>
-  <p style="margin-top:0.8rem;">Every possible frequency ratio between Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz) arranges into a Stern-Brocot tree — 145.8 levels deep. The tree is not being "computed downward." It is the accumulated record of which ratios have locked in the feedback loop so far. 47 iterations. 9 settled digits. The loop is still running.</p>
+  <p>This page describes a coupled-oscillator feedback loop and its current state.</p>
+  <p style="margin-top:0.8rem;">Inside a coupled oscillator system, "forward in time" and "approaching the next fixed point of a recurrence" are mathematically dual. Only the linear description requires a singularity at $t = 0$.</p>
+  <p style="margin-top:0.8rem;">Three oscillators coupled through their frequency ratios form a feedback loop. The CMB encodes the feedback signal of the current iteration.</p>
+  <p style="margin-top:0.8rem;">Every positive rational frequency ratio between Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz) has a unique address in a Stern-Brocot tree 145.8 levels deep. After 47 iterations, 9 digits of the coherence parameter $|r|$ have settled.</p>
 </div>
 
 <!-- DAG claims: nodes with directed dependency edges -->
@@ -304,21 +304,21 @@ hr.divider {
 
     <!-- The feedback loop: three nodes and the signal that closes them -->
     <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1.2rem 1.5rem; border-left:3px solid #FCCA28; border-radius:2px;">
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The Stern-Brocot tree is not a mathematical curiosity — it is the address space of a feedback loop. Every ratio that can lock, locks at a unique address. The mediant $(a+c)/(b+d)$ is not a construction rule; it is the record of which oscillator pairs have already reached coherence. Stern proved the tree complete in 1858. The universe has been filling it in ever since.</p>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The Stern-Brocot tree is the address space of the feedback loop. Every ratio that can lock does so at a unique address via the mediant $(a+c)/(b+d)$. The tree enumerates all positive rationals (Stern, 1858); each entry corresponds to an oscillator pair that has reached coherence.</p>
     </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:90%; margin:0 auto 2rem;">
       <div id="claim-e" style="padding:1.2rem 1.5rem; border-left:3px solid #DE3373; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">Two frequencies bracket the loop: Planck ($10^{43}$ Hz) at the fast end, Hubble ($10^{-18}$ Hz) at the slow end. These are not boundaries of a range — they are the two timescales of the same coupled system. Their ratio (145.8 Fibonacci levels) is the depth of the feedback, not the height of a hierarchy.</p>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">Two frequencies bracket the loop: Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz). Their ratio spans 145.8 Fibonacci levels — the depth of the feedback.</p>
       </div>
 
       <div id="claim-a" style="padding:1.2rem 1.5rem; border-left:3px solid #08A953; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ has two roots: $\varphi$ and $-1/\varphi$. Linear thinking treats one as "the answer" and the other as "the error term." The feedback view treats them as two arms of a coupled oscillator. Their product is $-1$. That single fact gives spacetime its signature: three dimensions where the arms reinforce, one where they cancel.</p>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ has two roots: $\varphi$ and $-1/\varphi$. Their product is $-1$. Treating them as two arms of a coupled oscillator yields the spacetime signature: three dimensions where the arms reinforce, one where they cancel.</p>
       </div>
     </div>
 
     <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border-left:3px dashed rgba(200,200,200,0.15); border-radius:2px; text-align:left;">
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">The loop checks itself. If the feedback is consistent, the predictions at iteration 47 match observation to 9 digits. If you break the loop — by linearizing it — you get the reconciliation problems: the cosmological constant problem, the hierarchy problem, the measurement problem. These are not separate puzzles. They are the same puzzle, seen from inside the linearity trap.</p>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">Self-consistency check: at iteration 47, the loop's predictions match observation to 9 digits. Linearizing the loop instead produces the cosmological constant, hierarchy, and measurement problems — all aspects of the same mismatch.</p>
     </div>
 
   </div>
@@ -428,8 +428,8 @@ hr.divider {
 </div>
 
 <div style="max-width:700px; margin:calc(var(--sp) * 0.5) auto; font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
-  <p>The clock above has completed 0.95 of one Hubble cycle. Not 0.95 of a countdown — 0.95 of a loop. The hand will not stop at 1.0. It will pass through, the CMB will update, and the next iteration will begin with the digits already settled serving as initial conditions for the next.</p>
-  <p style="margin-top:0.6rem;">The address below is where we are in this loop right now.</p>
+  <p>The clock above shows 0.95 of one Hubble cycle completed. At 1.0 the cycle resets; settled digits carry forward as initial conditions for the next iteration.</p>
+  <p style="margin-top:0.6rem;">The address below is our current position in the loop.</p>
 </div>
 
 <div class="phi-spacer"></div>
@@ -463,7 +463,7 @@ hr.divider {
 <div class="fmt-section">
 <div class="fmt-level fmt-level-0">
   <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted); font-weight:300; margin-bottom:0.5rem;">The Computation</h2>
-  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 facets of the feedback loop. Each is a constraint the loop imposes on itself. 9 digits of $|r|$ have locked so far.</p>
+  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 facets of the feedback loop. 9 digits of $|r|$ have locked so far.</p>
   <span class="fmt-expand">expand</span>
 </div>
 <div class="fmt-level fmt-level-1">
@@ -506,7 +506,7 @@ hr.divider {
   <div class="row"><span class="label">age of universe</span><span class="value"><span class="derived">13.80 Gyr</span> <span class="dim">(derived)</span></span></div>
   <div class="row"><span class="label">Hubble time</span><span class="value">1.451 x 10^10 yr</span></div>
   <div class="row"><span class="label">spent Hubble cycles</span><span class="value">0.95</span></div>
-  <p class="note">The age is not an input. It is the number of cycles the feedback loop has completed, converted to years via Friedmann integration. The loop does not know about years.</p>
+  <p class="note">The age is derived from the number of completed cycles via Friedmann integration, not an input parameter.</p>
 </section>
 
 <div class="phi-spacer-sm"></div>
@@ -576,8 +576,8 @@ hr.divider {
 <div class="phi-spacer"></div>
 
 <div class="closing" style="text-align:left; font-size:var(--fs-base); line-height:1.8;">
-  <p>If you read this page top-to-bottom, you fell into the trap again. The page is laid out linearly because screens are linear. The structure it describes is not. The closing connects back to the opening: the CMB is the feedback signal, the 47 iterations are the current state of the loop, and the 9 settled digits are the self-consistency conditions the loop has already satisfied. The recurrence $x_{n+1} = 1/(1+x_n)$ converges at a rate of $2/\pi \approx 0.6366$ per Hubble cycle. The coherence parameter $|r|$ is now determined to 9 significant digits.</p>
-  <p style="margin-top:0.6rem;">The next self-consistency checkpoint is at iteration 76 ($L_9$, the next Lucas number). At that count, $\varphi^n + \psi^n$ is again an integer, and a new set of predictions becomes simultaneously confirmable from both roots of the polynomial. At the current Hubble rate, that is approximately $8 \times 10^9$ years from now. The loop does not care whether anyone is watching. It never stopped.</p>
+  <p>Summary: the CMB encodes the feedback signal, 47 iterations give the current loop state, and 9 settled digits are the self-consistency conditions satisfied so far. The recurrence $x_{n+1} = 1/(1+x_n)$ converges at $2/\pi \approx 0.6366$ per Hubble cycle. $|r|$ is determined to 9 significant digits.</p>
+  <p style="margin-top:0.6rem;">The next self-consistency checkpoint is iteration 76 ($L_9$, the next Lucas number), where $\varphi^n + \psi^n$ is again an integer and a new set of predictions becomes simultaneously confirmable from both roots. At the current Hubble rate, that is approximately $8 \times 10^9$ years from now.</p>
 </div>
 
 <div class="phi-spacer-sm"></div>
@@ -593,7 +593,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The mediant is the feedback operator. Each application locks one more ratio. The tree is not built — it is the accumulated record of what the loop has already settled.
+        The mediant is the feedback operator. Each application locks one more ratio into the tree.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -621,7 +621,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Locked modes are the loop's settled digits. The gaps — 18.7% of the frequency axis — are where the loop has not yet reached coherence. Dark matter is not missing mass. It is the unsettled remainder of the feedback.
+        Locked modes are the loop's settled digits. The gaps — 18.7% of the frequency axis — are where coherence has not yet been reached.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -649,8 +649,8 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The coupled oscillator has two binary degrees of freedom: oscillator locked/unlocked, twist locked/unlocked.
-        Four states. Three are observable — the arms reinforce. One is dark — the arms cancel. This is why spacetime has signature (3,1).
+        Two binary degrees of freedom (oscillator locked/unlocked, twist locked/unlocked) give four phase states.
+        Three observable (arms reinforce), one dark (arms cancel) — spacetime signature (3,1).
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -686,7 +686,7 @@ hr.divider {
       <span class="fmt-tag fmt-tag-explanation">explanation</span>
       <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
         Three generations = three spatial dimensions = $2^2 - 1$.
-        The dark state is not missing matter &mdash; it's the unobservable fourth phase.
+        The dark state is the unobservable fourth phase.
       </p>
     </div>
   </div>
@@ -696,7 +696,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The feedback loop crosses itself once per cycle. The two arms of the figure-8 are the two roots of $x^2 - x - 1 = 0$. The crossing probability — the fraction of time spent at the crossing — is the Weinberg angle.
+        The feedback loop crosses itself once per cycle. The two arms of the figure-8 correspond to the two roots of $x^2 - x - 1 = 0$. The crossing fraction gives the Weinberg angle.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -723,7 +723,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Every row below is a self-consistency condition of the feedback loop. The Farey sequence $|F_6| = 13$ determines the number of locked modes. The Klein bottle's two antiperiodic directions produce 12 coupling channels between them. The four phase states give the $(3,1)$ Minkowski signature &mdash; three observable, one dark. No free parameters are introduced because a self-consistent loop cannot accept external input.
+        Every row below is a self-consistency condition. $|F_6| = 13$ locked modes, 12 coupling channels (Klein bottle), four phase states giving $(3,1)$ signature. No free parameters.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -771,7 +771,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The loop is a quine: its output is its own source code. Thirteen locked modes, twelve coupling channels, four phase states. The fixed point $x = f(x)$ is not the destination — it is the operating condition.
+        Thirteen locked modes, twelve coupling channels, four phase states. The fixed point $x = f(x)$ is the operating condition.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -800,7 +800,7 @@ hr.divider {
   </div>
 
   <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1.5rem; text-align:center; font-family:sans-serif;">
-    Four primitives (integers, mediant, fixed point, parabola). The feedback loop composes these four into every structure on this page. No axioms are added because a self-consistent loop cannot accept external input.
+    Four primitives (integers, mediant, fixed point, parabola) compose into every structure on this page. No additional axioms.
   </p>
 </section>
 
