@@ -288,8 +288,12 @@ hr.divider {
 
 <main>
 
-<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:0.3rem;">Our Address on the Tree</h1>
-<p style="font-size:var(--fs-base); color:var(--m-text-muted); margin-bottom:var(--sp);">Three observables ($n_s$, $H_0$, Planck units) and the polynomial $x^2 - x - 1 = 0$ determine the universe's position on the Stern-Brocot tree to 9 digits of the coherence parameter $|r|$. No free parameters.</p>
+<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:0.5rem;">Our Address on the Tree</h1>
+<div style="font-size:var(--fs-base); color:var(--m-text-muted); margin-bottom:var(--sp); line-height:1.8;">
+<p>The Stern-Brocot tree is a binary tree that contains every positive rational number exactly once. It is constructed by repeated application of the mediant: given two fractions $a/b$ and $c/d$, their mediant is $(a+c)/(b+d)$.</p>
+<p style="margin-top:0.8rem;">The observable universe spans a frequency range from the Planck frequency ($1.855 \times 10^{43}$ Hz) to the Hubble frequency ($2.183 \times 10^{-18}$ Hz). Their ratio is $8.497 \times 10^{60}$, which corresponds to 145.8 levels of the Stern-Brocot tree when measured in Fibonacci steps.</p>
+<p style="margin-top:0.8rem;">This page computes our position on the tree using three measured quantities — the CMB spectral tilt $n_s = 0.9649$, the Hubble constant $H_0 = 67.36$ km/s/Mpc, and the Planck units $\hbar$, $G$, $c$ — together with the recurrence $x_{n+1} = 1/(1+x_n)$, whose fixed point is the golden ratio conjugate $1/\varphi = (\sqrt{5}-1)/2$. The computation has no free parameters. Every derived quantity below follows from these inputs and this recurrence.</p>
+</div>
 
 <!-- Hero: The Clock -->
 <div class="phi-spacer-1">
@@ -445,9 +449,9 @@ hr.divider {
 
 <div class="phi-spacer"></div>
 
-<div class="closing">
-  <span class="highlight">One tree. 145.8 levels. 9 digits settled.</span><br>
-  47 oscillations of $f(x) = 1/(1+x)$ at convergence rate $2/\pi$. Next Lucas checkpoint: $L_9 = 76$.
+<div class="closing" style="text-align:left; font-size:var(--fs-base); line-height:1.8;">
+  <p><strong>Summary.</strong> The recurrence $x_{n+1} = 1/(1+x_n)$ has completed 47 iterations since the Planck epoch. Each iteration settles the ratio $F_n/F_{n+1}$ to one additional digit of precision, at a convergence rate of $2/\pi \approx 0.6366$ per Hubble cycle. After 47 iterations, the coherence parameter $|r|$ is determined to 9 significant digits.</p>
+  <p style="margin-top:0.6rem;">The quantity $\varphi^n + \psi^n$ (where $\psi = -1/\varphi$ is the conjugate root) is an integer — a Lucas number — only at specific values of $n$. The current count $n = 47$ is not a Lucas number. The next Lucas number is $L_9 = 76$. At that iteration count, a new set of predictions becomes simultaneously confirmable from both roots of the polynomial. At the current Hubble rate, this corresponds to approximately $8 \times 10^9$ years from now.</p>
 </div>
 
 <div class="phi-spacer-sm"></div>
