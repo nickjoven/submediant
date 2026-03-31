@@ -217,9 +217,9 @@ a:hover { text-decoration: underline; }
   </div>
 
   <div class="phi-spacer-sm"></div>
-  <canvas id="convergence-plot" class="plot"></canvas>
+  <canvas id="convergence-plot" class="plot" style="height:400px;"></canvas>
   <div style="text-align:right; font-size:var(--fs-xs); color:var(--m-text-muted,#8b949e); margin-top:0.5em;">
-    The golden line: $1/\varphi = 0.618033988...$
+    The golden line: $1/\varphi = 0.618033988\ldots$ — each ratio drops and settles
   </div>
 </section>
 
@@ -503,102 +503,135 @@ function buildSBPath() {
   el.innerHTML = html;
 }
 
-// ── Convergence plot (Section 1) ──────────────────────────────────────
+// ── Convergence cascade (Section 1): animated drop + settle ──────────
 function drawConvergencePlot() {
-  const canvas = document.getElementById('convergence-plot');
+  var canvas = document.getElementById('convergence-plot');
   if (!canvas) return;
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
-  const ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  const W = rect.width, H = rect.height;
+  var W = rect.width, H = rect.height;
 
-  const padL = 60, padR = 20, padT = 20, padB = 40;
-  const plotW = W - padL - padR;
-  const plotH = H - padT - padB;
-
-  // Clear
-  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
-  ctx.fillRect(0, 0, W, H);
-
-  // Y range: 0.45 to 1.05
-  const yMin = 0.45, yMax = 1.05;
-  const xMin = 0, xMax = 47;
-
-  function toX(n) { return padL + (n - xMin) / (xMax - xMin) * plotW; }
+  var padL = 40, padR = 20, padT = 30, padB = 30;
+  var plotH = H - padT - padB;
+  var yMin = 0.45, yMax = 1.05;
   function toY(v) { return padT + (1 - (v - yMin) / (yMax - yMin)) * plotH; }
 
-  // Grid
-  ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--m-border').trim() || '#30363d';
-  ctx.lineWidth = 0.5;
-  for (let y = 0.5; y <= 1.0; y += 0.1) {
+  // Each ratio is a "drop" — starts above screen, falls and oscillates to its target y
+  var drops = [];
+  for (var i = 0; i <= 47; i++) {
+    drops.push({
+      target: SEQ[i],        // final y value
+      current: yMax + 0.3,   // start above visible range
+      velocity: 0,
+      settled: false,
+      arriveTime: i * 120,   // ms stagger between arrivals
+      color: PALETTE[i % 12],
+      x: padL + (i / 47) * (W - padL - padR) // horizontal position
+    });
+  }
+
+  var startTime = performance.now();
+  var goldenY = toY(PHI_INV);
+
+  function frame() {
+    var now = performance.now();
+    var elapsed = now - startTime;
+
+    var bg = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Golden ratio target line
+    ctx.strokeStyle = '#FCCA28';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
     ctx.beginPath();
-    ctx.moveTo(padL, toY(y));
-    ctx.lineTo(W - padR, toY(y));
+    ctx.moveTo(padL, goldenY);
+    ctx.lineTo(W - padR, goldenY);
     ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#FCCA28';
+    ctx.font = (11 * (W > 500 ? 1 : 0.8)) + 'px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('1/\u03C6', padL + 4, goldenY - 6);
+
+    // Update and draw each drop
+    var allSettled = true;
+    for (var i = 0; i <= 47; i++) {
+      var d = drops[i];
+      var age = elapsed - d.arriveTime;
+      if (age < 0) { allSettled = false; continue; } // not yet arrived
+
+      if (!d.settled) {
+        // Spring physics: damped oscillation toward target
+        var displacement = d.current - d.target;
+        var springK = 0.0008;   // spring constant
+        var damping = 0.04;     // damping — higher iterations damp faster
+        var dampFactor = damping + i * 0.002; // later drops settle faster
+        var force = -springK * displacement;
+        d.velocity += force;
+        d.velocity *= (1 - dampFactor);
+        d.current += d.velocity;
+
+        // Check if settled (amplitude < threshold)
+        if (Math.abs(displacement) < 0.001 && Math.abs(d.velocity) < 0.0001) {
+          d.current = d.target;
+          d.settled = true;
+        } else {
+          allSettled = false;
+        }
+      }
+
+      var sy = toY(d.current);
+
+      // Trail connecting to previous drop
+      if (i > 0 && (elapsed - drops[i-1].arriveTime) > 0) {
+        var prevY = toY(drops[i-1].current);
+        ctx.beginPath();
+        ctx.moveTo(drops[i-1].x, prevY);
+        ctx.lineTo(d.x, sy);
+        ctx.strokeStyle = d.color;
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // Drop dot
+      var radius = d.settled ? 2.5 : 3.5 + Math.abs(d.velocity) * 200;
+      ctx.beginPath();
+      ctx.arc(d.x, sy, Math.min(radius, 6), 0, Math.PI * 2);
+      ctx.fillStyle = d.color;
+      ctx.fill();
+
+      // Label first few and last
+      if (i <= 5 || i === 47) {
+        ctx.fillStyle = d.color;
+        ctx.globalAlpha = 0.7;
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('n=' + i, d.x, sy - 8);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    if (!allSettled) {
+      requestAnimationFrame(frame);
+    } else {
+      // Final static state — draw the settled value
+      ctx.fillStyle = '#FCCA28';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText('0.618033988\u2026', W - padR, goldenY - 8);
+    }
   }
 
-  // Golden ratio line
-  ctx.strokeStyle = '#FCCA28';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6, 4]);
-  ctx.beginPath();
-  ctx.moveTo(padL, toY(PHI_INV));
-  ctx.lineTo(W - padR, toY(PHI_INV));
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Label
-  ctx.fillStyle = '#FCCA28';
-  ctx.font = '11px -apple-system, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('1/\u03C6 = 0.618033988...', padL + 4, toY(PHI_INV) - 6);
-
-  // Plot the oscillation curve
-  ctx.strokeStyle = '#DE3373';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i <= 47; i++) {
-    const x = toX(i), y = toY(SEQ[i]);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-
-  // Dots
-  for (let i = 0; i <= 47; i++) {
-    const x = toX(i), y = toY(SEQ[i]);
-    const col = PALETTE[i % 12];
-    ctx.fillStyle = col;
-    ctx.beginPath();
-    ctx.arc(x, y, i <= 20 ? 3 : 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Axes labels
-  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-text-muted').trim() || '#8b949e';
-  ctx.font = '11px -apple-system, sans-serif';
-  ctx.textAlign = 'center';
-  for (let n = 0; n <= 47; n += 5) {
-    ctx.fillText(n, toX(n), H - padB + 18);
-  }
-  ctx.textAlign = 'right';
-  for (let y = 0.5; y <= 1.0; y += 0.1) {
-    ctx.fillText(y.toFixed(1), padL - 8, toY(y) + 4);
-  }
-
-  // Axis labels
-  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-text').trim() || '#e6edf3';
-  ctx.font = '12px -apple-system, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('iteration n', W / 2, H - 4);
-  ctx.save();
-  ctx.translate(14, H / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillText('x\u2099', 0, 0);
-  ctx.restore();
+  requestAnimationFrame(frame);
 }
 
 // ── Background Canvas: Pipes + Starfield ──────────────────────────────
