@@ -736,15 +736,54 @@ function initBackground() {
     ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
     ctx.fillRect(0, 0, W, H);
 
-    // ── Draw stars ──
     const t = (now - startTime) / 1000;
+
+    // ── Background translation: slow drift through the starfield ──
+    // The view pans diagonally at golden-ratio angle, wrapping
+    const panX = t * 3;  // pixels/sec horizontal drift
+    const panY = t * 3 * PHI_INV;  // vertical drift at 1/φ ratio
+
+    // ── Draw stars with translation ──
     for (const star of stars) {
       const twinkle = 0.5 + 0.5 * Math.sin(t * star.twinkleSpeed + star.twinklePhase);
       const alpha = star.brightness * (0.4 + 0.6 * twinkle);
+      // Translated position, wrapping at edges
+      const sx = ((star.x - panX) % W + W) % W;
+      const sy = ((star.y - panY) % H + H) % H;
       ctx.beginPath();
-      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(230, 237, 243, ${alpha.toFixed(3)})`;
       ctx.fill();
+    }
+
+    // ── Convergence star: pure white, at 1/φ position, brightens with progress ──
+    {
+      const convergenceFrac = Math.min(1, segmentCount / pipeSegments.length);
+      const [csx, csy] = cobwebToScreen(PHI_INV, PHI_INV);
+      // Size and brightness grow with convergence
+      const cSize = 2 + convergenceFrac * 6;
+      const cAlpha = 0.1 + convergenceFrac * 0.9;
+      // Oscillation envelope: pulses at diminishing amplitude
+      const osc = Math.sin(t * 2) * (1 - convergenceFrac) * 0.3;
+      // Glow
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 10 + convergenceFrac * 30;
+      ctx.beginPath();
+      ctx.arc(csx, csy, cSize + osc * cSize, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${(cAlpha + osc * 0.2).toFixed(3)})`;
+      ctx.fill();
+      // Cross rays at full convergence
+      if (convergenceFrac > 0.5) {
+        const rayAlpha = (convergenceFrac - 0.5) * 0.3;
+        const rayLen = cSize * 3;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${rayAlpha.toFixed(3)})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(csx - rayLen, csy); ctx.lineTo(csx + rayLen, csy);
+        ctx.moveTo(csx, csy - rayLen); ctx.lineTo(csx, csy + rayLen);
+        ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
     }
 
     // ── Draw y=x line (faint) ──
@@ -785,10 +824,10 @@ function initBackground() {
       const glowAlpha = 0.15 + 0.25 * (1 - age);
 
       ctx.shadowColor = seg.color;
-      ctx.shadowBlur = 8 + 12 * (1 - age);
+      ctx.shadowBlur = 12 + 18 * (1 - age);
       ctx.strokeStyle = seg.color;
-      ctx.globalAlpha = 0.3 + 0.5 * (1 - age * 0.5);
-      ctx.lineWidth = 2 + (1 - age) * 1.5;
+      ctx.globalAlpha = 0.6 + 0.4 * (1 - age * 0.3);
+      ctx.lineWidth = 2.5 + (1 - age) * 2;
 
       ctx.beginPath();
       ctx.moveTo(sx1, sy1);
