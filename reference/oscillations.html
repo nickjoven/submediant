@@ -54,12 +54,6 @@ main {
 .phi-spacer-lg { height: calc(61.8px * 1.618 * 1.618); }
 .phi-spacer-sm { height: 61.8px; }
 
-#mobius-moon-toggle {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 100;
-}
 
 /* section titles */
 .section-title {
@@ -716,21 +710,21 @@ function initBackground() {
   let W, H;
 
   const ctx = canvas.getContext('2d');
+
+  // ── Stern-Brocot starfield ──
+  // Generate stars at rational points from Stern-Brocot tree levels 1..8
+  const stars = [];
+
   function resize() {
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // Regenerate stars for new dimensions
     if (stars.length > 0) { stars.length = 0; generateSBStars(); }
   }
   resize();
   window.addEventListener('resize', resize);
-
-  // ── Stern-Brocot starfield ──
-  // Generate stars at rational points from Stern-Brocot tree levels 1..8
-  const stars = [];
   function generateSBStars() {
     // BFS the Stern-Brocot tree
     // Level 0: 1/1
