@@ -640,16 +640,20 @@ function initBackground() {
   const dpr = window.devicePixelRatio || 1;
   let W, H;
 
+  const ctx = canvas.getContext('2d');
   function resize() {
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Regenerate stars for new dimensions
+    if (stars.length > 0) { stars.length = 0; generateSBStars(); }
   }
   resize();
   window.addEventListener('resize', resize);
-
-  const ctx = canvas.getContext('2d');
 
   // ── Stern-Brocot starfield ──
   // Generate stars at rational points from Stern-Brocot tree levels 1..8
@@ -762,9 +766,6 @@ function initBackground() {
       segmentCount++;
       lastSegmentTime = now;
     }
-
-    ctx.save();
-    ctx.scale(dpr, dpr);
 
     // Clear
     ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
@@ -880,7 +881,6 @@ function initBackground() {
 
     ctx.globalAlpha = 1;
     ctx.shadowBlur = 0;
-    ctx.restore();
 
     requestAnimationFrame(animate);
   }
