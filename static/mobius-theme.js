@@ -214,7 +214,24 @@ function applyPalette() {
   root.style.colorScheme = state.mode;
 
   var moonPhase = Math.floor(state.step / 2) % 6;
-  if (btn) btn.innerHTML = moonSVG(moonPhase, lift(PALETTE[primary]));
+  var moonColor = lift(PALETTE[primary]);
+  if (btn) btn.innerHTML = moonSVG(moonPhase, moonColor);
+
+  // Update favicon to match current moon phase
+  updateFavicon(moonPhase, moonColor);
+}
+
+function updateFavicon(phase, color) {
+  var svg = moonSVG(phase, color);
+  var encoded = "data:image/svg+xml," + encodeURIComponent(svg);
+  var link = document.querySelector("link[rel='icon']");
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "icon";
+    link.type = "image/svg+xml";
+    document.head.appendChild(link);
+  }
+  link.href = encoded;
 }
 
 // ── Moon Toggle ──────────────────────────────────────────────────────────
