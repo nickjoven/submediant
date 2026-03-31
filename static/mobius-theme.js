@@ -242,10 +242,11 @@ function createMoonToggle() {
     } else if (secondaryNav) {
       secondaryNav.appendChild(btn);
     } else {
-      // Fallback: look for any nav/header, otherwise use fixed positioning
-      const nav = document.querySelector("nav, .navbar, .bd-header");
+      // Standalone pages: insert at the START of the page-nav bar
+      const pageNav = document.getElementById("page-nav");
+      const nav = pageNav || document.querySelector("nav, .navbar, .bd-header");
       if (nav) {
-        nav.appendChild(btn);
+        nav.insertBefore(btn, nav.firstChild);
       } else {
         btn.style.cssText = "position:fixed;top:12px;right:12px;z-index:999;";
         document.body.appendChild(btn);
@@ -307,11 +308,47 @@ function initFormatAccordion() {
   });
 }
 
+// ── Curved space: subtle perspective warp on scroll (JB pages) ───────────
+function initCurvedSpace() {
+  // Only apply to pages with .bd-content (Jupyter Book) or .main content
+  var content = document.querySelector(".bd-content, .bd-article-container, main");
+  if (!content) return;
+
+  // Set up perspective on the content's parent
+  var wrapper = content.parentElement || content;
+  wrapper.style.perspective = "1200px";
+  wrapper.style.perspectiveOrigin = "50% 50%";
+  content.style.transformOrigin = "50% 0%";
+  content.style.transition = "transform 0.15s ease-out";
+
+  var lastScroll = 0;
+  window.addEventListener("scroll", function() {
+    var scrollY = window.scrollY;
+    var maxScroll = document.body.scrollHeight - window.innerHeight;
+    if (maxScroll <= 0) return;
+
+    // Scroll fraction: 0 at top, 1 at bottom
+    var frac = scrollY / maxScroll;
+
+    // Curve: subtle rotateX that peaks at mid-scroll
+    // At top and bottom: flat. In the middle: slightly tilted.
+    var curve = Math.sin(frac * Math.PI) * 0.8; // max 0.8 degrees
+
+    // Scroll velocity for additional micro-tilt
+    var delta = scrollY - lastScroll;
+    lastScroll = scrollY;
+    var velocity = Math.max(-2, Math.min(2, delta * 0.02)); // clamp
+
+    content.style.transform = "rotateX(" + (curve + velocity) + "deg)";
+  }, { passive: true });
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────
 function init() {
   createMoonToggle();  // button must exist before applyPalette sets its icon
   applyPalette();
   initFormatAccordion();
+  initCurvedSpace();
 }
 
 if (document.readyState === "loading") {
