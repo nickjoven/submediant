@@ -104,6 +104,36 @@ function liftForDark(hex) {
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
+// Luminance inversion for light mode: keep hue and saturation, invert lightness.
+// This is the mathematical complement on the L axis of HSL.
+function invertForLight(hex) {
+  var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  // RGB to HSL
+  var rn = r/255, gn = g/255, bn = b/255;
+  var max = Math.max(rn,gn,bn), min = Math.min(rn,gn,bn);
+  var h, s, l = (max+min)/2;
+  if (max === min) { h = s = 0; }
+  else {
+    var d = max - min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    if (max === rn) h = ((gn-bn)/d + (gn < bn ? 6 : 0))/6;
+    else if (max === gn) h = ((bn-rn)/d + 2)/6;
+    else h = ((rn-gn)/d + 4)/6;
+  }
+  // Invert lightness
+  l = 1 - l;
+  // Clamp to keep readable (not too extreme)
+  l = Math.max(0.15, Math.min(0.85, l));
+  // HSL to RGB
+  function hue2rgb(p, q, t) { if(t<0)t+=1; if(t>1)t-=1; if(t<1/6)return p+(q-p)*6*t; if(t<1/2)return q; if(t<2/3)return p+(q-p)*(2/3-t)*6; return p; }
+  var q2 = l < 0.5 ? l*(1+s) : l+s-l*s;
+  var p2 = 2*l-q2;
+  var ro = Math.round(hue2rgb(p2,q2,h+1/3)*255);
+  var go = Math.round(hue2rgb(p2,q2,h)*255);
+  var bo = Math.round(hue2rgb(p2,q2,h-1/3)*255);
+  return "#" + ((1<<24)+(ro<<16)+(go<<8)+bo).toString(16).slice(1);
+}
+
 // ── State: linked-list Möbius cycle with accumulating half-twist ─────────
 //
 // Structure: 12 colors in a circular linked list.
@@ -201,20 +231,21 @@ function applyPalette() {
   var extras = goldenAccents(primary, secondary);
 
   // In dark mode, lift colors that are too dark for readability
-  var lift = state.mode === "dark" ? liftForDark : function(c) { return c; };
+  // Dark mode: lift dark colors for readability. Light mode: invert lightness.
+  var adapt = state.mode === "dark" ? liftForDark : invertForLight;
 
-  root.style.setProperty("--m-ref", lift(PALETTE[primary]));
-  root.style.setProperty("--m-accent", lift(PALETTE[primary]));
-  root.style.setProperty("--m-accent2", lift(PALETTE[secondary]));
-  root.style.setProperty("--m-accent3", lift(PALETTE[extras[0]]));
-  root.style.setProperty("--m-accent4", lift(PALETTE[extras[1]]));
+  root.style.setProperty("--m-ref", adapt(PALETTE[primary]));
+  root.style.setProperty("--m-accent", adapt(PALETTE[primary]));
+  root.style.setProperty("--m-accent2", adapt(PALETTE[secondary]));
+  root.style.setProperty("--m-accent3", adapt(PALETTE[extras[0]]));
+  root.style.setProperty("--m-accent4", adapt(PALETTE[extras[1]]));
 
   root.setAttribute("data-mode", state.mode);
   root.setAttribute("data-theme", state.mode);
   root.style.colorScheme = state.mode;
 
   var moonPhase = Math.floor(state.step / 2) % 6;
-  var moonColor = lift(PALETTE[primary]);
+  var moonColor = adapt(PALETTE[primary]);
   if (btn) btn.innerHTML = moonSVG(moonPhase, moonColor);
 
   // Update favicon to match current moon phase

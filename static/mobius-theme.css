@@ -126,9 +126,28 @@ table tbody tr:nth-child(even) th {
   top: -16px; left: 0; right: 0; height: 16px;
 }
 
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  .mobius-hover-nav { font-size: 0.7rem; padding: 3px 8px; }
+/* ── Responsive: mobile / vertical readers ── */
+@media (max-width: 768px) {
+  /* Nav bar: tighter spacing, smaller text */
+  #page-nav { gap: 0.8rem !important; padding: 8px 10px !important; font-size: 0.7rem !important; }
+  #page-nav a { white-space: nowrap; }
+  #mobius-moon-toggle { width: 28px !important; height: 28px !important; }
+  #mobius-moon-toggle svg { width: 18px !important; height: 18px !important; }
+
+  /* Stack grids vertically */
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+
+  /* Reduce padding on standalone pages */
+  main { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Format accordion: less indent on mobile */
+  .fmt-level-1 { padding-left: 0.5rem; }
+  .fmt-level-2 { padding-left: 1rem; }
+  .fmt-level-3 { padding-left: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  #page-nav { gap: 0.5rem !important; font-size: 0.65rem !important; }
 }
 
 /* ── Format accordion: expand / collapse ── */
