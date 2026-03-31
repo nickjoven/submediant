@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>47 Oscillations</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+}
+
+body {
+  background: var(--m-bg, #0d1117);
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 40px 160px;
+}
+
+/* phi-based vertical rhythm */
+.phi-spacer-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer { height: calc(61.8px * 1.618); }
+.phi-spacer-lg { height: calc(61.8px * 1.618 * 1.618); }
+.phi-spacer-sm { height: 61.8px; }
+
+#mobius-moon-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+/* section titles */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  font-size: var(--fs-lg);
+  font-weight: 300;
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1.618em;
+}
+
+/* convergence plot */
+canvas.plot {
+  width: 100%;
+  max-width: 760px;
+  height: 380px;
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--m-bg, #0d1117) 80%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+/* mathjax blocks */
+.equation-block {
+  margin: 1.618em 0;
+  padding: 1em 0;
+  text-align: center;
+  font-size: var(--fs-lg);
+}
+
+/* fibonacci table */
+.fib-table {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  background: color-mix(in srgb, var(--m-surface, #161b22) 70%, transparent);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 2px;
+  padding: 1.618em;
+  overflow-x: auto;
+  max-height: 80vh;
+  overflow-y: auto;
+  white-space: pre;
+}
+
+.fib-table .settled {
+  color: var(--m-accent, #DE3373);
+}
+
+.fib-table .muted {
+  color: var(--m-text-muted, #8b949e);
+}
+
+/* math connection cards */
+.math-card {
+  padding: 1.618em;
+  margin-bottom: 1.618em;
+  border-left: 2px solid var(--m-border, #30363d);
+  background: color-mix(in srgb, var(--m-surface, #161b22) 40%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.math-card h3 {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  margin-bottom: 0.618em;
+  color: var(--m-text, #e6edf3);
+}
+
+.math-card p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 0.618em;
+}
+
+.math-card .equation-block {
+  font-size: var(--fs-base);
+}
+
+/* alpha centauri path */
+.sb-path {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: var(--fs-sm);
+  line-height: 2;
+  padding: 1.618em;
+  background: color-mix(in srgb, var(--m-surface, #161b22) 70%, transparent);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 2px;
+  overflow-x: auto;
+}
+
+.sb-path .left { color: #FCCA28; }
+.sb-path .right { color: #08A953; }
+.sb-path .mediant { color: var(--m-accent, #DE3373); }
+
+/* paragraph text */
+section p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+}
+
+section p strong {
+  color: var(--m-text, #e6edf3);
+}
+
+a { color: var(--m-accent, #DE3373); text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- HERO                                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-hero">
+  <div style="text-align:center;">
+    <div class="section-title" style="margin-bottom:0.3em;">47 Oscillations</div>
+    <div class="section-subtitle">The slowest convergence in mathematics</div>
+    <div style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); letter-spacing:0.1em;">
+      $x_{n+1} = \dfrac{1}{1+x_n} \longrightarrow \dfrac{1}{\varphi}$
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 1: THE OSCILLATION                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="oscillation">
+  <div class="section-title">The Oscillation</div>
+
+  <p>
+    Start with $x_0 = 1$. Apply the map $x \mapsto \frac{1}{1+x}$ repeatedly.
+    The sequence oscillates above and below $\frac{1}{\varphi}$, each swing
+    smaller than the last by exactly $\varphi$. These are consecutive
+    Fibonacci ratios:
+  </p>
+  <p>
+    <strong>1, &thinsp;1/2, &thinsp;2/3, &thinsp;3/5, &thinsp;5/8, &thinsp;8/13, &thinsp;13/21, &thinsp;21/34, &thinsp;34/55, &thinsp;55/89, &thinsp;...</strong>
+  </p>
+
+  <div class="equation-block">
+    $$x_{n+1} = \frac{1}{1 + x_n}, \qquad x_\infty = \frac{1}{\varphi} = \frac{\sqrt{5}-1}{2}$$
+  </div>
+
+  <div class="phi-spacer-sm"></div>
+  <canvas id="convergence-plot" class="plot"></canvas>
+  <div style="text-align:right; font-size:var(--fs-xs); color:var(--m-text-muted,#8b949e); margin-top:0.5em;">
+    The golden line: $1/\varphi = 0.618033988...$
+  </div>
+</section>
+
+<div class="phi-spacer-lg"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 2: 47 OSCILLATIONS TABLE                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="table">
+  <div class="section-title">The Sequence</div>
+  <p>
+    Each term is a ratio of consecutive Fibonacci numbers. By $n = 47$, the
+    first 9 decimal digits have settled to <strong>0.618033988...</strong>
+  </p>
+  <div class="phi-spacer-sm"></div>
+  <div id="fib-table" class="fib-table"></div>
+</section>
+
+<div class="phi-spacer-lg"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 3: THE NUMBER IN MATHEMATICS                               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="mathematics">
+  <div class="section-title">The Number in Mathematics</div>
+
+  <div class="math-card" style="border-left-color:#DE3373;">
+    <h3>1. Continued Fractions</h3>
+    <div class="equation-block">
+      $$\frac{1}{\varphi} = \cfrac{1}{1 + \cfrac{1}{1 + \cfrac{1}{1 + \cdots}}} = [0;\, 1, 1, 1, \ldots]$$
+    </div>
+    <p>
+      Every irrational number has a unique continued fraction expansion. The
+      golden ratio's reciprocal uses only 1s &mdash; the smallest possible
+      partial quotients. This makes it the <strong>slowest-converging</strong>
+      continued fraction and, in a precise sense, the <strong>most
+      irrational</strong> number. It sits at the widest gap in every Farey
+      sequence, the last number to be approximated.
+    </p>
+  </div>
+
+  <div class="math-card" style="border-left-color:#FCCA28;">
+    <h3>2. Diophantine Approximation</h3>
+    <div class="equation-block">
+      $$\text{For any irrational } \alpha,\ \exists\text{ infinitely many } \frac{p}{q} \text{ with } \left|\alpha - \frac{p}{q}\right| < \frac{1}{q^2 \sqrt{5}}$$
+    </div>
+    <p>
+      <strong>Hurwitz's theorem (1891)</strong>: the constant $\sqrt{5}$ is best
+      possible. The only number for which equality holds &mdash; the hardest
+      irrational to approximate by rationals &mdash; is $\varphi$ (and its
+      equivalents under M&ouml;bius transformations, including $1/\varphi$).
+      Replace $\sqrt{5}$ with anything larger and the theorem fails for
+      $\varphi$.
+    </p>
+  </div>
+
+  <div class="math-card" style="border-left-color:#08A953;">
+    <h3>3. Penrose Tilings &amp; Quasicrystals</h3>
+    <div class="equation-block">
+      $$\lim_{R \to \infty} \frac{N_{\text{kite}}(R)}{N_{\text{dart}}(R)} = \varphi$$
+    </div>
+    <p>
+      In a Penrose tiling, the ratio of kites to darts approaches $\varphi$
+      exactly. This aperiodic order was long considered a mathematical
+      curiosity until <strong>Dan Shechtman</strong> discovered physical
+      quasicrystals in 1984 (Nobel Prize in Chemistry, 2011). The icosahedral
+      symmetry of Al-Mn alloys exhibits fivefold diffraction patterns governed
+      by the golden ratio. Not random disorder &mdash; deterministic aperiodicity.
+    </p>
+  </div>
+
+  <div class="math-card" style="border-left-color:#F5712A;">
+    <h3>4. Hyperbolic Geometry</h3>
+    <div class="equation-block">
+      $$d = \frac{\text{diagonal of regular pentagon}}{\text{side}} = \varphi$$
+    </div>
+    <p>
+      In the Poincar&eacute; disk model of hyperbolic space, a regular ideal
+      pentagon inscribed in the unit circle has its diagonal-to-side ratio
+      equal to $\varphi$. The golden ratio is not merely Euclidean &mdash; it
+      appears as a fundamental length in hyperbolic geometry, connecting to
+      the modular group $\text{PSL}(2, \mathbb{Z})$ and the tessellation of
+      the hyperbolic plane by ideal triangles.
+    </p>
+  </div>
+
+  <div class="math-card" style="border-left-color:#F59EAF;">
+    <h3>5. Fibonacci in Nature</h3>
+    <div class="equation-block">
+      $$\theta = \frac{360°}{\varphi^2} \approx 137.507°$$
+    </div>
+    <p>
+      The divergence angle $\theta$ governs <strong>phyllotaxis</strong>:
+      the spiral arrangement of leaves, seeds, and florets. Sunflower heads
+      display 34 and 55 spirals (consecutive Fibonacci numbers). Pine cones
+      show 8 and 13. This is not mysticism &mdash; it is the same
+      mode-locking avoidance that makes $1/\varphi$ the hardest number to
+      approximate. A new primordium placed at the golden angle maximally avoids
+      alignment with previous ones, ensuring optimal packing.
+    </p>
+  </div>
+
+  <div class="math-card" style="border-left-color:#EE1B3E;">
+    <h3>6. Minimal Polynomial</h3>
+    <div class="equation-block">
+      $$x^2 + x - 1 = 0, \qquad x = \frac{\sqrt{5}-1}{2} = \frac{1}{\varphi}$$
+    </div>
+    <p>
+      The simplest quadratic irrational that generates an infinite
+      non-repeating pattern. Algebraic degree 2, yet maximally hard to
+      approximate &mdash; a paradox. Higher-degree algebraic numbers are
+      <em>easier</em> to approximate (by Roth's theorem, all algebraic
+      irrationals have approximation exponent 2, but $1/\varphi$ achieves
+      the worst constant). The minimal polynomial $x^2 + x - 1$ encodes
+      the recursion $F_{n+1} = F_n + F_{n-1}$ directly.
+    </p>
+  </div>
+</section>
+
+<div class="phi-spacer-lg"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 4: ALPHA CENTAURI                                          -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section id="alpha-centauri">
+  <div class="section-title">Alpha Centauri</div>
+
+  <p>
+    Alpha Centauri is <strong>4.37 light-years</strong> away. In the framework
+    of the Stern-Brocot tree, distance is not measured through empty space but
+    through the <strong>rational approximation chain</strong> &mdash; the
+    sequence of mediants connecting one frequency ratio to another. Each
+    mediant step is a turn in the pipe.
+  </p>
+
+  <div class="equation-block">
+    $$d = 4.37 \text{ ly} \times c = 4.134 \times 10^{16} \text{ m}$$
+  </div>
+
+  <p>
+    Suppose one star resonates at the ratio $\frac{2}{3}$ (a perfect fifth)
+    and another at $\frac{3}{5}$ (a major sixth). The Stern-Brocot path
+    between them traces every mediant &mdash; every rational number the
+    universe must pass through to connect two frequencies:
+  </p>
+
+  <div class="phi-spacer-sm"></div>
+
+  <div id="sb-path" class="sb-path"></div>
+
+  <div class="phi-spacer-sm"></div>
+
+  <p>
+    Each step is a left or right turn in the binary tree. The path between
+    $\frac{2}{3}$ and $\frac{3}{5}$ passes through their mediant
+    $\frac{5}{8}$ &mdash; the next Fibonacci ratio. The path between two
+    stars is not through empty space. It is through the structure of the
+    rationals themselves.
+  </p>
+
+  <p>
+    The pipe you see growing on the background canvas traces this path:
+    the cobweb iteration of $f(x) = \frac{1}{1+x}$, each segment a mediant
+    step, each turn a rational approximation to $\frac{1}{\varphi}$. The
+    universe already computed the curve. We are watching it remember.
+  </p>
+</section>
+
+<div class="phi-spacer-lg"></div>
+<div style="text-align:center; color:var(--m-text-muted,#8b949e); font-size:var(--fs-xs); letter-spacing:0.15em; padding-bottom:61.8px;">
+  $\frac{1}{\varphi} = 0.618033988...$
+</div>
+
+</main>
+
+<script src="_static/mobius-theme.js"></script>
+
+<script>
+(function() {
+"use strict";
+
+// ── Constants ──────────────────────────────────────────────────────────
+const PHI = (1 + Math.sqrt(5)) / 2;
+const PHI_INV = 1 / PHI; // 0.6180339887...
+const PALETTE = [
+  "#DE3373","#FCCA28","#08A953","#F5712A","#F59EAF","#EE1B3E",
+  "#1E76B8","#7C2E87","#7A0434","#F98F81","#37BA9B","#C0C2C2"
+];
+
+// ── Fibonacci sequence up to F(49) ────────────────────────────────────
+// Using BigInt for exact large values
+const FIB_BIG = [0n, 1n];
+for (let i = 2; i <= 49; i++) FIB_BIG.push(FIB_BIG[i-1] + FIB_BIG[i-2]);
+
+// Float versions for plotting
+const FIB = [];
+for (let i = 0; i <= 49; i++) FIB.push(Number(FIB_BIG[i]));
+
+// Convergence sequence: F(n)/F(n+1) for n=1..48
+// x_0 = F(1)/F(2) = 1/1, x_1 = F(1)/F(2)...
+// Actually: x_0=1, x_1=1/2, x_2=2/3, ...
+// x_n = F(n+1)/F(n+2) ... let's just iterate
+const SEQ = [1];
+for (let i = 1; i <= 47; i++) SEQ.push(1 / (1 + SEQ[i-1]));
+
+// ── Section 2: Fibonacci table ────────────────────────────────────────
+function buildFibTable() {
+  const el = document.getElementById('fib-table');
+  if (!el) return;
+  let lines = [];
+  for (let n = 0; n <= 47; n++) {
+    const nStr = String(n).padStart(2, ' ');
+    // F(n+1) / F(n+2)
+    const num = FIB_BIG[n + 1];
+    const den = FIB_BIG[n + 2];
+    const frac = num.toString() + '/' + den.toString();
+    const val = SEQ[n];
+    const valStr = val.toFixed(15);
+    // How many leading digits match 0.618033988749894...?
+    const target = '0.618033988749894';
+    let matchLen = 0;
+    for (let k = 0; k < Math.min(valStr.length, target.length); k++) {
+      if (valStr[k] === target[k]) matchLen = k + 1;
+      else break;
+    }
+    const padFrac = frac.padEnd(32, ' ');
+    const isSettled = n >= 47;
+    const line = `<span class="muted">n=${nStr}</span>   ${padFrac} = ${valStr}${isSettled ? ' <span class="settled">&larr; 9 digits settled</span>' : ''}`;
+    lines.push(line);
+  }
+  el.innerHTML = lines.join('\n');
+}
+
+// ── Section 4: Stern-Brocot path ──────────────────────────────────────
+function buildSBPath() {
+  const el = document.getElementById('sb-path');
+  if (!el) return;
+
+  // Find Stern-Brocot path from 2/3 to 3/5
+  // Path for a fraction p/q: start at 1/1, go left if p/q < mediant, right if >
+  function sbPath(p, q) {
+    let lp = 0, lq = 1, rp = 1, rq = 0;
+    let path = [];
+    while (true) {
+      let mp = lp + rp, mq = lq + rq;
+      if (mp === p && mq === q) { path.push({dir:'M', p:mp, q:mq}); break; }
+      if (p * mq < mp * q) { // p/q < mp/mq → go left
+        rp = mp; rq = mq;
+        path.push({dir:'L', p:mp, q:mq});
+      } else {
+        lp = mp; lq = mq;
+        path.push({dir:'R', p:mp, q:mq});
+      }
+      if (path.length > 50) break;
+    }
+    return path;
+  }
+
+  const pathA = sbPath(2, 3);
+  const pathB = sbPath(3, 5);
+
+  let html = '<strong>Path to 2/3:</strong>\n';
+  html += pathA.map(s => {
+    const cls = s.dir === 'L' ? 'left' : s.dir === 'R' ? 'right' : 'mediant';
+    return `  <span class="${cls}">${s.dir}</span> → <span class="mediant">${s.p}/${s.q}</span>`;
+  }).join('\n') + '\n\n';
+
+  html += '<strong>Path to 3/5:</strong>\n';
+  html += pathB.map(s => {
+    const cls = s.dir === 'L' ? 'left' : s.dir === 'R' ? 'right' : 'mediant';
+    return `  <span class="${cls}">${s.dir}</span> → <span class="mediant">${s.p}/${s.q}</span>`;
+  }).join('\n') + '\n\n';
+
+  // Common ancestor and path between
+  html += '<strong>Mediant chain 2/3 → 5/8 → 3/5:</strong>\n';
+  html += '  <span class="mediant">2/3</span>';
+  html += '  →  mediant(2/3, 3/5) = <span class="mediant">5/8</span>';
+  html += '  →  <span class="mediant">3/5</span>\n\n';
+  html += '<span class="muted">Every step is a Fibonacci ratio. The path IS the convergence.</span>';
+
+  el.innerHTML = html;
+}
+
+// ── Convergence plot (Section 1) ──────────────────────────────────────
+function drawConvergencePlot() {
+  const canvas = document.getElementById('convergence-plot');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+
+  const padL = 60, padR = 20, padT = 20, padB = 40;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  // Clear
+  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+
+  // Y range: 0.45 to 1.05
+  const yMin = 0.45, yMax = 1.05;
+  const xMin = 0, xMax = 47;
+
+  function toX(n) { return padL + (n - xMin) / (xMax - xMin) * plotW; }
+  function toY(v) { return padT + (1 - (v - yMin) / (yMax - yMin)) * plotH; }
+
+  // Grid
+  ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--m-border').trim() || '#30363d';
+  ctx.lineWidth = 0.5;
+  for (let y = 0.5; y <= 1.0; y += 0.1) {
+    ctx.beginPath();
+    ctx.moveTo(padL, toY(y));
+    ctx.lineTo(W - padR, toY(y));
+    ctx.stroke();
+  }
+
+  // Golden ratio line
+  ctx.strokeStyle = '#FCCA28';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(padL, toY(PHI_INV));
+  ctx.lineTo(W - padR, toY(PHI_INV));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Label
+  ctx.fillStyle = '#FCCA28';
+  ctx.font = '11px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('1/\u03C6 = 0.618033988...', padL + 4, toY(PHI_INV) - 6);
+
+  // Plot the oscillation curve
+  ctx.strokeStyle = '#DE3373';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i <= 47; i++) {
+    const x = toX(i), y = toY(SEQ[i]);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Dots
+  for (let i = 0; i <= 47; i++) {
+    const x = toX(i), y = toY(SEQ[i]);
+    const col = PALETTE[i % 12];
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.arc(x, y, i <= 20 ? 3 : 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Axes labels
+  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-text-muted').trim() || '#8b949e';
+  ctx.font = '11px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let n = 0; n <= 47; n += 5) {
+    ctx.fillText(n, toX(n), H - padB + 18);
+  }
+  ctx.textAlign = 'right';
+  for (let y = 0.5; y <= 1.0; y += 0.1) {
+    ctx.fillText(y.toFixed(1), padL - 8, toY(y) + 4);
+  }
+
+  // Axis labels
+  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-text').trim() || '#e6edf3';
+  ctx.font = '12px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('iteration n', W / 2, H - 4);
+  ctx.save();
+  ctx.translate(14, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('x\u2099', 0, 0);
+  ctx.restore();
+}
+
+// ── Background Canvas: Pipes + Starfield ──────────────────────────────
+function initBackground() {
+  const canvas = document.getElementById('bg');
+  const dpr = window.devicePixelRatio || 1;
+  let W, H;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const ctx = canvas.getContext('2d');
+
+  // ── Stern-Brocot starfield ──
+  // Generate stars at rational points from Stern-Brocot tree levels 1..8
+  const stars = [];
+  function generateSBStars() {
+    // BFS the Stern-Brocot tree
+    // Level 0: 1/1
+    // Each node (a/b) has left child mediant(leftAncestor, a/b) and right child mediant(a/b, rightAncestor)
+    let queue = [{p:1, q:1, lp:0, lq:1, rp:1, rq:0, level:0}];
+    const maxLevel = 7;
+    const visited = new Set();
+    visited.add('1/1');
+
+    while (queue.length > 0) {
+      const node = queue.shift();
+      const {p, q, lp, lq, rp, rq, level} = node;
+
+      // Map p/q to screen position using golden-ratio hashing
+      // x = fractional part of p/q * phi * screenWidth
+      // y = fractional part of p/q * phi^2 * screenHeight
+      const ratio = p / q;
+      const x = ((ratio * PHI * 137.508) % 1) * W;
+      const y = ((ratio * PHI * PHI * 97.3) % 1) * H;
+      const brightness = Math.max(0.15, 1.0 - level * 0.12);
+      const size = Math.max(0.5, 2.5 - level * 0.3);
+      const twinklePhase = (p * 7 + q * 13) % 100 / 100 * Math.PI * 2;
+      const twinkleSpeed = 0.3 + (p * 3 + q * 5) % 20 / 20 * 0.7;
+
+      stars.push({ x, y, brightness, size, twinklePhase, twinkleSpeed, level, p, q });
+
+      if (level < maxLevel) {
+        // Left child: mediant of (lp/lq) and (p/q)
+        const mlp = lp + p, mlq = lq + q;
+        const keyL = mlp + '/' + mlq;
+        if (!visited.has(keyL) && mlq < 200) {
+          visited.add(keyL);
+          queue.push({p:mlp, q:mlq, lp:lp, lq:lq, rp:p, rq:q, level:level+1});
+        }
+        // Right child: mediant of (p/q) and (rp/rq)
+        const mrp = p + rp, mrq = q + rq;
+        const keyR = mrp + '/' + mrq;
+        if (!visited.has(keyR) && mrq < 200) {
+          visited.add(keyR);
+          queue.push({p:mrp, q:mrq, lp:p, lq:q, rp:rp, rq:rq, level:level+1});
+        }
+      }
+    }
+
+    // Add more stars with deeper golden-ratio distributed positions
+    for (let i = 1; i <= 300; i++) {
+      const frac = (i * PHI_INV) % 1;
+      const frac2 = (i * PHI_INV * PHI_INV) % 1;
+      stars.push({
+        x: frac * W,
+        y: frac2 * H,
+        brightness: 0.08 + Math.random() * 0.15,
+        size: 0.3 + Math.random() * 0.5,
+        twinklePhase: i * 0.7,
+        twinkleSpeed: 0.2 + Math.random() * 0.5,
+        level: 8,
+        p: i, q: i + 1
+      });
+    }
+  }
+  generateSBStars();
+
+  // ── Cobweb pipes ──
+  // f(x) = 1/(1+x), cobweb iteration starting from x0=1
+  // Segments: (x_n, x_n) → (x_n, f(x_n)), then (x_n, f(x_n)) → (f(x_n), f(x_n))
+  // = horizontal to curve, then vertical to y=x
+  // Actually cobweb: (x_n, x_n) → (x_n, 1/(1+x_n)) [vertical to curve]
+  //                  (x_n, 1/(1+x_n)) → (1/(1+x_n), 1/(1+x_n)) [horizontal to y=x]
+  const pipeSegments = [];
+  for (let n = 0; n <= 47; n++) {
+    const xn = SEQ[n];
+    const fxn = 1 / (1 + xn); // = SEQ[n+1]
+    // Vertical: from (xn, xn) to (xn, fxn)
+    pipeSegments.push({
+      x1: xn, y1: xn,
+      x2: xn, y2: fxn,
+      color: PALETTE[(n * 2) % 12]
+    });
+    // Horizontal: from (xn, fxn) to (fxn, fxn)
+    pipeSegments.push({
+      x1: xn, y1: fxn,
+      x2: fxn, y2: fxn,
+      color: PALETTE[(n * 2 + 1) % 12]
+    });
+  }
+
+  // Map cobweb coordinates to screen
+  // The cobweb lives in [0.4, 1.1] roughly
+  function cobwebToScreen(cx, cy) {
+    const margin = 0.15;
+    const lo = PHI_INV - 0.5, hi = PHI_INV + 0.5;
+    const sx = ((cx - lo) / (hi - lo)) * W;
+    const sy = H - ((cy - lo) / (hi - lo)) * H;
+    return [sx, sy];
+  }
+
+  // Animation state
+  let segmentCount = 0;
+  const SEGMENT_INTERVAL = 2000; // ms per new segment
+  let lastSegmentTime = performance.now();
+  const startTime = performance.now();
+
+  function animate(now) {
+    // Advance pipe segments
+    if (now - lastSegmentTime > SEGMENT_INTERVAL && segmentCount < pipeSegments.length) {
+      segmentCount++;
+      lastSegmentTime = now;
+    }
+
+    ctx.save();
+    ctx.scale(dpr, dpr);
+
+    // Clear
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--m-bg').trim() || '#0d1117';
+    ctx.fillRect(0, 0, W, H);
+
+    // ── Draw stars ──
+    const t = (now - startTime) / 1000;
+    for (const star of stars) {
+      const twinkle = 0.5 + 0.5 * Math.sin(t * star.twinkleSpeed + star.twinklePhase);
+      const alpha = star.brightness * (0.4 + 0.6 * twinkle);
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(230, 237, 243, ${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+
+    // ── Draw y=x line (faint) ──
+    {
+      const [x1, y1] = cobwebToScreen(0, 0);
+      const [x2, y2] = cobwebToScreen(1.2, 1.2);
+      ctx.strokeStyle = 'rgba(200, 200, 200, 0.06)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    // ── Draw f(x) = 1/(1+x) curve (faint) ──
+    ctx.strokeStyle = 'rgba(200, 200, 200, 0.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i <= 100; i++) {
+      const x = 0.1 + i / 100 * 1.1;
+      const y = 1 / (1 + x);
+      const [sx, sy] = cobwebToScreen(x, y);
+      if (i === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+
+    // ── Draw pipe segments ──
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (let i = 0; i < segmentCount; i++) {
+      const seg = pipeSegments[i];
+      const [sx1, sy1] = cobwebToScreen(seg.x1, seg.y1);
+      const [sx2, sy2] = cobwebToScreen(seg.x2, seg.y2);
+
+      // Glow effect
+      const age = Math.min(1, (segmentCount - i) / 10);
+      const glowAlpha = 0.15 + 0.25 * (1 - age);
+
+      ctx.shadowColor = seg.color;
+      ctx.shadowBlur = 8 + 12 * (1 - age);
+      ctx.strokeStyle = seg.color;
+      ctx.globalAlpha = 0.3 + 0.5 * (1 - age * 0.5);
+      ctx.lineWidth = 2 + (1 - age) * 1.5;
+
+      ctx.beginPath();
+      ctx.moveTo(sx1, sy1);
+      ctx.lineTo(sx2, sy2);
+      ctx.stroke();
+
+      // If this is the newest segment, draw a bright tip
+      if (i === segmentCount - 1) {
+        ctx.beginPath();
+        ctx.arc(sx2, sy2, 3, 0, Math.PI * 2);
+        ctx.fillStyle = seg.color;
+        ctx.globalAlpha = 0.9;
+        ctx.fill();
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  buildFibTable();
+  buildSBPath();
+  drawConvergencePlot();
+  initBackground();
+
+  // Redraw convergence plot on resize
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(drawConvergencePlot, 200);
+  });
+});
+
+})();
+</script>
+
+</body>
+</html>
