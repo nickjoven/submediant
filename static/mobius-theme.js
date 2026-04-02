@@ -366,12 +366,11 @@ function initCurvedSpace() {
 
   // Set up perspective on the content's parent
   var wrapper = content.parentElement || content;
-  wrapper.style.perspective = "1200px";
+  wrapper.style.perspective = "2400px";
   wrapper.style.perspectiveOrigin = "50% 50%";
-  content.style.transformOrigin = "50% 0%";
+  content.style.transformOrigin = "50% 50%";
   content.style.transition = "transform 0.15s ease-out";
 
-  var lastScroll = 0;
   window.addEventListener("scroll", function() {
     var scrollY = window.scrollY;
     var maxScroll = document.body.scrollHeight - window.innerHeight;
@@ -380,16 +379,11 @@ function initCurvedSpace() {
     // Scroll fraction: 0 at top, 1 at bottom
     var frac = scrollY / maxScroll;
 
-    // Curve: subtle rotateX that peaks at mid-scroll
+    // Curve: very subtle rotateX that peaks at mid-scroll
     // At top and bottom: flat. In the middle: slightly tilted.
-    var curve = Math.sin(frac * Math.PI) * 0.8; // max 0.8 degrees
+    var curve = Math.sin(frac * Math.PI) * 0.3; // max 0.3 degrees
 
-    // Scroll velocity for additional micro-tilt
-    var delta = scrollY - lastScroll;
-    lastScroll = scrollY;
-    var velocity = Math.max(-2, Math.min(2, delta * 0.02)); // clamp
-
-    content.style.transform = "rotateX(" + (curve + velocity) + "deg)";
+    content.style.transform = "rotateX(" + curve + "deg)";
   }, { passive: true });
 }
 
