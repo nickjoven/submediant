@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
+<title>Simulations</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+  --gold: #FCCA28;
+  --green: #08A953;
+  --magenta: #DE3373;
+  --teal: #37BA9B;
+  --salmon: #F98F81;
+  --blue: #1E76B8;
+  --purple: #7C2E87;
+  --maroon: #7A0434;
+}
+
+body {
+  background: transparent;
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: clip;
+  color-scheme: dark;
+}
+html:not([data-mode="light"]) {
+  --m-bg: #000000;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 40px 160px;
+}
+
+/* phi-based vertical rhythm */
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer { height: calc(61.8px * var(--phi)); }
+.phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
+.phi-spacer-sm { height: 61.8px; }
+
+/* section titles */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.section-num {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.618em;
+  opacity: 0.7;
+}
+
+/* equation blocks */
+.equation-block {
+  margin: 1.618em 0;
+  padding: 1em 0;
+  text-align: center;
+  font-size: var(--fs-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* prose */
+section p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+}
+section p strong {
+  color: var(--m-text, #e6edf3);
+}
+section ul {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+section ul li { margin-bottom: 0.618em; }
+section ul li strong { color: var(--m-text, #e6edf3); }
+
+a { color: var(--magenta); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* MathJax overflow */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
+/* visualization containers */
+.viz-container {
+  position: relative;
+  width: 100%;
+  margin: 1.618em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(200,200,200,0.08);
+}
+.viz-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.viz-label {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+}
+.viz-side-by-side {
+  display: flex;
+  gap: 1em;
+  margin: 1.618em 0;
+}
+.viz-side-by-side .viz-container {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+/* controls */
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin: 1em 0 1.618em;
+  padding: 1em;
+  background: color-mix(in srgb, var(--m-surface, #161b22) 60%, transparent);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+.sim-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  flex: 1;
+  min-width: 140px;
+}
+.sim-control label {
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sim-control .val {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: var(--fs-xs);
+  color: var(--gold);
+  min-width: 3em;
+  text-align: right;
+}
+.sim-control .row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  background: var(--m-border, #30363d);
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: none;
+}
+.sim-btn {
+  font-size: var(--fs-xs);
+  padding: 0.4em 1em;
+  background: transparent;
+  color: var(--m-text-muted, #8b949e);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.sim-btn:hover {
+  border-color: var(--gold);
+  color: var(--m-text, #e6edf3);
+}
+
+/* fade-in on scroll */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  backdrop-filter: blur(0.5px) brightness(1.05);
+  -webkit-backdrop-filter: blur(0.5px) brightness(1.05);
+  border-radius: 4px;
+  padding: 1rem 0;
+}
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* responsive */
+@media (max-width: 600px) {
+  main { padding: 0 16px 120px !important; }
+  .equation-block { font-size: var(--fs-base) !important; padding: 0.5em 0; }
+  .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
+  .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
+  .viz-side-by-side { flex-direction: column; }
+  section ul { padding-left: 1em; }
+  .sim-controls { gap: 0.6em; padding: 0.8em; }
+  .sim-control { min-width: 120px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<main>
+
+<!-- HERO -->
+<div class="phi-spacer-hero">
+  <div style="text-align:center;">
+    <div class="section-title" style="font-weight:100; letter-spacing:0.15em;">Simulations</div>
+    <p style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); max-width:500px; margin:0 auto;">
+      Coupled oscillators, phase locking, and the structures that emerge.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- I. COUPLED PENDULUMS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s1">
+  <span class="section-num">I</span>
+  <h2 class="section-title">Coupled Pendulums</h2>
+  <p>
+    Two pendulums on a shared beam. They exchange energy through the beam's
+    lateral give and spontaneously anti-synchronize &mdash; Huygens' observation
+    from 1665. Two coupled oscillators always reduce to a single relative-phase
+    equation. This is the <strong>trivially solvable</strong> case.
+  </p>
+  <div class="equation-block">
+    $$\ddot{\theta}_i = -\frac{g}{\ell}\sin\theta_i + \kappa\,(\theta_j - \theta_i)$$
+  </div>
+
+  <div class="viz-container" style="height: 360px;">
+    <canvas id="pendulum-canvas"></canvas>
+    <div class="viz-label">Huygens' clocks &mdash; phase difference converges to &pi;</div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Amplitude (initial &theta;)</label>
+      <div class="row">
+        <input type="range" id="pend-amp" min="10" max="80" value="45" step="1">
+        <span class="val" id="pend-amp-val">45&deg;</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Period (length &ell;)</label>
+      <div class="row">
+        <input type="range" id="pend-period" min="50" max="200" value="120" step="1">
+        <span class="val" id="pend-period-val">120</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Coupling &kappa;</label>
+      <div class="row">
+        <input type="range" id="pend-coupling" min="0" max="100" value="30" step="1">
+        <span class="val" id="pend-coupling-val">0.30</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="pend-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    Adjust the <strong>amplitude</strong> to set how far each pendulum starts from vertical.
+    Change the <strong>period</strong> by varying the pendulum length.
+    Increase <strong>coupling</strong> to watch them lock faster. Two oscillators,
+    one relative phase &mdash; always solvable. To get non-trivial dynamics,
+    you need <a href="three-body.html">three</a>.
+  </p>
+</section>
+
+<div class="phi-spacer-lg"></div>
+<div id="sim-sections-placeholder"></div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Utilities ────────────────────────────────────────────────────────────
+(function() {
+"use strict";
+
+// IntersectionObserver for fade-in
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) e.target.classList.add("visible");
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll("section").forEach(function(s) { observer.observe(s); });
+
+// High-DPI canvas helper
+function setupCanvas(canvas, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  var ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+// RK4 integrator
+function rk4(state, derivs, dt) {
+  var n = state.length;
+  var k1 = derivs(state);
+  var s2 = new Array(n), s3 = new Array(n), s4 = new Array(n);
+  for (var i = 0; i < n; i++) s2[i] = state[i] + k1[i] * dt * 0.5;
+  var k2 = derivs(s2);
+  for (var i = 0; i < n; i++) s3[i] = state[i] + k2[i] * dt * 0.5;
+  var k3 = derivs(s3);
+  for (var i = 0; i < n; i++) s4[i] = state[i] + k3[i] * dt;
+  var k4 = derivs(s4);
+  var out = new Array(n);
+  for (var i = 0; i < n; i++) {
+    out[i] = state[i] + (dt / 6) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
+  }
+  return out;
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// I. COUPLED PENDULUMS
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var canvas = document.getElementById("pendulum-canvas");
+  var container = canvas.parentElement;
+  var ctx;
+  var W, H;
+
+  // Parameters
+  var g = 9.81;
+  var ampDeg = 45;
+  var length = 120;     // pixel length, maps to physical length
+  var kappa = 0.30;
+
+  // State: [theta1, omega1, theta2, omega2]
+  var state;
+  var phaseTrail = [];  // history of (theta1, theta2) for phase plot
+  var TRAIL_MAX = 600;
+  var simTime = 0;
+
+  function initState() {
+    var a1 = ampDeg * Math.PI / 180;
+    var a2 = -ampDeg * Math.PI / 180 * 0.6; // start offset
+    state = [a1, 0, a2, 0];
+    phaseTrail = [];
+    simTime = 0;
+  }
+
+  function derivs(s) {
+    var L = length / 100; // scale to ~1m
+    var t1 = s[0], w1 = s[1], t2 = s[2], w2 = s[3];
+    return [
+      w1,
+      -(g / L) * Math.sin(t1) + kappa * (t2 - t1),
+      w2,
+      -(g / L) * Math.sin(t2) + kappa * (t1 - t2)
+    ];
+  }
+
+  function resize() {
+    W = container.clientWidth;
+    H = container.clientHeight;
+    ctx = setupCanvas(canvas, W, H);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Beam
+    var beamY = 50;
+    var beamLeft = W * 0.2;
+    var beamRight = W * 0.8;
+    var cx1 = W * 0.35;
+    var cx2 = W * 0.65;
+    var L = length;
+
+    ctx.strokeStyle = "rgba(200,200,200,0.3)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(beamLeft, beamY);
+    ctx.lineTo(beamRight, beamY);
+    ctx.stroke();
+
+    // Pendulum bobs
+    var x1 = cx1 + L * Math.sin(state[0]);
+    var y1 = beamY + L * Math.cos(state[0]);
+    var x2 = cx2 + L * Math.sin(state[2]);
+    var y2 = beamY + L * Math.cos(state[2]);
+
+    // Rods
+    ctx.strokeStyle = "rgba(200,200,200,0.4)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx1, beamY); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx2, beamY); ctx.lineTo(x2, y2); ctx.stroke();
+
+    // Coupling spring (zigzag between pivot points)
+    ctx.strokeStyle = "rgba(252,202,40,0.3)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    var springN = 8;
+    var springAmp = 6;
+    for (var i = 0; i <= springN * 2; i++) {
+      var t = i / (springN * 2);
+      var sx = cx1 + (cx2 - cx1) * t;
+      var sy = beamY + (i % 2 === 0 ? -springAmp : springAmp) * (i > 0 && i < springN * 2 ? 1 : 0);
+      if (i === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+
+    // Bobs
+    ctx.fillStyle = "#DE3373";
+    ctx.beginPath(); ctx.arc(x1, y1, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#37BA9B";
+    ctx.beginPath(); ctx.arc(x2, y2, 10, 0, Math.PI * 2); ctx.fill();
+
+    // Phase difference readout
+    var dphi = state[0] - state[2];
+    // Normalize to [-pi, pi]
+    dphi = ((dphi + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+    ctx.fillStyle = "rgba(200,200,200,0.5)";
+    ctx.font = "12px 'SF Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("\u0394\u03c6 = " + (dphi * 180 / Math.PI).toFixed(1) + "\u00b0", W / 2, H - 20);
+
+    // Phase trail (small inset bottom-right)
+    var insetW = 100, insetH = 100;
+    var insetX = W - insetW - 16;
+    var insetY = H - insetH - 16;
+    ctx.strokeStyle = "rgba(200,200,200,0.1)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(insetX, insetY, insetW, insetH);
+
+    // Axes labels
+    ctx.fillStyle = "rgba(200,200,200,0.3)";
+    ctx.font = "9px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("\u03b81", insetX + insetW / 2, insetY + insetH + 12);
+    ctx.save();
+    ctx.translate(insetX - 8, insetY + insetH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText("\u03b82", 0, 0);
+    ctx.restore();
+
+    if (phaseTrail.length > 1) {
+      ctx.beginPath();
+      for (var i = 0; i < phaseTrail.length; i++) {
+        var px = insetX + insetW / 2 + phaseTrail[i][0] * insetW / (2 * Math.PI);
+        var py = insetY + insetH / 2 + phaseTrail[i][1] * insetH / (2 * Math.PI);
+        px = Math.max(insetX, Math.min(insetX + insetW, px));
+        py = Math.max(insetY, Math.min(insetY + insetH, py));
+        var alpha = 0.15 + 0.85 * (i / phaseTrail.length);
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.strokeStyle = "rgba(252,202,40,0.6)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    // Sub-step physics
+    var steps = 8;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) {
+      state = rk4(state, derivs, dt);
+      simTime += dt;
+    }
+
+    // Record phase trail
+    phaseTrail.push([state[0], state[2]]);
+    if (phaseTrail.length > TRAIL_MAX) phaseTrail.shift();
+
+    draw();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var ampSlider = document.getElementById("pend-amp");
+  var periodSlider = document.getElementById("pend-period");
+  var couplingSlider = document.getElementById("pend-coupling");
+  var ampVal = document.getElementById("pend-amp-val");
+  var periodVal = document.getElementById("pend-period-val");
+  var couplingVal = document.getElementById("pend-coupling-val");
+  var resetBtn = document.getElementById("pend-reset");
+
+  ampSlider.addEventListener("input", function() {
+    ampDeg = +this.value;
+    ampVal.textContent = ampDeg + "\u00b0";
+    initState();
+  });
+  periodSlider.addEventListener("input", function() {
+    length = +this.value;
+    periodVal.textContent = length;
+    // Compute physical period
+    var L = length / 100;
+    var T = 2 * Math.PI * Math.sqrt(L / g);
+    periodVal.textContent = T.toFixed(2) + "s";
+  });
+  couplingSlider.addEventListener("input", function() {
+    kappa = +this.value / 100;
+    couplingVal.textContent = kappa.toFixed(2);
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", resize);
+  resize();
+  // Set initial period display
+  var T0 = 2 * Math.PI * Math.sqrt((length/100) / g);
+  periodVal.textContent = T0.toFixed(2) + "s";
+  requestAnimationFrame(animate);
+})();
+
+// ── Background canvas ────────────────────────────────────────────────────
+(function() {
+  var canvas = document.getElementById("bg");
+  var ctx = canvas.getContext("2d");
+  var W, H;
+
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  window.addEventListener("resize", resize);
+  resize();
+
+  var t = 0;
+  function draw() {
+    t += 0.003;
+    ctx.clearRect(0, 0, W, H);
+
+    // Subtle Lissajous curves
+    ctx.globalAlpha = 0.06;
+    for (var k = 0; k < 3; k++) {
+      var a = 2 + k;
+      var b = 3 + k;
+      var delta = t * (0.5 + k * 0.3);
+      ctx.beginPath();
+      for (var i = 0; i <= 600; i++) {
+        var s = (i / 600) * Math.PI * 2 * 4;
+        var x = W / 2 + Math.sin(a * s + delta) * W * 0.3;
+        var y = H / 2 + Math.sin(b * s) * H * 0.3;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = ["#FCCA28", "#37BA9B", "#DE3373"][k];
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+})();
+</script>
+
+</body>
+</html>
