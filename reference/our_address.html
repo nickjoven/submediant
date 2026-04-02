@@ -1220,3 +1220,171 @@ requestAnimationFrame(drawClock);
   ctx.globalAlpha = 1;
 })();
 </script>
+
+<script src="_static/mobius-theme.js"></script>
+<script>
+// ── Background: Cosmic particle field ──────────────────────────────────
+// Oscillating particles that synchronize in clusters — galaxies emerging
+// from coupled oscillators. No tree. The universe computes itself.
+const bgCanvas = document.getElementById('bg');
+const bgCtx = bgCanvas.getContext('2d');
+
+let bW, bH;
+var bgDpr = window.devicePixelRatio || 1;
+function resizeBg() {
+  bW = window.innerWidth; bH = window.innerHeight;
+  bgCanvas.width = bW * bgDpr; bgCanvas.height = bH * bgDpr;
+  bgCtx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0);
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+const BG_PHI = (1 + Math.sqrt(5)) / 2;
+const N_PARTICLES = 180;
+const particles = [];
+
+// Distribute particles in a golden-angle sunflower pattern for initial positions
+// then let them drift — galaxies coalesce from uniform distribution
+for (let i = 0; i < N_PARTICLES; i++) {
+  var goldenAngle = Math.PI * 2 * (1 - 1 / BG_PHI);
+  var t = i / N_PARTICLES;
+  var r = Math.sqrt(t);
+  var theta = i * goldenAngle;
+  particles.push({
+    x: 0.5 + r * 0.5 * Math.cos(theta),
+    y: 0.5 + r * 0.5 * Math.sin(theta),
+    phase: Math.random() * Math.PI * 2,
+    freq: (0.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : BG_PHI),
+    radius: 0.3 + Math.random() * 1.2,
+    drift_x: (Math.random() - 0.5) * 0.00012,
+    drift_y: (Math.random() - 0.5) * 0.00010,
+    cluster: Math.floor(i / 15), // soft clustering for galaxy-like grouping
+  });
+}
+
+// Tongue wave bands for background texture
+const bgTongues = [
+  { p: 1, q: 2, amp: 0.06 },
+  { p: 1, q: 3, amp: 0.04 },
+  { p: 2, q: 5, amp: 0.03 },
+];
+
+let bgT = 0;
+
+function drawBg() {
+  var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
+  bgCtx.fillStyle = bgColor;
+  bgCtx.fillRect(0, 0, bW, bH);
+
+  // Subtle wave bands (Arnold tongue structure in the background)
+  for (const tg of bgTongues) {
+    const yCenter = (tg.p / tg.q) * bH;
+    const omega = tg.p / tg.q * 0.4;
+    bgCtx.beginPath();
+    for (let x = 0; x < bW; x += 4) {
+      const wave = Math.sin(x * 0.008 + bgT * omega) * tg.amp * 30;
+      const y = yCenter + wave;
+      const alpha = 0.012 * (1 + 0.5 * Math.sin(bgT * omega * 0.3));
+      bgCtx.fillStyle = 'rgba(60, 80, 120, ' + alpha + ')';
+      bgCtx.fillRect(x, y - 0.5, 4, 1);
+    }
+  }
+
+  // Particles — oscillating dots that cluster into galaxy-like structures
+  var slowT = bgT * 0.001;
+  for (const p of particles) {
+    p.phase += p.freq * 0.006;
+    p.x += p.drift_x;
+    p.y += p.drift_y;
+
+    // Wrap
+    if (p.x > 1.1) p.x = -0.1;
+    if (p.x < -0.1) p.x = 1.1;
+    if (p.y > 1.1) p.y = -0.1;
+    if (p.y < -0.1) p.y = 1.1;
+
+    // Gentle clustering force — particles in same cluster attract slightly
+    // This creates galaxy-like condensation over time
+    var clusterCx = 0.5 + 0.3 * Math.cos(slowT * 0.5 + p.cluster * 1.3);
+    var clusterCy = 0.5 + 0.3 * Math.sin(slowT * 0.7 + p.cluster * 0.8);
+    p.x += (clusterCx - p.x) * 0.00003;
+    p.y += (clusterCy - p.y) * 0.00003;
+
+    var sx = p.x * bW;
+    var sy = p.y * bH;
+
+    var brightness = 0.06 + 0.04 * Math.sin(p.phase);
+    var pr = p.radius * (1 + 0.15 * Math.sin(p.phase * BG_PHI));
+
+    // Outer glow for brighter particles (galaxy cores)
+    if (p.radius > 0.9) {
+      bgCtx.beginPath();
+      bgCtx.arc(sx, sy, pr * 4, 0, Math.PI * 2);
+      bgCtx.fillStyle = 'rgba(180, 190, 220, ' + (brightness * 0.15) + ')';
+      bgCtx.fill();
+    }
+
+    bgCtx.beginPath();
+    bgCtx.arc(sx, sy, pr, 0, Math.PI * 2);
+    bgCtx.fillStyle = 'rgba(180, 190, 220, ' + brightness + ')';
+    bgCtx.fill();
+  }
+
+  // Coupling lines — faint connections between nearby particles (gravity)
+  for (let i = 0; i < N_PARTICLES; i += 3) {
+    const a = particles[i];
+    const b = particles[(i + 7) % N_PARTICLES];
+    const dx = a.x - b.x, dy = a.y - b.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 0.08) {
+      const alpha = 0.025 * (1 - dist / 0.08) * (0.5 + 0.5 * Math.cos(a.phase - b.phase));
+      bgCtx.beginPath();
+      bgCtx.moveTo(a.x * bW, a.y * bH);
+      bgCtx.lineTo(b.x * bW, b.y * bH);
+      bgCtx.strokeStyle = 'rgba(100, 130, 200, ' + alpha + ')';
+      bgCtx.lineWidth = 0.4;
+      bgCtx.stroke();
+    }
+  }
+
+  // Arrow of time: horizontal gradient showing progress
+  var arrowY = bH * 0.04;
+  var grad = bgCtx.createLinearGradient(0, arrowY, bW, arrowY);
+  grad.addColorStop(0, "rgba(222,51,115,0)");
+  grad.addColorStop(0.2, "rgba(222,51,115,0.04)");
+  grad.addColorStop(0.95, "rgba(8,169,83,0.06)");
+  grad.addColorStop(1, "rgba(8,169,83,0)");
+  bgCtx.fillStyle = grad;
+  bgCtx.fillRect(0, arrowY - 1, bW, 3);
+
+  bgT += 1;
+  requestAnimationFrame(drawBg);
+}
+
+requestAnimationFrame(drawBg);
+
+// ── Binary clock: 9 digits in binary ────────────────────────────────────
+const computedDigits = [3, 2, 3, 0, 6, 8, 4, 7, 0];
+
+function buildBinaryClock() {
+  const container = document.getElementById('binary-clock');
+  container.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const col = document.createElement('div');
+    col.className = 'binary-digit';
+    const val = computedDigits[i];
+    for (let bit = 3; bit >= 0; bit--) {
+      const dot = document.createElement('div');
+      dot.className = 'bit' + ((val >> bit) & 1 ? ' on' : '');
+      col.appendChild(dot);
+    }
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = 'd' + (i + 1);
+    col.appendChild(label);
+    container.appendChild(col);
+  }
+}
+
+buildBinaryClock();
+</script>
