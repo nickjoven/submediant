@@ -202,6 +202,24 @@ a:hover { text-decoration: underline; }
   50% { opacity: 0.8; }
 }
 
+/* tap-to-enlarge overlay */
+.diagram-row svg,
+.diagram-center svg { cursor: zoom-in; }
+.diagram-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex; align-items: center; justify-content: center;
+  cursor: zoom-out;
+  opacity: 0; transition: opacity 0.25s ease;
+  padding: 24px;
+}
+.diagram-overlay.open { opacity: 1; }
+.diagram-overlay svg {
+  max-width: 92vw; max-height: 85vh;
+  width: auto; height: auto;
+  filter: drop-shadow(0 0 40px rgba(124, 46, 135, 0.3));
+}
+
 /* fade-in on scroll */
 section {
   opacity: 0;
@@ -1089,5 +1107,39 @@ revealSections();
   <a href="constants.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Constants</a>
   <a href="simulations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Simulations</a>
 </nav>
+
+<script>
+/* ── Tap-to-enlarge SVG diagrams ── */
+(function() {
+  var overlay = document.createElement('div');
+  overlay.className = 'diagram-overlay';
+  document.body.appendChild(overlay);
+
+  function close() {
+    overlay.classList.remove('open');
+    setTimeout(function() { overlay.innerHTML = ''; }, 250);
+  }
+
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') close();
+  });
+
+  document.querySelectorAll('.diagram-row svg, .diagram-center svg').forEach(function(svg) {
+    svg.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var clone = svg.cloneNode(true);
+      clone.removeAttribute('width');
+      clone.removeAttribute('height');
+      clone.style.cursor = 'zoom-out';
+      overlay.innerHTML = '';
+      overlay.appendChild(clone);
+      // force reflow then animate in
+      overlay.offsetHeight;
+      overlay.classList.add('open');
+    });
+  });
+})();
+</script>
 </body>
 </html>
