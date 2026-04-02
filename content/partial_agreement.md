@@ -19,8 +19,6 @@ arms — the rational, luminous arms — are the *record of their
 disagreement*. Each arm traces the phase difference between fast
 and slow, written in stars across a hundred thousand light-years.
 
-A spiral galaxy is a system that learned to disagree gracefully.
-
 ---
 
 ## II.
@@ -38,8 +36,6 @@ Not gradually. Not from the edges. The break propagates at the
 speed of sound through rock, because every point was locked to
 its neighbor, and when one let go, they all let go. The cascade
 is instant because the coupling was total.
-
-A cascading failure is a system that forgot how to disagree.
 
 ---
 
@@ -95,8 +91,6 @@ agreement looks like when the coupling isn't strong enough
 for gravity.
 
 At $K \to 0$, there is no structure at all.
-
-One equation. One parameter. Three regimes. Two PDEs.
 
 ---
 
@@ -177,8 +171,7 @@ to maintain structure but not enough to enforce unanimity.
 This is why spiral galaxies are the most common galaxy type
 in the universe. Spirals are the *generic* solution. Ellipticals
 (all locked, $K \geq 1$, no arms) and irregulars (uncoupled,
-$K \approx 0$, no structure) are the special cases. The spiral
-is the attractor.
+$K \approx 0$, no structure) are the special cases.
 
 ---
 
@@ -253,25 +246,6 @@ locked. It's a fixed point: the population determines the
 coupling determines the population.
 
 Solve it. Extract the observables. Compare to data.
-
-Zero free parameters. Zero free functions.
-
----
-
-## IX.
-
-A spiral galaxy is a system that learned to disagree gracefully.
-
-A cascading failure is a system that forgot how.
-
-The mathematics of partial agreement is the mathematics of
-everything in between — the equation that produces gravity
-when the coupling is critical, quantum mechanics when it's
-subcritical, and collapse when it's too strong.
-
-The universe is a spiral. Not as a metaphor. As a solution.
-
-The arms are still turning.
 
 ---
 

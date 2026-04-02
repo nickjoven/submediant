@@ -130,6 +130,10 @@ table tbody tr:nth-child(even) th {
 html { overflow-x: clip; }
 main { overflow-wrap: break-word; }
 .MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+/* Display math: scrollable for wide equations */
+.MathJax[display="true"], mjx-container[display="true"] { max-width: 100% !important; overflow-x: auto !important; }
+/* Inline math: no scrollbars */
+.MathJax:not([display="true"]), mjx-container:not([display="true"]) { overflow: visible !important; }
 
 /* ── Responsive: mobile / vertical readers ── */
 @media (max-width: 768px) {

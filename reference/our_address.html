@@ -130,6 +130,7 @@ canvas#clock {
   gap: 8px;
   justify-content: center;
   margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .binary-digit {
@@ -155,7 +156,7 @@ canvas#clock {
 .binary-digit .label {
   font-size: var(--fs-sm);
   color: var(--m-text-muted, #8b949e);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* ── Address block: postal envelope style ── */
@@ -490,15 +491,9 @@ hr.divider {
   </div>
 </div>
 
-<div style="max-width:700px; margin:calc(var(--sp) * 1.5) auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
-  <div data-voice="narrative">
-    <p>The clock above has completed 0.95 of one Hubble cycle. Not 0.95 of a countdown — 0.95 of a loop. The hand will not stop at 1.0. It will pass through, the CMB will update, and the next iteration will begin with the digits already settled serving as initial conditions for the next.</p>
-    <p style="margin-top:0.6rem;">The address below is where we are in this loop right now.</p>
-  </div>
-  <div data-voice="technical">
-    <p>The clock above shows 0.95 of one Hubble cycle completed. At 1.0 the cycle resets; settled digits carry forward as initial conditions for the next iteration.</p>
-    <p style="margin-top:0.6rem;">The address below is our current position in the loop.</p>
-  </div>
+<div style="max-width:700px; margin:calc(var(--sp) * 2) auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
+  <p>The clock above shows 0.95 of one Hubble cycle completed. At 1.0 the cycle resets; settled digits carry forward as initial conditions for the next iteration.</p>
+  <p style="margin-top:0.6rem;">The address below is our current position in the loop.</p>
 </div>
 
 <div class="phi-spacer"></div>
@@ -2020,6 +2015,7 @@ buildBinaryClock();
   <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
   <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
   <a href="our_address.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Our Address</a>
+  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
 </nav>
 </body>
 </html>
