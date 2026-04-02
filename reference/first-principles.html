@@ -12,6 +12,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
 
 :root {
   --phi: 1.618;
@@ -30,7 +31,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--fs-base);
   line-height: 1.8;
-  overflow-x: hidden;
+  overflow-x: clip;
   color-scheme: dark;
 }
 html:not([data-mode="light"]) {
@@ -54,7 +55,7 @@ main {
 }
 
 /* phi-based vertical rhythm */
-.phi-spacer-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
 .phi-spacer { height: calc(61.8px * var(--phi)); }
 .phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
 .phi-spacer-sm { height: 61.8px; }
@@ -95,7 +96,12 @@ main {
   padding: 1em 0;
   text-align: center;
   font-size: var(--fs-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* MathJax overflow containment */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
 
 /* prose */
 section p {
@@ -138,7 +144,7 @@ html:not([data-mode="light"]) {
   --m-bg: #000000;
 }
 
-.dict-lhs { color: var(--gold); min-width: 120px; text-align: right; font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
+.dict-lhs { color: var(--gold); min-width: 80px; text-align: right; font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
 .dict-arrow { color: var(--m-text-muted, #8b949e); }
 .dict-rhs { color: var(--m-text, #e6edf3); }
 .dict-gloss { color: var(--m-text-muted, #8b949e); font-size: var(--fs-xs); margin-left: 0.5em; }
@@ -157,6 +163,16 @@ a:hover { text-decoration: underline; }
   color: var(--m-text-muted, #8b949e);
   font-style: italic;
   font-size: var(--fs-sm);
+}
+
+/* responsive: mobile */
+@media (max-width: 600px) {
+  .equation-block { font-size: var(--fs-base) !important; padding: 0.5em 0; }
+  .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
+  .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
+  .derive-table { font-size: var(--fs-xs); }
+  .derive-table th, .derive-table td { padding: 0.4em 0.5em; }
+  .dict-lhs { min-width: 60px; }
 }
 
 /* fade-in on scroll */
@@ -668,6 +684,7 @@ revealSections();
   <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
   <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
   <a href="our_address.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Our Address</a>
+  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
 </nav>
 </body>
 </html>
