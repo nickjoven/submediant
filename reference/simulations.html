@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
+<title>Simulations</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+  --gold: #FCCA28;
+  --green: #08A953;
+  --magenta: #DE3373;
+  --teal: #37BA9B;
+  --salmon: #F98F81;
+  --blue: #1E76B8;
+  --purple: #7C2E87;
+  --maroon: #7A0434;
+}
+
+body {
+  background: transparent;
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: clip;
+  color-scheme: dark;
+}
+html:not([data-mode="light"]) {
+  --m-bg: #000000;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 40px 160px;
+}
+
+/* phi-based vertical rhythm */
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer { height: calc(61.8px * var(--phi)); }
+.phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
+.phi-spacer-sm { height: 61.8px; }
+
+/* section titles */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.section-num {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.618em;
+  opacity: 0.7;
+}
+
+/* equation blocks */
+.equation-block {
+  margin: 1.618em 0;
+  padding: 1em 0;
+  text-align: center;
+  font-size: var(--fs-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* prose */
+section p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+}
+section p strong {
+  color: var(--m-text, #e6edf3);
+}
+section ul {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+section ul li { margin-bottom: 0.618em; }
+section ul li strong { color: var(--m-text, #e6edf3); }
+
+a { color: var(--magenta); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* MathJax overflow */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
+/* visualization containers */
+.viz-container {
+  position: relative;
+  width: 100%;
+  margin: 1.618em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(200,200,200,0.08);
+}
+.viz-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.viz-label {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+}
+.viz-side-by-side {
+  display: flex;
+  gap: 1em;
+  margin: 1.618em 0;
+}
+.viz-side-by-side .viz-container {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+/* controls */
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin: 1em 0 1.618em;
+  padding: 1em;
+  background: color-mix(in srgb, var(--m-surface, #161b22) 60%, transparent);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+.sim-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  flex: 1;
+  min-width: 140px;
+}
+.sim-control label {
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sim-control .val {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: var(--fs-xs);
+  color: var(--gold);
+  min-width: 3em;
+  text-align: right;
+}
+.sim-control .row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  background: var(--m-border, #30363d);
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: none;
+}
+.sim-btn {
+  font-size: var(--fs-xs);
+  padding: 0.4em 1em;
+  background: transparent;
+  color: var(--m-text-muted, #8b949e);
+  border: 1px solid var(--m-border, #30363d);
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.sim-btn:hover {
+  border-color: var(--gold);
+  color: var(--m-text, #e6edf3);
+}
+
+/* fade-in on scroll */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  backdrop-filter: blur(0.5px) brightness(1.05);
+  -webkit-backdrop-filter: blur(0.5px) brightness(1.05);
+  border-radius: 4px;
+  padding: 1rem 0;
+}
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* responsive */
+@media (max-width: 600px) {
+  main { padding: 0 16px 120px !important; }
+  .equation-block { font-size: var(--fs-base) !important; padding: 0.5em 0; }
+  .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
+  .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
+  .viz-side-by-side { flex-direction: column; }
+  section ul { padding-left: 1em; }
+  .sim-controls { gap: 0.6em; padding: 0.8em; }
+  .sim-control { min-width: 120px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<main>
+
+<!-- HERO -->
+<div class="phi-spacer-hero">
+  <div style="text-align:center;">
+    <div class="section-title" style="font-weight:100; letter-spacing:0.15em;">Simulations</div>
+    <p style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); max-width:500px; margin:0 auto;">
+      Coupled oscillators, phase locking, and the structures that emerge.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- I. COUPLED PENDULUMS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s1">
+  <span class="section-num">I</span>
+  <h2 class="section-title">Coupled Pendulums</h2>
+  <p>
+    Two pendulums on a shared beam. They exchange energy through the beam's
+    lateral give and spontaneously anti-synchronize &mdash; Huygens' observation
+    from 1665. Two coupled oscillators always reduce to a single relative-phase
+    equation. This is the <strong>trivially solvable</strong> case.
+  </p>
+  <div class="equation-block">
+    $$\ddot{\theta}_i = -\frac{g}{\ell}\sin\theta_i + \kappa\,(\theta_j - \theta_i)$$
+  </div>
+
+  <div class="viz-container" style="height: 360px;">
+    <canvas id="pendulum-canvas"></canvas>
+    <div class="viz-label">Huygens' clocks &mdash; phase difference converges to &pi;</div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Amplitude (initial &theta;)</label>
+      <div class="row">
+        <input type="range" id="pend-amp" min="10" max="80" value="45" step="1">
+        <span class="val" id="pend-amp-val">45&deg;</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Period (length &ell;)</label>
+      <div class="row">
+        <input type="range" id="pend-period" min="50" max="200" value="120" step="1">
+        <span class="val" id="pend-period-val">120</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Coupling &kappa;</label>
+      <div class="row">
+        <input type="range" id="pend-coupling" min="0" max="100" value="30" step="1">
+        <span class="val" id="pend-coupling-val">0.30</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="pend-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    Adjust the <strong>amplitude</strong> to set how far each pendulum starts from vertical.
+    Change the <strong>period</strong> by varying the pendulum length.
+    Increase <strong>coupling</strong> to watch them lock faster. Two oscillators,
+    one relative phase &mdash; always solvable. To get non-trivial dynamics,
+    you need <a href="three-body.html">three</a>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- II. KURAMOTO RING -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s2">
+  <span class="section-num">II</span>
+  <h2 class="section-title">Kuramoto Ring</h2>
+  <p>
+    $N$ oscillators on a circle, each with its own natural frequency.
+    Below a critical coupling $K_c$, they drift independently. Above it,
+    they coalesce &mdash; first in clusters, then globally. The
+    <strong>order parameter</strong> $r$ measures coherence: $r = 0$ is
+    incoherence, $r = 1$ is perfect synchrony.
+  </p>
+  <div class="equation-block">
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i), \qquad r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="kuramoto-circle"></canvas>
+      <div class="viz-label">Phase circle &mdash; color = natural frequency</div>
+    </div>
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="kuramoto-rplot"></canvas>
+      <div class="viz-label">Order parameter $r(t)$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>N oscillators</label>
+      <div class="row">
+        <input type="range" id="kura-n" min="3" max="80" value="30" step="1">
+        <span class="val" id="kura-n-val">30</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Coupling K</label>
+      <div class="row">
+        <input type="range" id="kura-k" min="0" max="200" value="40" step="1">
+        <span class="val" id="kura-k-val">0.40</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Frequency spread &Delta;&omega;</label>
+      <div class="row">
+        <input type="range" id="kura-spread" min="10" max="200" value="100" step="1">
+        <span class="val" id="kura-spread-val">1.00</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="kura-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    The <strong>frequency spread</strong> controls the period distribution &mdash;
+    how different the oscillators' natural periods are. The <strong>coupling</strong>
+    is the amplitude of the interaction. At $K = 0$ they're independent; past
+    $K_c = 2\Delta\omega/\pi$ they begin to lock. This is the framework's
+    core dynamical system. At critical coupling $K = 1$ in the continuum limit,
+    you get <a href="first-principles.html">Einstein</a>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- III. ARNOLD TONGUES / DEVIL'S STAIRCASE -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s3">
+  <span class="section-num">III</span>
+  <h2 class="section-title">Arnold Tongues</h2>
+  <p>
+    A single oscillator driven at frequency ratio $\Omega$. As driving
+    amplitude $K$ grows, the oscillator locks into rational ratios &mdash;
+    the <strong>Arnold tongues</strong>. Between the tongues: chaos. The
+    winding number $W(\Omega)$ at fixed $K$ is the <strong>devil's staircase</strong>
+    &mdash; flat at every rational, with a Cantor set of irrationals between.
+  </p>
+  <div class="equation-block">
+    $$\theta_{n+1} = \theta_n + \Omega - \frac{K}{2\pi}\sin(2\pi\,\theta_n)$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="arnold-canvas"></canvas>
+      <div class="viz-label">Arnold tongues &mdash; $(\Omega, K)$ plane</div>
+    </div>
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="staircase-canvas"></canvas>
+      <div class="viz-label">Devil's staircase &mdash; $W(\Omega)$ at current $K$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Driving amplitude K</label>
+      <div class="row">
+        <input type="range" id="arnold-k" min="0" max="100" value="50" step="1">
+        <span class="val" id="arnold-k-val">0.50</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Driving period &Omega;</label>
+      <div class="row">
+        <input type="range" id="arnold-omega" min="0" max="1000" value="618" step="1">
+        <span class="val" id="arnold-omega-val">0.618</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="arnold-recompute">Recompute</button>
+    </div>
+  </div>
+
+  <p>
+    The tongues are indexed by the <strong>Stern-Brocot tree</strong>. The widest
+    is $1/1$, then $1/2$, then $1/3$ and $2/3$. The golden ratio
+    $\Omega = 1/\varphi$ is the <strong>last to lock</strong> &mdash; it sits at the
+    narrowest gap, the most irrational point in the staircase. Drag
+    <strong>K</strong> to watch tongues widen; drag <strong>&Omega;</strong> to trace
+    the staircase.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- IV. BOWED STRING (STICK-SLIP) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s4">
+  <span class="section-num">IV</span>
+  <h2 class="section-title">Bowed String</h2>
+  <p>
+    A bow drawn across a string. Velocity-dependent friction creates a
+    <strong>stick-slip</strong> cycle: the contact point grips, loads, snaps free,
+    and grips again. The limit cycle in phase space is the physical mechanism
+    behind mode-locking. Different bow pressures select different overtones &mdash;
+    the Arnold tongue structure made audible.
+  </p>
+  <div class="equation-block">
+    $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu(v_b - \dot{x}), \qquad \mu(v) = \frac{\mu_s}{1 + |v|/v_0}\,\text{sgn}(v)$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="bow-motion-canvas"></canvas>
+      <div class="viz-label">String displacement &mdash; stick (gold) &amp; slip (teal)</div>
+    </div>
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="bow-phase-canvas"></canvas>
+      <div class="viz-label">Phase portrait &mdash; $(x, \dot{x})$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Bow speed v<sub>b</sub></label>
+      <div class="row">
+        <input type="range" id="bow-speed" min="5" max="80" value="30" step="1">
+        <span class="val" id="bow-speed-val">0.30</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Bow pressure F<sub>N</sub></label>
+      <div class="row">
+        <input type="range" id="bow-pressure" min="5" max="150" value="60" step="1">
+        <span class="val" id="bow-pressure-val">0.60</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Damping &gamma;</label>
+      <div class="row">
+        <input type="range" id="bow-damping" min="1" max="40" value="8" step="1">
+        <span class="val" id="bow-damping-val">0.08</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="bow-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    Increase <strong>bow pressure</strong> to deepen the stick phase.
+    Increase <strong>bow speed</strong> to change the oscillation period.
+    With low damping, the limit cycle is wide and sawtooth-like &mdash; the
+    classic Helmholtz motion of a bowed string. This connects directly to
+    the <a href="our_address.html">stick-slip framework</a> for dark matter.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- V. STERN-BROCOT GEAR TRAIN -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s5">
+  <span class="section-num">V</span>
+  <h2 class="section-title">Stern-Brocot Gears</h2>
+  <p>
+    Two meshing gears must turn at a <strong>rational</strong> ratio $p/q$.
+    Given a target ratio, the Stern-Brocot tree finds the simplest fraction
+    that approximates it &mdash; the same algorithm clockmakers used for centuries.
+    Each left/right decision in the tree is a mediant operation.
+  </p>
+  <div class="equation-block">
+    $$\text{mediant}\!\left(\frac{a}{b},\,\frac{c}{d}\right) = \frac{a+c}{b+d}$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="gear-canvas"></canvas>
+      <div class="viz-label">Meshing gears at ratio $p/q$</div>
+    </div>
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="sbtree-canvas"></canvas>
+      <div class="viz-label">Stern-Brocot tree &mdash; search path</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Target ratio</label>
+      <div class="row">
+        <input type="range" id="gear-ratio" min="1" max="999" value="618" step="1">
+        <span class="val" id="gear-ratio-val">0.618</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Max denominator (depth)</label>
+      <div class="row">
+        <input type="range" id="gear-depth" min="2" max="30" value="10" step="1">
+        <span class="val" id="gear-depth-val">10</span>
+      </div>
+    </div>
+    <div class="sim-control" style="min-width: 200px;">
+      <label>Best approximation</label>
+      <div class="row">
+        <span class="val" id="gear-result" style="text-align:left; flex:1; font-size: var(--fs-sm); color: var(--magenta);">—</span>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Slide the <strong>target ratio</strong> continuously from 0 to 1.
+    The gears snap to the nearest realizable rational at each tree depth.
+    Increase <strong>max denominator</strong> for finer precision &mdash; more
+    teeth, closer approximation. The <strong>search path</strong> shows L/R
+    decisions down the tree. At $1/\varphi$, the path alternates L-R-L-R
+    forever: the continued fraction $[0; 1, 1, 1, \ldots]$, the slowest
+    convergence from the <a href="oscillations.html">oscillations page</a>.
+  </p>
+</section>
+
+<div class="phi-spacer-lg"></div>
+<div class="phi-spacer-lg"></div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Utilities ────────────────────────────────────────────────────────────
+(function() {
+"use strict";
+
+// IntersectionObserver for fade-in
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) e.target.classList.add("visible");
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll("section").forEach(function(s) { observer.observe(s); });
+
+// High-DPI canvas helper
+function setupCanvas(canvas, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  var ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+// RK4 integrator
+function rk4(state, derivs, dt) {
+  var n = state.length;
+  var k1 = derivs(state);
+  var s2 = new Array(n), s3 = new Array(n), s4 = new Array(n);
+  for (var i = 0; i < n; i++) s2[i] = state[i] + k1[i] * dt * 0.5;
+  var k2 = derivs(s2);
+  for (var i = 0; i < n; i++) s3[i] = state[i] + k2[i] * dt * 0.5;
+  var k3 = derivs(s3);
+  for (var i = 0; i < n; i++) s4[i] = state[i] + k3[i] * dt;
+  var k4 = derivs(s4);
+  var out = new Array(n);
+  for (var i = 0; i < n; i++) {
+    out[i] = state[i] + (dt / 6) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
+  }
+  return out;
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// I. COUPLED PENDULUMS
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var canvas = document.getElementById("pendulum-canvas");
+  var container = canvas.parentElement;
+  var ctx;
+  var W, H;
+
+  // Parameters
+  var g = 9.81;
+  var ampDeg = 45;
+  var length = 120;     // pixel length, maps to physical length
+  var kappa = 0.30;
+
+  // State: [theta1, omega1, theta2, omega2]
+  var state;
+  var phaseTrail = [];  // history of (theta1, theta2) for phase plot
+  var TRAIL_MAX = 600;
+  var simTime = 0;
+
+  function initState() {
+    var a1 = ampDeg * Math.PI / 180;
+    var a2 = -ampDeg * Math.PI / 180 * 0.6; // start offset
+    state = [a1, 0, a2, 0];
+    phaseTrail = [];
+    simTime = 0;
+  }
+
+  function derivs(s) {
+    var L = length / 100; // scale to ~1m
+    var t1 = s[0], w1 = s[1], t2 = s[2], w2 = s[3];
+    return [
+      w1,
+      -(g / L) * Math.sin(t1) + kappa * (t2 - t1),
+      w2,
+      -(g / L) * Math.sin(t2) + kappa * (t1 - t2)
+    ];
+  }
+
+  function resize() {
+    W = container.clientWidth;
+    H = container.clientHeight;
+    ctx = setupCanvas(canvas, W, H);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Beam
+    var beamY = 50;
+    var beamLeft = W * 0.2;
+    var beamRight = W * 0.8;
+    var cx1 = W * 0.35;
+    var cx2 = W * 0.65;
+    var L = length;
+
+    ctx.strokeStyle = "rgba(200,200,200,0.3)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(beamLeft, beamY);
+    ctx.lineTo(beamRight, beamY);
+    ctx.stroke();
+
+    // Pendulum bobs
+    var x1 = cx1 + L * Math.sin(state[0]);
+    var y1 = beamY + L * Math.cos(state[0]);
+    var x2 = cx2 + L * Math.sin(state[2]);
+    var y2 = beamY + L * Math.cos(state[2]);
+
+    // Rods
+    ctx.strokeStyle = "rgba(200,200,200,0.4)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx1, beamY); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx2, beamY); ctx.lineTo(x2, y2); ctx.stroke();
+
+    // Coupling spring (zigzag between pivot points)
+    ctx.strokeStyle = "rgba(252,202,40,0.3)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    var springN = 8;
+    var springAmp = 6;
+    for (var i = 0; i <= springN * 2; i++) {
+      var t = i / (springN * 2);
+      var sx = cx1 + (cx2 - cx1) * t;
+      var sy = beamY + (i % 2 === 0 ? -springAmp : springAmp) * (i > 0 && i < springN * 2 ? 1 : 0);
+      if (i === 0) ctx.moveTo(sx, sy);
+      else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+
+    // Bobs
+    ctx.fillStyle = "#DE3373";
+    ctx.beginPath(); ctx.arc(x1, y1, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#37BA9B";
+    ctx.beginPath(); ctx.arc(x2, y2, 10, 0, Math.PI * 2); ctx.fill();
+
+    // Phase difference readout
+    var dphi = state[0] - state[2];
+    // Normalize to [-pi, pi]
+    dphi = ((dphi + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+    ctx.fillStyle = "rgba(200,200,200,0.5)";
+    ctx.font = "12px 'SF Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("\u0394\u03c6 = " + (dphi * 180 / Math.PI).toFixed(1) + "\u00b0", W / 2, H - 20);
+
+    // Phase trail (small inset bottom-right)
+    var insetW = 100, insetH = 100;
+    var insetX = W - insetW - 16;
+    var insetY = H - insetH - 16;
+    ctx.strokeStyle = "rgba(200,200,200,0.1)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(insetX, insetY, insetW, insetH);
+
+    // Axes labels
+    ctx.fillStyle = "rgba(200,200,200,0.3)";
+    ctx.font = "9px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("\u03b81", insetX + insetW / 2, insetY + insetH + 12);
+    ctx.save();
+    ctx.translate(insetX - 8, insetY + insetH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText("\u03b82", 0, 0);
+    ctx.restore();
+
+    if (phaseTrail.length > 1) {
+      ctx.beginPath();
+      for (var i = 0; i < phaseTrail.length; i++) {
+        var px = insetX + insetW / 2 + phaseTrail[i][0] * insetW / (2 * Math.PI);
+        var py = insetY + insetH / 2 + phaseTrail[i][1] * insetH / (2 * Math.PI);
+        px = Math.max(insetX, Math.min(insetX + insetW, px));
+        py = Math.max(insetY, Math.min(insetY + insetH, py));
+        var alpha = 0.15 + 0.85 * (i / phaseTrail.length);
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.strokeStyle = "rgba(252,202,40,0.6)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    // Sub-step physics
+    var steps = 8;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) {
+      state = rk4(state, derivs, dt);
+      simTime += dt;
+    }
+
+    // Record phase trail
+    phaseTrail.push([state[0], state[2]]);
+    if (phaseTrail.length > TRAIL_MAX) phaseTrail.shift();
+
+    draw();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var ampSlider = document.getElementById("pend-amp");
+  var periodSlider = document.getElementById("pend-period");
+  var couplingSlider = document.getElementById("pend-coupling");
+  var ampVal = document.getElementById("pend-amp-val");
+  var periodVal = document.getElementById("pend-period-val");
+  var couplingVal = document.getElementById("pend-coupling-val");
+  var resetBtn = document.getElementById("pend-reset");
+
+  ampSlider.addEventListener("input", function() {
+    ampDeg = +this.value;
+    ampVal.textContent = ampDeg + "\u00b0";
+    initState();
+  });
+  periodSlider.addEventListener("input", function() {
+    length = +this.value;
+    periodVal.textContent = length;
+    // Compute physical period
+    var L = length / 100;
+    var T = 2 * Math.PI * Math.sqrt(L / g);
+    periodVal.textContent = T.toFixed(2) + "s";
+  });
+  couplingSlider.addEventListener("input", function() {
+    kappa = +this.value / 100;
+    couplingVal.textContent = kappa.toFixed(2);
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", resize);
+  resize();
+  // Set initial period display
+  var T0 = 2 * Math.PI * Math.sqrt((length/100) / g);
+  periodVal.textContent = T0.toFixed(2) + "s";
+  requestAnimationFrame(animate);
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// II. KURAMOTO RING
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var circleCanvas = document.getElementById("kuramoto-circle");
+  var rCanvas = document.getElementById("kuramoto-rplot");
+  var circleContainer = circleCanvas.parentElement;
+  var rContainer = rCanvas.parentElement;
+  var cctx, rctx;
+  var cW, cH, rW, rH;
+
+  // Parameters
+  var N = 30;
+  var K = 0.40;
+  var spread = 1.0;
+
+  // State
+  var theta, omega, colors;
+  var rHistory = [];
+  var R_MAX = 400;
+  var simTime = 0;
+
+  function hsl(h) { return "hsl(" + h + ", 70%, 60%)"; }
+
+  function initState() {
+    theta = new Array(N);
+    omega = new Array(N);
+    colors = new Array(N);
+    for (var i = 0; i < N; i++) {
+      theta[i] = Math.random() * 2 * Math.PI;
+      omega[i] = (i / (N - 1) - 0.5) * 2 * spread; // uniform in [-spread, spread]
+      colors[i] = hsl(Math.round(240 + (omega[i] / spread) * 120)); // blue-red
+    }
+    rHistory = [];
+    simTime = 0;
+  }
+
+  function step(dt) {
+    // Euler (fast enough for Kuramoto — first-order ODE, no stiffness)
+    var dtheta = new Array(N);
+    for (var i = 0; i < N; i++) {
+      var sum = 0;
+      for (var j = 0; j < N; j++) {
+        sum += Math.sin(theta[j] - theta[i]);
+      }
+      dtheta[i] = omega[i] + (K / N) * sum;
+    }
+    for (var i = 0; i < N; i++) {
+      theta[i] += dtheta[i] * dt;
+    }
+    simTime += dt;
+  }
+
+  function orderParam() {
+    var cx = 0, cy = 0;
+    for (var i = 0; i < N; i++) {
+      cx += Math.cos(theta[i]);
+      cy += Math.sin(theta[i]);
+    }
+    cx /= N; cy /= N;
+    return { r: Math.sqrt(cx * cx + cy * cy), psi: Math.atan2(cy, cx) };
+  }
+
+  function resizeCircle() {
+    cW = circleContainer.clientWidth;
+    cH = circleContainer.clientHeight;
+    cctx = setupCanvas(circleCanvas, cW, cH);
+  }
+  function resizeR() {
+    rW = rContainer.clientWidth;
+    rH = rContainer.clientHeight;
+    rctx = setupCanvas(rCanvas, rW, rH);
+  }
+
+  function drawCircle() {
+    cctx.clearRect(0, 0, cW, cH);
+    var cx = cW / 2, cy = cH / 2;
+    var R = Math.min(cW, cH) * 0.38;
+
+    // Unit circle
+    cctx.strokeStyle = "rgba(200,200,200,0.15)";
+    cctx.lineWidth = 1;
+    cctx.beginPath();
+    cctx.arc(cx, cy, R, 0, Math.PI * 2);
+    cctx.stroke();
+
+    // Order parameter vector
+    var op = orderParam();
+    cctx.strokeStyle = "rgba(252,202,40,0.7)";
+    cctx.lineWidth = 2;
+    cctx.beginPath();
+    cctx.moveTo(cx, cy);
+    cctx.lineTo(cx + op.r * R * Math.cos(op.psi), cy - op.r * R * Math.sin(op.psi));
+    cctx.stroke();
+
+    // r value text
+    cctx.fillStyle = "rgba(252,202,40,0.8)";
+    cctx.font = "bold 14px 'SF Mono', monospace";
+    cctx.textAlign = "center";
+    cctx.fillText("r = " + op.r.toFixed(3), cx, cy - R - 12);
+
+    // Oscillator dots
+    for (var i = 0; i < N; i++) {
+      var x = cx + R * Math.cos(theta[i]);
+      var y = cy - R * Math.sin(theta[i]);
+      cctx.fillStyle = colors[i];
+      cctx.beginPath();
+      cctx.arc(x, y, Math.max(3, 8 - N * 0.06), 0, Math.PI * 2);
+      cctx.fill();
+    }
+  }
+
+  function drawR() {
+    rctx.clearRect(0, 0, rW, rH);
+    var pad = 30;
+    var plotW = rW - 2 * pad;
+    var plotH = rH - 2 * pad;
+
+    // Axes
+    rctx.strokeStyle = "rgba(200,200,200,0.2)";
+    rctx.lineWidth = 1;
+    rctx.beginPath();
+    rctx.moveTo(pad, pad);
+    rctx.lineTo(pad, pad + plotH);
+    rctx.lineTo(pad + plotW, pad + plotH);
+    rctx.stroke();
+
+    // y-axis labels
+    rctx.fillStyle = "rgba(200,200,200,0.4)";
+    rctx.font = "10px 'SF Mono', monospace";
+    rctx.textAlign = "right";
+    rctx.fillText("1.0", pad - 4, pad + 4);
+    rctx.fillText("0.5", pad - 4, pad + plotH / 2 + 4);
+    rctx.fillText("0.0", pad - 4, pad + plotH + 4);
+
+    // 0.5 line
+    rctx.strokeStyle = "rgba(200,200,200,0.08)";
+    rctx.beginPath();
+    rctx.moveTo(pad, pad + plotH / 2);
+    rctx.lineTo(pad + plotW, pad + plotH / 2);
+    rctx.stroke();
+
+    // K_c line
+    var Kc = 2 * spread / Math.PI;
+    if (K > 0) {
+      // Mark theoretical r_inf = sqrt(1 - Kc/K) for K > Kc
+      if (K >= Kc) {
+        var rInf = Math.sqrt(1 - Kc / K);
+        var yInf = pad + plotH * (1 - rInf);
+        rctx.strokeStyle = "rgba(222,51,115,0.3)";
+        rctx.setLineDash([4,4]);
+        rctx.beginPath();
+        rctx.moveTo(pad, yInf);
+        rctx.lineTo(pad + plotW, yInf);
+        rctx.stroke();
+        rctx.setLineDash([]);
+        rctx.fillStyle = "rgba(222,51,115,0.5)";
+        rctx.textAlign = "left";
+        rctx.fillText("r\u221e=" + rInf.toFixed(2), pad + plotW - 50, yInf - 4);
+      }
+    }
+
+    // r(t) trace
+    if (rHistory.length > 1) {
+      rctx.beginPath();
+      for (var i = 0; i < rHistory.length; i++) {
+        var x = pad + (i / R_MAX) * plotW;
+        var y = pad + plotH * (1 - rHistory[i]);
+        if (i === 0) rctx.moveTo(x, y);
+        else rctx.lineTo(x, y);
+      }
+      rctx.strokeStyle = "rgba(252,202,40,0.8)";
+      rctx.lineWidth = 1.5;
+      rctx.stroke();
+    }
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    var steps = 4;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) step(dt);
+
+    var op = orderParam();
+    rHistory.push(op.r);
+    if (rHistory.length > R_MAX) rHistory.shift();
+
+    drawCircle();
+    drawR();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var nSlider = document.getElementById("kura-n");
+  var kSlider = document.getElementById("kura-k");
+  var spreadSlider = document.getElementById("kura-spread");
+  var nVal = document.getElementById("kura-n-val");
+  var kVal = document.getElementById("kura-k-val");
+  var spreadVal = document.getElementById("kura-spread-val");
+  var resetBtn = document.getElementById("kura-reset");
+
+  nSlider.addEventListener("input", function() {
+    N = +this.value;
+    nVal.textContent = N;
+    initState();
+  });
+  kSlider.addEventListener("input", function() {
+    K = +this.value / 100;
+    kVal.textContent = K.toFixed(2);
+  });
+  spreadSlider.addEventListener("input", function() {
+    spread = +this.value / 100;
+    spreadVal.textContent = spread.toFixed(2);
+    // Rebuild frequencies without resetting phases
+    for (var i = 0; i < N; i++) {
+      omega[i] = (i / (N - 1) - 0.5) * 2 * spread;
+      colors[i] = hsl(Math.round(240 + (omega[i] / spread) * 120));
+    }
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", function() { resizeCircle(); resizeR(); });
+  resizeCircle();
+  resizeR();
+  requestAnimationFrame(animate);
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// III. ARNOLD TONGUES / DEVIL'S STAIRCASE
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var arnoldCanvas = document.getElementById("arnold-canvas");
+  var stairCanvas = document.getElementById("staircase-canvas");
+  var arnoldContainer = arnoldCanvas.parentElement;
+  var stairContainer = stairCanvas.parentElement;
+  var actx, sctx;
+  var aW, aH, sW, sH;
+
+  var Kval = 0.50;
+  var omegaVal = 0.618;
+
+  // Compute winding number for circle map
+  function windingNumber(omega, k, iters, transient) {
+    var theta = 0;
+    for (var i = 0; i < transient; i++) {
+      theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+    }
+    var theta0 = theta;
+    for (var i = 0; i < iters; i++) {
+      theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+    }
+    return (theta - theta0) / iters;
+  }
+
+  // Pre-compute Arnold tongue image
+  var tongueImageData = null;
+  var TONGUE_RES_X = 300; // omega resolution
+  var TONGUE_RES_Y = 200; // K resolution
+
+  function computeTongueImage() {
+    var data = new Array(TONGUE_RES_X * TONGUE_RES_Y);
+    for (var ky = 0; ky < TONGUE_RES_Y; ky++) {
+      var k = ky / (TONGUE_RES_Y - 1); // K from 0 to 1
+      for (var ox = 0; ox < TONGUE_RES_X; ox++) {
+        var om = ox / (TONGUE_RES_X - 1); // omega from 0 to 1
+        var w = windingNumber(om, k, 80, 40);
+        data[ky * TONGUE_RES_X + ox] = w;
+      }
+    }
+    tongueImageData = data;
+  }
+
+  // Identify if winding number is "locked" (close to a rational p/q with small q)
+  function isLocked(w, tol) {
+    // Check rationals with denominator up to 12
+    for (var q = 1; q <= 12; q++) {
+      var p = Math.round(w * q);
+      if (Math.abs(w - p / q) < tol) return p / q;
+    }
+    return null;
+  }
+
+  // Color by winding number
+  function windingColor(w) {
+    var locked = isLocked(w, 0.005);
+    if (locked !== null) {
+      // Color by the rational — hue from value
+      var hue = (locked * 360 + 200) % 360;
+      return "hsl(" + hue + ", 50%, 35%)";
+    }
+    return "rgba(0,0,0,0.8)"; // chaotic region
+  }
+
+  function resizeArnold() {
+    aW = arnoldContainer.clientWidth;
+    aH = arnoldContainer.clientHeight;
+    actx = setupCanvas(arnoldCanvas, aW, aH);
+  }
+  function resizeStair() {
+    sW = stairContainer.clientWidth;
+    sH = stairContainer.clientHeight;
+    sctx = setupCanvas(stairCanvas, sW, sH);
+  }
+
+  function drawTongues() {
+    actx.clearRect(0, 0, aW, aH);
+    var pad = 30;
+    var plotW = aW - 2 * pad;
+    var plotH = aH - 2 * pad;
+
+    if (!tongueImageData) return;
+
+    // Draw the tongue map
+    for (var ky = 0; ky < TONGUE_RES_Y; ky++) {
+      for (var ox = 0; ox < TONGUE_RES_X; ox++) {
+        var w = tongueImageData[ky * TONGUE_RES_X + ox];
+        actx.fillStyle = windingColor(w);
+        var x = pad + (ox / TONGUE_RES_X) * plotW;
+        var y = pad + plotH - (ky / TONGUE_RES_Y) * plotH;
+        var dw = plotW / TONGUE_RES_X + 1;
+        var dh = plotH / TONGUE_RES_Y + 1;
+        actx.fillRect(x, y, dw, dh);
+      }
+    }
+
+    // Axes
+    actx.strokeStyle = "rgba(200,200,200,0.3)";
+    actx.lineWidth = 1;
+    actx.beginPath();
+    actx.moveTo(pad, pad);
+    actx.lineTo(pad, pad + plotH);
+    actx.lineTo(pad + plotW, pad + plotH);
+    actx.stroke();
+
+    actx.fillStyle = "rgba(200,200,200,0.5)";
+    actx.font = "10px 'SF Mono', monospace";
+    actx.textAlign = "center";
+    actx.fillText("\u03a9", pad + plotW / 2, pad + plotH + 18);
+    actx.textAlign = "right";
+    actx.fillText("K", pad - 8, pad + plotH / 2);
+    actx.fillText("1", pad - 4, pad + 4);
+    actx.fillText("0", pad - 4, pad + plotH + 4);
+    actx.textAlign = "center";
+    actx.fillText("0", pad, pad + plotH + 14);
+    actx.fillText("1", pad + plotW, pad + plotH + 14);
+
+    // Crosshair at current (omega, K)
+    var curX = pad + omegaVal * plotW;
+    var curY = pad + plotH - Kval * plotH;
+    actx.strokeStyle = "rgba(252,202,40,0.6)";
+    actx.lineWidth = 1;
+    actx.setLineDash([3,3]);
+    actx.beginPath();
+    actx.moveTo(curX, pad); actx.lineTo(curX, pad + plotH);
+    actx.stroke();
+    actx.beginPath();
+    actx.moveTo(pad, curY); actx.lineTo(pad + plotW, curY);
+    actx.stroke();
+    actx.setLineDash([]);
+
+    // Dot
+    actx.fillStyle = "#FCCA28";
+    actx.beginPath();
+    actx.arc(curX, curY, 4, 0, Math.PI * 2);
+    actx.fill();
+
+    // Label key rationals along bottom
+    var rats = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
+    actx.fillStyle = "rgba(200,200,200,0.3)";
+    actx.font = "8px 'SF Mono', monospace";
+    actx.textAlign = "center";
+    for (var i = 0; i < rats.length; i++) {
+      var r = rats[i][0] / rats[i][1];
+      actx.fillText(rats[i][0] + "/" + rats[i][1], pad + r * plotW, pad + plotH + 24);
+    }
+  }
+
+  function drawStaircase() {
+    sctx.clearRect(0, 0, sW, sH);
+    var pad = 30;
+    var plotW = sW - 2 * pad;
+    var plotH = sH - 2 * pad;
+
+    // Axes
+    sctx.strokeStyle = "rgba(200,200,200,0.3)";
+    sctx.lineWidth = 1;
+    sctx.beginPath();
+    sctx.moveTo(pad, pad);
+    sctx.lineTo(pad, pad + plotH);
+    sctx.lineTo(pad + plotW, pad + plotH);
+    sctx.stroke();
+
+    sctx.fillStyle = "rgba(200,200,200,0.5)";
+    sctx.font = "10px 'SF Mono', monospace";
+    sctx.textAlign = "center";
+    sctx.fillText("\u03a9", pad + plotW / 2, pad + plotH + 18);
+    sctx.textAlign = "right";
+    sctx.fillText("W", pad - 8, pad + plotH / 2);
+    sctx.fillText("1", pad - 4, pad + 4);
+    sctx.fillText("0", pad - 4, pad + plotH + 4);
+
+    // Diagonal reference (W = Omega, no locking)
+    sctx.strokeStyle = "rgba(200,200,200,0.1)";
+    sctx.beginPath();
+    sctx.moveTo(pad, pad + plotH);
+    sctx.lineTo(pad + plotW, pad);
+    sctx.stroke();
+
+    // Compute staircase at current K
+    var STAIR_N = 500;
+    sctx.beginPath();
+    for (var i = 0; i <= STAIR_N; i++) {
+      var om = i / STAIR_N;
+      var w = windingNumber(om, Kval, 120, 60);
+      var x = pad + om * plotW;
+      var y = pad + plotH * (1 - w);
+      if (i === 0) sctx.moveTo(x, y);
+      else sctx.lineTo(x, y);
+    }
+    sctx.strokeStyle = "#DE3373";
+    sctx.lineWidth = 1.5;
+    sctx.stroke();
+
+    // Mark current omega
+    var w0 = windingNumber(omegaVal, Kval, 120, 60);
+    var curX = pad + omegaVal * plotW;
+    var curY = pad + plotH * (1 - w0);
+    sctx.fillStyle = "#FCCA28";
+    sctx.beginPath();
+    sctx.arc(curX, curY, 5, 0, Math.PI * 2);
+    sctx.fill();
+
+    // Label
+    sctx.fillStyle = "rgba(252,202,40,0.8)";
+    sctx.font = "11px 'SF Mono', monospace";
+    sctx.textAlign = "left";
+    var locked = isLocked(w0, 0.01);
+    var label = "W = " + w0.toFixed(4);
+    if (locked !== null) {
+      // Find p/q
+      for (var q = 1; q <= 12; q++) {
+        var p = Math.round(w0 * q);
+        if (Math.abs(w0 - p / q) < 0.01) { label = "W = " + p + "/" + q + " (locked)"; break; }
+      }
+    }
+    sctx.fillText(label, curX + 8, curY - 8);
+
+    // Mark 1/phi
+    var phiInv = (Math.sqrt(5) - 1) / 2;
+    var phiX = pad + phiInv * plotW;
+    sctx.strokeStyle = "rgba(252,202,40,0.2)";
+    sctx.setLineDash([2,4]);
+    sctx.beginPath();
+    sctx.moveTo(phiX, pad); sctx.lineTo(phiX, pad + plotH);
+    sctx.stroke();
+    sctx.setLineDash([]);
+    sctx.fillStyle = "rgba(252,202,40,0.3)";
+    sctx.font = "9px 'SF Mono', monospace";
+    sctx.textAlign = "center";
+    sctx.fillText("1/\u03c6", phiX, pad - 4);
+  }
+
+  // Controls
+  var kSlider = document.getElementById("arnold-k");
+  var omegaSlider = document.getElementById("arnold-omega");
+  var kValEl = document.getElementById("arnold-k-val");
+  var omegaValEl = document.getElementById("arnold-omega-val");
+  var recomputeBtn = document.getElementById("arnold-recompute");
+
+  function redraw() {
+    drawTongues();
+    drawStaircase();
+  }
+
+  kSlider.addEventListener("input", function() {
+    Kval = +this.value / 100;
+    kValEl.textContent = Kval.toFixed(2);
+    drawStaircase();
+    drawTongues(); // just crosshair update + image
+  });
+
+  omegaSlider.addEventListener("input", function() {
+    omegaVal = +this.value / 1000;
+    omegaValEl.textContent = omegaVal.toFixed(3);
+    drawStaircase();
+    drawTongues();
+  });
+
+  recomputeBtn.addEventListener("click", function() {
+    computeTongueImage();
+    redraw();
+  });
+
+  // Init
+  window.addEventListener("resize", function() { resizeArnold(); resizeStair(); redraw(); });
+  resizeArnold();
+  resizeStair();
+  computeTongueImage();
+  redraw();
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// IV. BOWED STRING (STICK-SLIP)
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var motionCanvas = document.getElementById("bow-motion-canvas");
+  var phaseCanvas = document.getElementById("bow-phase-canvas");
+  var motionContainer = motionCanvas.parentElement;
+  var phaseContainer = phaseCanvas.parentElement;
+  var mctx, pctx;
+  var mW, mH, pW, pH;
+
+  // Parameters
+  var vBow = 0.30;    // bow speed
+  var FN = 0.60;      // normal force (pressure)
+  var gamma = 0.08;   // damping
+  var m = 1.0;        // mass
+  var k = 4.0;        // spring constant (sets natural frequency)
+  var muS = 1.0;      // static friction coefficient
+  var v0 = 0.15;      // characteristic velocity
+
+  // State: [x, xdot]
+  var state;
+  var motionHistory = []; // time series of x
+  var phaseHistory = [];  // (x, xdot) pairs
+  var HIST_MAX = 800;
+  var PHASE_MAX = 1200;
+  var simTime = 0;
+
+  function initState() {
+    state = [0.01, 0]; // small perturbation
+    motionHistory = [];
+    phaseHistory = [];
+    simTime = 0;
+  }
+
+  function friction(vrel) {
+    // Velocity-dependent friction: Stribeck curve
+    return FN * muS * vrel / (Math.abs(vrel) + v0);
+  }
+
+  function derivs(s) {
+    var x = s[0], xd = s[1];
+    var vrel = vBow - xd;
+    var f = friction(vrel);
+    return [
+      xd,
+      (f - gamma * xd - k * x) / m
+    ];
+  }
+
+  function isSticking(s) {
+    var vrel = vBow - s[1];
+    return Math.abs(vrel) < v0 * 0.5;
+  }
+
+  function resizeMotion() {
+    mW = motionContainer.clientWidth;
+    mH = motionContainer.clientHeight;
+    mctx = setupCanvas(motionCanvas, mW, mH);
+  }
+  function resizePhase() {
+    pW = phaseContainer.clientWidth;
+    pH = phaseContainer.clientHeight;
+    pctx = setupCanvas(phaseCanvas, pW, pH);
+  }
+
+  function drawMotion() {
+    mctx.clearRect(0, 0, mW, mH);
+    var pad = 30;
+    var plotW = mW - 2 * pad;
+    var plotH = mH - 2 * pad;
+
+    // Axes
+    mctx.strokeStyle = "rgba(200,200,200,0.2)";
+    mctx.lineWidth = 1;
+    mctx.beginPath();
+    mctx.moveTo(pad, pad + plotH / 2);
+    mctx.lineTo(pad + plotW, pad + plotH / 2);
+    mctx.stroke();
+
+    mctx.fillStyle = "rgba(200,200,200,0.3)";
+    mctx.font = "10px 'SF Mono', monospace";
+    mctx.textAlign = "right";
+    mctx.fillText("x(t)", pad - 4, pad + plotH / 2 - 4);
+
+    if (motionHistory.length < 2) return;
+
+    // Auto-scale y
+    var ymax = 0;
+    for (var i = 0; i < motionHistory.length; i++) {
+      var a = Math.abs(motionHistory[i][0]);
+      if (a > ymax) ymax = a;
+    }
+    ymax = Math.max(ymax * 1.2, 0.05);
+
+    // Draw trace, colored by stick/slip
+    for (var i = 1; i < motionHistory.length; i++) {
+      var x0 = pad + ((i - 1) / HIST_MAX) * plotW;
+      var x1 = pad + (i / HIST_MAX) * plotW;
+      var y0 = pad + plotH / 2 - (motionHistory[i - 1][0] / ymax) * (plotH / 2);
+      var y1 = pad + plotH / 2 - (motionHistory[i][0] / ymax) * (plotH / 2);
+      mctx.strokeStyle = motionHistory[i][1] ? "rgba(252,202,40,0.8)" : "rgba(55,186,155,0.8)";
+      mctx.lineWidth = 1.5;
+      mctx.beginPath();
+      mctx.moveTo(x0, y0);
+      mctx.lineTo(x1, y1);
+      mctx.stroke();
+    }
+  }
+
+  function drawPhase() {
+    pctx.clearRect(0, 0, pW, pH);
+    var pad = 30;
+    var plotW = pW - 2 * pad;
+    var plotH = pH - 2 * pad;
+    var cx = pad + plotW / 2;
+    var cy = pad + plotH / 2;
+
+    // Axes
+    pctx.strokeStyle = "rgba(200,200,200,0.2)";
+    pctx.lineWidth = 1;
+    pctx.beginPath();
+    pctx.moveTo(pad, cy); pctx.lineTo(pad + plotW, cy);
+    pctx.stroke();
+    pctx.beginPath();
+    pctx.moveTo(cx, pad); pctx.lineTo(cx, pad + plotH);
+    pctx.stroke();
+
+    pctx.fillStyle = "rgba(200,200,200,0.3)";
+    pctx.font = "10px 'SF Mono', monospace";
+    pctx.textAlign = "center";
+    pctx.fillText("x", pad + plotW + 10, cy + 4);
+    pctx.fillText("x\u0307", cx, pad - 6);
+
+    if (phaseHistory.length < 2) return;
+
+    // Auto-scale
+    var xmax = 0, vmax = 0;
+    for (var i = 0; i < phaseHistory.length; i++) {
+      var ax = Math.abs(phaseHistory[i][0]);
+      var av = Math.abs(phaseHistory[i][1]);
+      if (ax > xmax) xmax = ax;
+      if (av > vmax) vmax = av;
+    }
+    xmax = Math.max(xmax * 1.2, 0.05);
+    vmax = Math.max(vmax * 1.2, 0.05);
+
+    // Trace with fading
+    pctx.beginPath();
+    for (var i = 0; i < phaseHistory.length; i++) {
+      var px = cx + (phaseHistory[i][0] / xmax) * (plotW / 2);
+      var py = cy - (phaseHistory[i][1] / vmax) * (plotH / 2);
+      if (i === 0) pctx.moveTo(px, py);
+      else pctx.lineTo(px, py);
+    }
+    pctx.strokeStyle = "rgba(222,51,115,0.6)";
+    pctx.lineWidth = 1;
+    pctx.stroke();
+
+    // Current point
+    var last = phaseHistory[phaseHistory.length - 1];
+    var px = cx + (last[0] / xmax) * (plotW / 2);
+    var py = cy - (last[1] / vmax) * (plotH / 2);
+    pctx.fillStyle = "#FCCA28";
+    pctx.beginPath();
+    pctx.arc(px, py, 3, 0, Math.PI * 2);
+    pctx.fill();
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    var steps = 16;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) {
+      state = rk4(state, derivs, dt);
+      simTime += dt;
+    }
+
+    var stick = isSticking(state);
+    motionHistory.push([state[0], stick]);
+    if (motionHistory.length > HIST_MAX) motionHistory.shift();
+
+    phaseHistory.push([state[0], state[1]]);
+    if (phaseHistory.length > PHASE_MAX) phaseHistory.shift();
+
+    drawMotion();
+    drawPhase();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var speedSlider = document.getElementById("bow-speed");
+  var pressureSlider = document.getElementById("bow-pressure");
+  var dampingSlider = document.getElementById("bow-damping");
+  var speedVal = document.getElementById("bow-speed-val");
+  var pressureVal = document.getElementById("bow-pressure-val");
+  var dampingVal = document.getElementById("bow-damping-val");
+  var resetBtn = document.getElementById("bow-reset");
+
+  speedSlider.addEventListener("input", function() {
+    vBow = +this.value / 100;
+    speedVal.textContent = vBow.toFixed(2);
+  });
+  pressureSlider.addEventListener("input", function() {
+    FN = +this.value / 100;
+    pressureVal.textContent = FN.toFixed(2);
+  });
+  dampingSlider.addEventListener("input", function() {
+    gamma = +this.value / 100;
+    dampingVal.textContent = gamma.toFixed(2);
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", function() { resizeMotion(); resizePhase(); });
+  resizeMotion();
+  resizePhase();
+  requestAnimationFrame(animate);
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// V. STERN-BROCOT GEAR TRAIN
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var gearCanvas = document.getElementById("gear-canvas");
+  var treeCanvas = document.getElementById("sbtree-canvas");
+  var gearContainer = gearCanvas.parentElement;
+  var treeContainer = treeCanvas.parentElement;
+  var gctx, tctx;
+  var gW, gH, tW, tH;
+
+  var targetRatio = 0.618;
+  var maxDenom = 10;
+
+  // Stern-Brocot search: returns { p, q, path }
+  function sternBrocot(target, maxQ) {
+    var lp = 0, lq = 1; // left bound 0/1
+    var rp = 1, rq = 1; // right bound 1/1
+    var path = [];
+    var p, q;
+    for (var i = 0; i < 60; i++) {
+      p = lp + rp;
+      q = lq + rq;
+      if (q > maxQ) break;
+      var med = p / q;
+      if (Math.abs(med - target) < 1e-12) {
+        path.push("=");
+        break;
+      } else if (target < med) {
+        path.push("L");
+        rp = p; rq = q;
+      } else {
+        path.push("R");
+        lp = p; lq = q;
+      }
+    }
+    return { p: p, q: q, path: path };
+  }
+
+  var gearAngle = 0;
+  var currentP = 1, currentQ = 1;
+  var searchPath = [];
+
+  function update() {
+    var result = sternBrocot(targetRatio, maxDenom);
+    currentP = result.p;
+    currentQ = result.q;
+    searchPath = result.path;
+    document.getElementById("gear-result").textContent =
+      currentP + "/" + currentQ + " = " + (currentP / currentQ).toFixed(6) +
+      "  (path: " + searchPath.join("") + ")";
+  }
+
+  function resizeGear() {
+    gW = gearContainer.clientWidth;
+    gH = gearContainer.clientHeight;
+    gctx = setupCanvas(gearCanvas, gW, gH);
+  }
+  function resizeTree() {
+    tW = treeContainer.clientWidth;
+    tH = treeContainer.clientHeight;
+    tctx = setupCanvas(treeCanvas, tW, tH);
+  }
+
+  function drawGearWheel(ctx, cx, cy, r, teeth, angle, color) {
+    var toothH = r * 0.12;
+    var toothW = Math.PI / teeth;
+    ctx.beginPath();
+    for (var i = 0; i < teeth; i++) {
+      var a0 = angle + (2 * Math.PI * i) / teeth;
+      var a1 = a0 + toothW * 0.4;
+      var a2 = a0 + toothW * 0.6;
+      var a3 = a0 + toothW;
+      // Inner arc
+      ctx.arc(cx, cy, r, a0, a1);
+      // Tooth outer
+      ctx.lineTo(cx + (r + toothH) * Math.cos(a1), cy + (r + toothH) * Math.sin(a1));
+      ctx.arc(cx, cy, r + toothH, a1, a2);
+      ctx.lineTo(cx + r * Math.cos(a2), cy + r * Math.sin(a2));
+      // Inner arc
+      ctx.arc(cx, cy, r, a2, a3);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Center dot
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Spoke line for rotation visibility
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * 0.7 * Math.cos(angle), cy + r * 0.7 * Math.sin(angle));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.5;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawGears() {
+    gctx.clearRect(0, 0, gW, gH);
+    var p = currentP, q = currentQ;
+
+    // Size gears proportional to tooth count
+    var maxTeeth = Math.max(p, q);
+    var scaleFactor = Math.min(gW, gH) * 0.3 / Math.max(maxTeeth, 4);
+    var r1 = Math.max(30, q * scaleFactor);
+    var r2 = Math.max(30, p * scaleFactor);
+    // Cap radii
+    var maxR = Math.min(gW, gH) * 0.35;
+    if (r1 > maxR) { r2 *= maxR / r1; r1 = maxR; }
+    if (r2 > maxR) { r1 *= maxR / r2; r2 = maxR; }
+
+    var toothH1 = r1 * 0.12;
+    var gap = 2; // mesh gap
+    var cx1 = gW / 2 - (r1 + toothH1 + gap) * 0.5;
+    var cy1 = gH / 2;
+    var cx2 = cx1 + r1 + r2 + toothH1 * 2 + gap;
+    var cy2 = gH / 2;
+
+    // Clamp positions to canvas
+    if (cx2 + r2 + 20 > gW) {
+      var shift = (cx2 + r2 + 20 - gW) / 2;
+      cx1 -= shift; cx2 -= shift;
+    }
+
+    // Gear 1: q teeth, angle = gearAngle
+    drawGearWheel(gctx, cx1, cy1, r1, Math.max(q, 3), gearAngle, "#37BA9B");
+    // Gear 2: p teeth, angle = -gearAngle * q/p (counter-rotate, gear ratio)
+    var angle2 = -gearAngle * q / p + Math.PI / Math.max(p, 3); // offset for mesh
+    drawGearWheel(gctx, cx2, cy2, r2, Math.max(p, 3), angle2, "#DE3373");
+
+    // Labels
+    gctx.fillStyle = "rgba(200,200,200,0.6)";
+    gctx.font = "12px 'SF Mono', monospace";
+    gctx.textAlign = "center";
+    gctx.fillText(q + " teeth", cx1, cy1 + r1 + 30);
+    gctx.fillText(p + " teeth", cx2, cy2 + r2 + 30);
+
+    // Ratio label
+    gctx.fillStyle = "rgba(252,202,40,0.8)";
+    gctx.font = "bold 14px 'SF Mono', monospace";
+    gctx.fillText(p + "/" + q, gW / 2, 28);
+  }
+
+  function drawTree() {
+    tctx.clearRect(0, 0, tW, tH);
+    var pad = 20;
+    var plotW = tW - 2 * pad;
+    var plotH = tH - 2 * pad;
+
+    // Draw Stern-Brocot tree (first 5 levels) with search path highlighted
+    // Build tree nodes: each node is { p, q, x, y, left, right }
+    var levels = Math.min(5, searchPath.length + 1);
+    var nodes = [];
+
+    function buildTree(lp, lq, rp, rq, depth, x, xspan, parentIdx) {
+      if (depth > levels) return;
+      var p = lp + rp, q = lq + rq;
+      var y = pad + (depth / (levels + 1)) * plotH;
+      var idx = nodes.length;
+      nodes.push({ p: p, q: q, x: x, y: y, parent: parentIdx, depth: depth });
+      // Left child
+      buildTree(lp, lq, p, q, depth + 1, x - xspan / 2, xspan / 2, idx);
+      // Right child
+      buildTree(p, q, rp, rq, depth + 1, x + xspan / 2, xspan / 2, idx);
+    }
+
+    buildTree(0, 1, 1, 1, 0, pad + plotW / 2, plotW / 4, -1);
+
+    // Draw edges
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].parent >= 0) {
+        var par = nodes[nodes[i].parent];
+        tctx.strokeStyle = "rgba(200,200,200,0.1)";
+        tctx.lineWidth = 1;
+        tctx.beginPath();
+        tctx.moveTo(par.x, par.y);
+        tctx.lineTo(nodes[i].x, nodes[i].y);
+        tctx.stroke();
+      }
+    }
+
+    // Highlight search path
+    // Walk the tree following the path
+    var lp = 0, lq = 1, rp = 1, rq = 1;
+    var pathNodes = [];
+    for (var d = 0; d <= searchPath.length && d <= levels; d++) {
+      var p = lp + rp, q = lq + rq;
+      // Find matching node
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].p === p && nodes[i].q === q && nodes[i].depth === d) {
+          pathNodes.push(i);
+          break;
+        }
+      }
+      if (d < searchPath.length) {
+        if (searchPath[d] === "L") { rp = p; rq = q; }
+        else { lp = p; lq = q; }
+      }
+    }
+
+    // Draw highlighted edges
+    for (var i = 1; i < pathNodes.length; i++) {
+      var n0 = nodes[pathNodes[i - 1]];
+      var n1 = nodes[pathNodes[i]];
+      var dir = searchPath[i - 1];
+      tctx.strokeStyle = dir === "L" ? "#FCCA28" : "#08A953";
+      tctx.lineWidth = 2.5;
+      tctx.beginPath();
+      tctx.moveTo(n0.x, n0.y);
+      tctx.lineTo(n1.x, n1.y);
+      tctx.stroke();
+    }
+
+    // Draw nodes
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      var isOnPath = pathNodes.indexOf(i) >= 0;
+      var isTerminal = i === pathNodes[pathNodes.length - 1];
+
+      // Node circle
+      tctx.fillStyle = isTerminal ? "#DE3373" : isOnPath ? "rgba(252,202,40,0.8)" : "rgba(200,200,200,0.15)";
+      var r = isTerminal ? 6 : isOnPath ? 5 : 3;
+      tctx.beginPath();
+      tctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      tctx.fill();
+
+      // Label
+      if (isOnPath || n.depth < 3) {
+        tctx.fillStyle = isOnPath ? "rgba(252,202,40,0.9)" : "rgba(200,200,200,0.4)";
+        tctx.font = (isTerminal ? "bold " : "") + "10px 'SF Mono', monospace";
+        tctx.textAlign = "center";
+        tctx.fillText(n.p + "/" + n.q, n.x, n.y - r - 4);
+      }
+    }
+
+    // Path string at bottom
+    if (searchPath.length > 0) {
+      tctx.font = "12px 'SF Mono', monospace";
+      tctx.textAlign = "center";
+      var pathStr = "";
+      var pathX = pad + plotW / 2 - searchPath.length * 7;
+      for (var i = 0; i < searchPath.length; i++) {
+        tctx.fillStyle = searchPath[i] === "L" ? "#FCCA28" : "#08A953";
+        tctx.fillText(searchPath[i], pathX + i * 14, tH - pad);
+      }
+    }
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    gearAngle += dtReal * 1.5; // constant rotation speed
+
+    drawGears();
+    // Tree is static, only redraw on param change
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var ratioSlider = document.getElementById("gear-ratio");
+  var depthSlider = document.getElementById("gear-depth");
+  var ratioVal = document.getElementById("gear-ratio-val");
+  var depthVal = document.getElementById("gear-depth-val");
+
+  ratioSlider.addEventListener("input", function() {
+    targetRatio = +this.value / 1000;
+    ratioVal.textContent = targetRatio.toFixed(3);
+    update();
+    drawTree();
+  });
+  depthSlider.addEventListener("input", function() {
+    maxDenom = +this.value;
+    depthVal.textContent = maxDenom;
+    update();
+    drawTree();
+  });
+
+  // Init
+  window.addEventListener("resize", function() { resizeGear(); resizeTree(); drawTree(); });
+  resizeGear();
+  resizeTree();
+  update();
+  drawTree();
+  requestAnimationFrame(animate);
+})();
+
+// ── Background canvas ────────────────────────────────────────────────────
+(function() {
+  var canvas = document.getElementById("bg");
+  var ctx = canvas.getContext("2d");
+  var W, H;
+
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  window.addEventListener("resize", resize);
+  resize();
+
+  var t = 0;
+  function draw() {
+    t += 0.003;
+    ctx.clearRect(0, 0, W, H);
+
+    // Subtle Lissajous curves
+    ctx.globalAlpha = 0.06;
+    for (var k = 0; k < 3; k++) {
+      var a = 2 + k;
+      var b = 3 + k;
+      var delta = t * (0.5 + k * 0.3);
+      ctx.beginPath();
+      for (var i = 0; i <= 600; i++) {
+        var s = (i / 600) * Math.PI * 2 * 4;
+        var x = W / 2 + Math.sin(a * s + delta) * W * 0.3;
+        var y = H / 2 + Math.sin(b * s) * H * 0.3;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = ["#FCCA28", "#37BA9B", "#DE3373"][k];
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+})();
+</script>
+
+</body>
+</html>
