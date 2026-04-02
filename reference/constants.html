@@ -150,16 +150,26 @@ a:hover { text-decoration: underline; }
 }
 
 /* inline diagrams */
+.diagram-row,
+.diagram-center {
+  background: rgba(124, 46, 135, 0.06);
+  border: 1px solid rgba(124, 46, 135, 0.12);
+  border-radius: 12px;
+  padding: 2em 1.5em;
+  margin: 2.5em 0;
+}
 .diagram-row {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2em;
-  margin: 2em 0;
   flex-wrap: wrap;
 }
-.diagram-row svg {
+.diagram-row svg,
+.diagram-center svg {
   flex-shrink: 0;
+  max-width: 100%;
+  height: auto;
 }
 .diagram-caption {
   font-size: var(--fs-xs);
@@ -172,7 +182,6 @@ a:hover { text-decoration: underline; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2em 0;
 }
 
 /* SVG animation keyframes */
@@ -228,7 +237,7 @@ section.visible {
   <!-- Diagram: four phase circles — incoherent → locked -->
   <div class="diagram-row">
     <div style="text-align:center;">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="90" height="90" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
         <!-- scattered phases -->
         <circle cx="60" cy="28" r="2.5" fill="var(--purple)" opacity="0.6"/>
@@ -241,7 +250,7 @@ section.visible {
       <div class="diagram-caption">K ≪ 1</div>
     </div>
     <div style="text-align:center;">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="90" height="90" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
         <!-- partial locking: some cluster, some drift -->
         <circle cx="36" cy="10" r="2.5" fill="var(--purple)" opacity="0.7"/>
@@ -254,7 +263,7 @@ section.visible {
       <div class="diagram-caption">K &lt; 1</div>
     </div>
     <div style="text-align:center;">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="90" height="90" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
         <!-- critical: most locked, one trailing -->
         <circle cx="36" cy="10" r="3" fill="var(--purple)" opacity="0.85"/>
@@ -267,7 +276,7 @@ section.visible {
       <div class="diagram-caption">K = 1</div>
     </div>
     <div style="text-align:center;">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="90" height="90" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
         <!-- full lock: all at one point -->
         <circle cx="36" cy="10" r="3" fill="var(--purple)" opacity="0.9"/>
@@ -307,7 +316,7 @@ section.visible {
   </div>
   <!-- Diagram: concentric wavefronts with causal cone -->
   <div class="diagram-center">
-    <svg width="200" height="120" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="260" height="156" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- causal cone lines -->
       <line x1="100" y1="100" x2="30" y2="10" stroke="var(--purple)" stroke-width="0.6" opacity="0.25" stroke-dasharray="3,3"/>
       <line x1="100" y1="100" x2="170" y2="10" stroke="var(--purple)" stroke-width="0.6" opacity="0.25" stroke-dasharray="3,3"/>
@@ -347,7 +356,7 @@ section.visible {
   </div>
   <!-- Diagram: spiral converging to fixed point -->
   <div class="diagram-center">
-    <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="180" height="180" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- spiral path converging inward -->
       <path d="M 70 20
                C 110 20, 120 60, 110 80
@@ -381,7 +390,7 @@ section.visible {
   </div>
   <!-- Diagram: Arnold tongue wedge -->
   <div class="diagram-center">
-    <svg width="180" height="120" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="240" height="160" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- axis -->
       <line x1="10" y1="110" x2="170" y2="110" stroke="var(--m-text-muted, #8b949e)" stroke-width="0.5" opacity="0.3"/>
       <line x1="90" y1="110" x2="90" y2="8" stroke="var(--m-text-muted, #8b949e)" stroke-width="0.5" opacity="0.3"/>
@@ -417,7 +426,7 @@ section.visible {
   </div>
   <!-- Diagram: tree of rationals with node size ~ cost -->
   <div class="diagram-center">
-    <svg width="260" height="130" viewBox="0 0 260 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="320" height="160" viewBox="0 0 260 130" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- edges -->
       <line x1="130" y1="18" x2="65" y2="55" stroke="var(--purple)" stroke-width="0.6" opacity="0.25"/>
       <line x1="130" y1="18" x2="195" y2="55" stroke="var(--purple)" stroke-width="0.6" opacity="0.25"/>
@@ -469,7 +478,7 @@ section.visible {
 
   <!-- Diagram: K branching into four primitives -->
   <div class="diagram-center">
-    <svg width="280" height="100" viewBox="0 0 280 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="340" height="120" viewBox="0 0 280 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- central K node -->
       <circle cx="140" cy="16" r="8" stroke="var(--purple)" stroke-width="1" opacity="0.5" fill="none"/>
       <text x="140" y="19.5" text-anchor="middle" fill="var(--purple)" font-size="10" font-weight="600" opacity="0.8">K</text>
