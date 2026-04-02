@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
-<title>Our Address on the Tree</title>
+<title>Our Address</title>
 <link rel="stylesheet" href="_static/mobius-theme.css">
 <script>
 MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
@@ -15,14 +15,13 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 html { overflow-x: clip; }
 
 :root {
-  /* Golden-ratio type scale: each step = prev * phi */
   --phi: 1.618;
-  --fs-base: clamp(18px, 1.2vw + 8px, 22px);  /* responsive base */
-  --fs-sm: calc(var(--fs-base) / var(--phi));    /* ~11-14px */
-  --fs-xs: calc(var(--fs-sm) / var(--phi));      /* ~7-9px */
-  --fs-lg: calc(var(--fs-base) * var(--phi));    /* ~26-36px */
-  --fs-xl: calc(var(--fs-lg) * var(--phi));      /* ~42-58px */
-  --sp: calc(var(--fs-base) * var(--phi));       /* golden spacing unit */
+  --fs-base: clamp(18px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
 }
 
 body {
@@ -34,40 +33,28 @@ body {
   overflow-x: clip;
   color-scheme: dark;
 }
-html:not([data-mode="light"]) {
-  --m-bg: #000000;
-}
+html:not([data-mode="light"]) { --m-bg: #000000; }
 
 canvas#bg {
-  position: fixed;
-  top: 0; left: 0;
+  position: fixed; top: 0; left: 0;
   width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
+  z-index: 0; pointer-events: none;
 }
 
-/* ── Golden-ratio layout ── */
 main {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
   padding: 0 40px 160px;
 }
 
-/* phi-based vertical rhythm: sections placed at phi intervals */
 .phi-spacer-1 { min-height: 61.8vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0 3rem; }
 .phi-spacer    { height: calc(61.8px * 1.618); }
 .phi-spacer-sm { height: 61.8px; }
 
-/* ── Theme toggle (standalone page) ── */
-
-/* ── Clock section ── */
+/* ── Clock ── */
 .clock-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 32px;
 }
 
 canvas#clock {
@@ -77,163 +64,119 @@ canvas#clock {
 }
 
 .digital-readout {
-  text-align: center;
-  font-size: var(--fs-lg);
+  text-align: center; font-size: var(--fs-lg);
   color: var(--m-text-muted, #8b949e);
-  letter-spacing: 0.05em;
-  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em; font-variant-numeric: tabular-nums;
 }
-
-.digital-readout .value {
-  color: var(--m-text, #e6edf3);
-  font-weight: 600;
-}
-
-.digital-readout .sep {
-  color: var(--m-border, #30363d);
-  margin: 0 0.3em;
-}
+.digital-readout .value { color: var(--m-text, #e6edf3); font-weight: 600; }
+.digital-readout .sep { color: var(--m-border, #30363d); margin: 0 0.3em; }
 
 /* ── Binary clock ── */
-.binary-clock {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 12px;
+.binary-clock { display: flex; gap: 8px; justify-content: center; margin-top: 12px; margin-bottom: 8px; }
+.binary-digit { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.binary-digit .bit { width: 14px; height: 14px; border-radius: 2px; background: var(--m-border, #30363d); transition: background 0.3s; }
+.binary-digit .bit.on { background: var(--m-accent, #DE3373); box-shadow: 0 0 6px color-mix(in srgb, var(--m-accent, #DE3373) 40%, transparent); }
+.binary-digit .label { font-size: var(--fs-sm); color: var(--m-text-muted, #8b949e); margin-top: 4px; }
+
+/* ── Coordinate cards ── */
+.coord-cards {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin: 2rem 0;
+}
+.coord-card {
+  padding: 20px 16px; border-radius: 4px;
+  border: 1px solid var(--m-border, #30363d);
+  background: color-mix(in srgb, var(--m-surface, #161b22) 60%, transparent);
+  backdrop-filter: blur(4px);
+  text-align: center;
+}
+.coord-card .coord-label {
+  font-size: var(--fs-xs); text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--m-text-muted, #8b949e);
   margin-bottom: 8px;
 }
-
-.binary-digit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+.coord-card .coord-value {
+  font-size: var(--fs-lg); font-weight: 600;
+  color: var(--m-text, #e6edf3);
 }
-
-.binary-digit .bit {
-  width: 14px;
-  height: 14px;
-  border-radius: 2px;
-  background: var(--m-border, #30363d);
-  transition: background 0.3s;
-}
-
-.binary-digit .bit.on {
-  background: var(--m-accent, #DE3373);
-  box-shadow: 0 0 6px color-mix(in srgb, var(--m-accent, #DE3373) 40%, transparent);
-}
-
-.binary-digit .label {
-  font-size: var(--fs-sm);
-  color: var(--m-text-muted, #8b949e);
+.coord-card .coord-unit {
+  font-size: var(--fs-sm); color: var(--m-text-muted, #8b949e);
   margin-top: 4px;
 }
 
-/* ── Address block: postal envelope style ── */
-.address-envelope {
-  text-align: center;
-  padding: 48px 32px;
+/* ── Rule banner ── */
+.rule-banner {
+  text-align: center; padding: 24px 32px;
+  border: 1px solid color-mix(in srgb, var(--m-accent2, #FCCA28) 30%, transparent);
+  border-radius: 4px; margin: 2rem 0;
+  background: color-mix(in srgb, var(--m-accent2, #FCCA28) 5%, transparent);
+}
+.rule-banner .rule-eq {
+  font-size: var(--fs-lg); color: var(--m-accent2, #FCCA28);
+  font-weight: 500;
+}
+.rule-banner .rule-gloss {
+  font-size: var(--fs-sm); color: var(--m-text-muted, #8b949e);
+  margin-top: 8px;
+}
+
+/* ── Coordinate readout ── */
+.coord-readout {
+  text-align: center; padding: 48px 32px;
   border: 1px solid var(--m-border, #30363d);
   background: color-mix(in srgb, var(--m-surface, #161b22) 60%, transparent);
-  border-radius: 2px;
-  max-width: 480px;
-  margin: 0 auto;
-  backdrop-filter: blur(4px);
+  border-radius: 2px; max-width: 520px;
+  margin: 0 auto; backdrop-filter: blur(4px);
 }
-
-.return-address {
-  text-align: left;
-  font-size: var(--fs-sm);
+.readout-line {
+  display: block; font-size: var(--fs-base);
+  line-height: 2.2; color: var(--m-text, #e6edf3);
+}
+.readout-line .derived { color: var(--m-accent, #DE3373); }
+.readout-line .muted { color: var(--m-text-muted, #8b949e); font-size: var(--fs-sm); }
+.readout-header {
+  font-size: var(--fs-sm); font-weight: 600;
   color: var(--m-text-muted, #8b949e);
-  margin-bottom: 48px;
-  line-height: 1.8;
-  letter-spacing: 0.02em;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 24px;
 }
 
-.return-address .sender {
-  font-weight: 600;
-  color: var(--m-text, #e6edf3);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: var(--fs-sm);
+/* ── Spiral canvas ── */
+canvas#spiral {
+  display: block; margin: 0 auto;
+  width: min(600px, 90vw); height: min(600px, 90vw);
 }
 
-.main-address {
-  font-size: var(--fs-base);
-  line-height: 2.2;
-  color: var(--m-text, #e6edf3);
-}
-
-.main-address .line {
-  display: block;
-}
-
-.main-address .derived {
-  color: var(--m-accent, #DE3373);
-}
-
-.main-address .muted {
-  color: var(--m-text-muted, #8b949e);
-  font-size: var(--fs-sm);
-}
-
-/* ── Stamp ── */
-.stamp {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  width: 60px;
-  height: 72px;
-  border: 1.5px dashed var(--m-border, #30363d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6rem;
-  color: var(--m-text-muted, #8b949e);
-  text-align: center;
-  line-height: 1.3;
+/* ── CMB ring ── */
+canvas#cmb-ring {
+  display: block; margin: 0 auto;
+  width: min(400px, 70vw); height: min(400px, 70vw);
 }
 
 /* ── Data sections ── */
-section {
-  margin-bottom: 0;
-}
-
+section { margin-bottom: 0; }
 .section-label {
-  font-size: var(--fs-sm);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--m-text-muted, #8b949e);
+  font-size: var(--fs-sm); letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--m-text-muted, #8b949e);
   margin-bottom: 12px;
 }
-
 .section-title {
-  font-size: var(--fs-lg);
-  color: var(--m-text, #e6edf3);
-  font-weight: 500;
-  margin-bottom: 16px;
+  font-size: var(--fs-lg); color: var(--m-text, #e6edf3);
+  font-weight: 500; margin-bottom: 16px;
 }
-
 .row {
-  display: flex;
-  justify-content: space-between;
+  display: flex; justify-content: space-between;
   padding: 6px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
 }
-
 .row .label { color: var(--m-text-muted, #8b949e); font-size: var(--fs-base); }
 .row .value { color: var(--m-text, #e6edf3); text-align: right; font-size: var(--fs-base); }
 .row .value .derived { color: var(--m-accent, #DE3373); }
 .row .value .dim { color: var(--m-text-muted, #8b949e); font-size: var(--fs-sm); }
-
 .note {
-  color: var(--m-text-muted, #8b949e);
-  font-size: var(--fs-sm);
-  font-style: italic;
-  margin-top: 8px;
-  opacity: 0.7;
+  color: var(--m-text-muted, #8b949e); font-size: var(--fs-sm);
+  font-style: italic; margin-top: 8px; opacity: 0.7;
 }
-
 hr.divider {
   border: none;
   border-top: 1px solid color-mix(in srgb, var(--m-border, #30363d) 30%, transparent);
@@ -241,47 +184,45 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
-/* MathJax display math: allow natural width for scale-to-fit */
 mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
-
 .pred-grid {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  gap: 4px 12px;
-  font-size: var(--fs-base);
+  display: grid; grid-template-columns: auto auto 1fr;
+  gap: 4px 12px; font-size: var(--fs-base);
 }
-
 .pred-grid .hdr {
-  color: var(--m-text-muted, #8b949e);
-  font-size: var(--fs-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: var(--m-text-muted, #8b949e); font-size: var(--fs-sm);
+  text-transform: uppercase; letter-spacing: 0.1em;
   padding-bottom: 8px;
   border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
 }
-
 .pred-grid .settled { color: var(--m-accent3, #08A953); }
 .pred-grid .unsettled { color: var(--m-text-muted, #8b949e); opacity: 0.4; }
 
 /* ── Closing ── */
 .closing {
-  text-align: center;
-  color: var(--m-text-muted, #8b949e);
-  font-size: var(--fs-base);
-  line-height: 2;
+  text-align: center; color: var(--m-text-muted, #8b949e);
+  font-size: var(--fs-base); line-height: 2;
 }
+.closing .highlight { color: var(--m-text, #e6edf3); font-weight: 500; }
 
-.closing .highlight {
-  color: var(--m-text, #e6edf3);
-  font-weight: 500;
+/* ── Hand legend ── */
+.hand-legend {
+  display: flex; gap: 24px; justify-content: center;
+  flex-wrap: wrap; margin-top: 16px;
+}
+.hand-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--fs-sm); color: var(--m-text-muted, #8b949e);
+}
+.hand-legend-swatch {
+  width: 24px; height: 3px; border-radius: 1px;
 }
 
 /* ── Responsive ── */
 @media (max-width: 520px) {
   main { padding: 0 16px 100px; }
   canvas#clock { width: 85vw; height: 85vw; }
-  .address-envelope { padding: 32px 16px; }
-  .stamp { display: none; }
+  .coord-cards { grid-template-columns: 1fr; }
   .phi-spacer-1 { height: 50vh; height: 50dvh; min-height: 260px; }
   .pred-grid { font-size: var(--fs-sm); gap: 4px 8px; }
 }
@@ -293,188 +234,113 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <main>
 
-<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:1rem;">Our Address on the Tree</h1>
+<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:1rem;">Our Address</h1>
 
-<!-- Opening prose -->
-<div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.8); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">
-  <p>There is a tree that contains every possible ratio. You build it with one rule: from $a/b$ and $c/d$, make $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this single operation &mdash; the mediant &mdash; generates every positive rational number, each exactly once.</p>
-  <p style="margin-top:0.8rem;">Nature fills this tree by the path of least resistance. Simple ratios lock first: $1/1$, then $1/2$ and $2/1$, then $1/3$, $2/3$, $3/2$, $3/1$. Each ratio is a pair of oscillations that have synchronized. The simpler the ratio, the less coupling it takes to lock &mdash; so it settles earlier. No blueprint, no selection. Just the structure that emerges when oscillations couple.</p>
-  <p style="margin-top:0.8rem;">The tree spans from the fastest oscillation in nature (Planck, $10^{43}$ Hz) to the slowest (Hubble, $10^{-18}$ Hz) &mdash; 145.8 levels deep. After 13.8 billion years, 47 oscillations have completed and 9 digits of the coherence parameter $|r|$ have settled. This page is the printout so far.</p>
+<!-- The Rule -->
+<div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">
+  <p>One rule governs everything on this page: <em>the address must predict itself</em>. A universe of coupled oscillators computes its own coherence, which determines the coupling, which determines the coherence. The loop must close. Where it closes is the address.</p>
 </div>
 
-<!-- DAG claims: nodes with directed dependency edges -->
-<div id="claim-dag" style="position:relative; margin-bottom:var(--sp); min-height:480px;">
-  <canvas id="dag-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
-  <div style="position:relative; z-index:1;">
+<div class="rule-banner">
+  <div class="rule-eq">$N(p/q) = N_{\text{total}} \times g(p/q) \times w\!\bigl(p/q,\; K_0\, F[N]\bigr)$</div>
+  <div class="rule-gloss">The population determines the coupling determines the population. Self-consistency &mdash; not a result, the rule.</div>
+</div>
 
-    <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1.2rem 1.5rem; border-left:3px solid #FCCA28; border-radius:2px;">
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The Stern-Brocot tree is the address space. Every ratio that can lock does so at a unique address via the mediant $(a+c)/(b+d)$. The tree enumerates all positive rationals (Stern, 1858); each entry is an oscillator pair that has reached coherence.</p>
-    </div>
+<!-- Three coordinates -->
+<div style="max-width:700px; margin:calc(var(--sp)) auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">
+  <p>Three coordinates locate us within that fixed point.</p>
+</div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:90%; margin:0 auto 2rem;">
-      <div id="claim-e" style="padding:1.2rem 1.5rem; border-left:3px solid #DE3373; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">Two frequencies bracket the tree: Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz). Their ratio spans 145.8 Fibonacci levels &mdash; the depth of the self-organization.</p>
-      </div>
-
-      <div id="claim-a" style="padding:1.2rem 1.5rem; border-left:3px solid #08A953; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ has two roots: $\varphi$ and $-1/\varphi$. Their product is $-1$. Three dimensions where the arms reinforce, one where they cancel &mdash; spacetime signature $(3,1)$.</p>
-      </div>
-    </div>
-
-    <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border-left:3px dashed rgba(200,200,200,0.15); border-radius:2px; text-align:left;">
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">Self-consistency check: at iteration 47, the tree's predictions match observation to 9 digits. The structure checks itself.</p>
-    </div>
-
+<div class="coord-cards">
+  <div class="coord-card">
+    <div class="coord-label">Clocks</div>
+    <div class="coord-value">47</div>
+    <div class="coord-unit">oscillations of $x_{n+1} = 1/(1+x_n)$</div>
+  </div>
+  <div class="coord-card">
+    <div class="coord-label">Depth</div>
+    <div class="coord-value">145.8</div>
+    <div class="coord-unit">Fibonacci levels, Planck to Hubble</div>
+  </div>
+  <div class="coord-card">
+    <div class="coord-label">Expansion</div>
+    <div class="coord-value">81.3%</div>
+    <div class="coord-unit">of frequency axis locked</div>
   </div>
 </div>
 
-<style>
-@media (max-width: 800px) {
-  #claim-dag div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-}
-</style>
+<div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.8); font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
+  <p>Clocks count iterations &mdash; <em>when</em> we are. Depth spans the scale hierarchy from the fastest oscillation in nature ($10^{43}$ Hz) to the slowest ($10^{-18}$ Hz) &mdash; <em>where</em> we are. Expansion measures how much of the frequency axis has synchronized &mdash; <em>how far</em> the computation has progressed. The 18.7% that remains unlocked is the gap, and the largest gap sits at $1/\varphi$.</p>
+  <p style="margin-top:0.8rem;">After 13.8 billion years, 9 digits of the coherence parameter $|r|$ have settled. This page is the printout so far.</p>
+</div>
 
-<!-- DAG edges: canvas draws directed arrows between claim nodes -->
-<script>
-(function() {
-  var container = document.getElementById("claim-dag");
-  var canvas = document.getElementById("dag-canvas");
-  var ctx = canvas.getContext("2d");
-
-  function resize() {
-    var rect = container.getBoundingClientRect();
-    var dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = rect.width + "px";
-    canvas.style.height = rect.height + "px";
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  resize();
-  window.addEventListener("resize", resize);
-
-  function center(el) {
-    var r = el.getBoundingClientRect();
-    var c = container.getBoundingClientRect();
-    return { x: r.left + r.width / 2 - c.left, y: r.top + r.height / 2 - c.top, t: r.top - c.top, b: r.bottom - c.top };
-  }
-
-  function arrow(x1, y1, x2, y2, color, dashed) {
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    // Quadratic curve for organic feel
-    var cpx = (x1 + x2) / 2 + (y2 - y1) * 0.1;
-    var cpy = (y1 + y2) / 2;
-    ctx.quadraticCurveTo(cpx, cpy, x2, y2);
-    ctx.strokeStyle = color;
-    ctx.globalAlpha = 0.4;
-    ctx.lineWidth = 1.2;
-    if (dashed) ctx.setLineDash([4, 4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    // Arrowhead
-    var angle = Math.atan2(y2 - cpy, x2 - cpx);
-    var hl = 7;
-    ctx.beginPath();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - hl * Math.cos(angle - 0.4), y2 - hl * Math.sin(angle - 0.4));
-    ctx.lineTo(x2 - hl * Math.cos(angle + 0.4), y2 - hl * Math.sin(angle + 0.4));
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.globalAlpha = 0.5;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-
-  function draw() {
-    var W = container.offsetWidth;
-    var H = container.offsetHeight;
-    ctx.clearRect(0, 0, W, H);
-
-    var R = document.getElementById("claim-r");
-    var E = document.getElementById("claim-e");
-    var A = document.getElementById("claim-a");
-    var F = document.getElementById("claim-f");
-    if (!R || !E || !A || !F) return;
-
-    var rC = center(R), eC = center(E), aC = center(A), fC = center(F);
-
-    // R → E (rational enables empirical)
-    arrow(rC.x - 60, rC.b, eC.x, eC.t, "#FCCA28", false);
-    // R → A (rational enables algebraic)
-    arrow(rC.x + 60, rC.b, aC.x, aC.t, "#FCCA28", false);
-    // E → A (empirical constrains algebraic)
-    arrow(eC.x + eC.x * 0.02, eC.y, aC.x - aC.x * 0.02, aC.y, "#DE3373", false);
-    // R,E,A → F (all feed fidelity bound)
-    arrow(eC.x, eC.b, fC.x - 30, fC.t, "#DE3373", false);
-    arrow(aC.x, aC.b, fC.x + 30, fC.t, "#08A953", false);
-    // F → R (back-edge: fidelity confirms rational — dashed)
-    arrow(fC.x, fC.b, rC.x, rC.b + 20, "#FCCA28", true);
-  }
-
-  draw();
-  window.addEventListener("resize", function() { resize(); draw(); });
-  // Redraw after MathJax renders (layout may shift)
-  setTimeout(draw, 1000);
-  setTimeout(draw, 3000);
-})();
-</script>
-
-<!-- Hero: The Clock -->
+<!-- Hero: The Multi-Handed Clock -->
 <div class="phi-spacer-1">
   <div class="clock-container">
     <canvas id="clock" width="840" height="840"></canvas>
     <div class="digital-readout">
       <span class="value">47</span> oscillations<span class="sep">|</span><span class="value">9</span> digits<span class="sep">|</span><span class="value">13.80</span> Gyr
     </div>
+    <div class="hand-legend">
+      <span class="hand-legend-item"><span class="hand-legend-swatch" style="background:#DE3373;"></span> clocks (0.95 cycles)</span>
+      <span class="hand-legend-item"><span class="hand-legend-swatch" style="background:#08A953;"></span> depth (level 21 / 145.8)</span>
+      <span class="hand-legend-item"><span class="hand-legend-swatch" style="background:#1E76B8;"></span> expansion (81.3%)</span>
+      <span class="hand-legend-item"><span class="hand-legend-swatch" style="background:#FCCA28; border-style:dashed; border-width:1px; height:0; border-color:#FCCA28;"></span> gap twin (0.5)</span>
+    </div>
     <div class="binary-clock" id="binary-clock"></div>
   </div>
 </div>
 
 <div style="max-width:700px; margin:calc(var(--sp) * 2) auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
-  <p>The clock above shows 0.95 of one Hubble cycle completed. At 1.0 the cycle resets; settled digits carry forward as initial conditions for the next iteration.</p>
-  <p style="margin-top:0.6rem;">The address below is our current position in the loop.</p>
+  <p>Four hands, one face. The rose hand shows 0.95 of one Hubble cycle &mdash; when this iteration's computation resets. The green hand marks our observation window at level 21 of 145.8. The blue hand tracks how much of the frequency axis has locked. The dashed gold hand is the gap twin at $1/\varphi$, accumulating phase at $10^{-59}$ radians per oscillation.</p>
 </div>
 
 <div class="phi-spacer"></div>
 
-<!-- The Address -->
-<div class="address-envelope" style="position: relative;">
-  <div class="stamp">0.95<br>Hubble<br>cycles</div>
-
-  <div class="return-address">
-    <span class="sender">From the Current Iteration</span><br>
-    $\varphi = (1 + \sqrt{5})\,/\,2$<br>
-    $d = 3$<br>
-    $|F_6| = 13$
-  </div>
-
-  <div class="main-address">
-    <span class="line">Level 21, CMB Pivot</span>
-    <span class="line">Window $\sqrt{5} = 2.236$ levels</span>
-    <span class="line">Depth 145.8 Fibonacci Levels</span>
-    <span class="line">Stern-Brocot Tree</span>
-    <span class="line muted">---</span>
-    <span class="line"><span class="derived">Age 13.80 Gyr</span> <span class="muted">(derived)</span></span>
-    <span class="line">47 oscillations, 9 digits of $|r|$</span>
-    <span class="line">$\Omega_\Lambda = 0.6847$</span>
-  </div>
+<!-- Golden Spiral: universe landmarks along the depth axis -->
+<div style="text-align:center; margin-bottom:1rem;">
+  <div style="font-size:var(--fs-sm); text-transform:uppercase; letter-spacing:0.15em; color:var(--m-text-muted,#8b949e); margin-bottom:12px;">Depth &mdash; the scale hierarchy</div>
+  <canvas id="spiral" width="600" height="600"></canvas>
+  <p style="font-size:var(--fs-sm); color:var(--m-text-muted); margin-top:8px; max-width:500px; margin-left:auto; margin-right:auto;">A golden spiral from Planck frequency (center) to Hubble frequency (edge). Landmarks appear where oscillations have synchronized at observable scales.</p>
 </div>
 
 <div class="phi-spacer"></div>
 
-<!-- Steps: expandable -->
+<!-- CMB Ring -->
+<div style="text-align:center; margin-bottom:1rem;">
+  <div style="font-size:var(--fs-sm); text-transform:uppercase; letter-spacing:0.15em; color:var(--m-text-muted,#8b949e); margin-bottom:12px;">The CMB window &mdash; level 21, width $\sqrt{5}$</div>
+  <canvas id="cmb-ring" width="400" height="400"></canvas>
+  <p style="font-size:var(--fs-sm); color:var(--m-text-muted); margin-top:8px; max-width:500px; margin-left:auto; margin-right:auto;">Temperature fluctuations in the CMB are the imprint of the observation window: $\sqrt{5} = 2.236$ levels wide, centered at level 21. This is where our 9 settled digits become measurable.</p>
+</div>
+
+<div class="phi-spacer"></div>
+
+<!-- Coordinate Readout -->
+<div class="coord-readout">
+  <div class="readout-header">Current Coordinates</div>
+  <span class="readout-line">Clocks: 47 of 49 per cycle &mdash; 0.95 Hubble cycles</span>
+  <span class="readout-line">Depth: 145.8 Fibonacci levels</span>
+  <span class="readout-line">Expansion: 81.3% locked, 18.7% dark gaps</span>
+  <span class="readout-line" style="color:var(--m-text-muted); font-size:var(--fs-sm);">---</span>
+  <span class="readout-line"><span class="derived">Age 13.80 Gyr</span> <span class="muted">(derived, not input)</span></span>
+  <span class="readout-line">9 digits of $|r|$ settled</span>
+  <span class="readout-line">$\Omega_\Lambda = 0.6847$</span>
+</div>
+
+<div class="phi-spacer"></div>
+
+<!-- Steps: expandable computation -->
 <div class="fmt-section">
 <div class="fmt-level fmt-level-0">
   <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted); font-weight:300; margin-bottom:0.5rem;">The Computation</h2>
-  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 steps down the tree. 9 digits of $|r|$ have locked so far.</p>
+  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 steps. Three coordinates, one rule. 9 digits of $|r|$ have locked so far.</p>
   <span class="fmt-expand">expand</span>
 </div>
 <div class="fmt-level fmt-level-1">
 
 <!-- Step 1 -->
 <section>
-  <div class="section-label">Step 1 — Self-similarity rate</div>
+  <div class="section-label">Step 1 &mdash; Self-similarity rate (Clocks)</div>
   <div class="row"><span class="label">$n_s$</span><span class="value">0.9649 <span class="dim">(Planck 2018)</span></span></div>
   <div class="row"><span class="label">$\ln(\varphi^2)$</span><span class="value">0.962424 <span class="dim">(from $x^2 - x - 1 = 0$)</span></span></div>
   <div class="row"><span class="label">rate</span><span class="value">0.036470 levels / e-fold</span></div>
@@ -484,7 +350,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 2 -->
 <section>
-  <div class="section-label">Step 2 — Total tree depth</div>
+  <div class="section-label">Step 2 &mdash; Total scale hierarchy (Depth)</div>
   <div class="row"><span class="label">$\omega_{\text{Planck}}$</span><span class="value">$1.855 \times 10^{43}$ Hz</span></div>
   <div class="row"><span class="label">$\omega_{\text{Hubble}}$</span><span class="value">$2.183 \times 10^{-18}$ Hz</span></div>
   <div class="row"><span class="label">ratio</span><span class="value">8.497 x 10^60</span></div>
@@ -495,7 +361,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 3 -->
 <section>
-  <div class="section-label">Step 3 — The CMB window</div>
+  <div class="section-label">Step 3 &mdash; The CMB window (Depth)</div>
   <div class="row"><span class="label">$\sqrt{5}$</span><span class="value">2.236068</span></div>
   <div class="row"><span class="label">N_efolds</span><span class="value">61.3</span></div>
   <div class="row"><span class="label">sampled levels</span><span class="value">$\sqrt{5} = 2.236$</span></div>
@@ -506,7 +372,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 4 -->
 <section>
-  <div class="section-label">Step 4 — Spent cycles</div>
+  <div class="section-label">Step 4 &mdash; Spent cycles (Clocks)</div>
   <div class="row"><span class="label">age of universe</span><span class="value"><span class="derived">13.80 Gyr</span> <span class="dim">(derived)</span></span></div>
   <div class="row"><span class="label">Hubble time</span><span class="value">1.451 x 10^10 yr</span></div>
   <div class="row"><span class="label">spent Hubble cycles</span><span class="value">0.95</span></div>
@@ -517,7 +383,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 5 -->
 <section>
-  <div class="section-label">Step 5 — Computational progress</div>
+  <div class="section-label">Step 5 &mdash; Computational progress (Clocks)</div>
   <div class="row"><span class="label">oscillations / cycle</span><span class="value">49</span></div>
   <div class="row"><span class="label">total oscillations</span><span class="value">47</span></div>
   <div class="row"><span class="label">convergence rate</span><span class="value">2/pi = 0.6366</span></div>
@@ -528,7 +394,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 6 -->
 <section>
-  <div class="section-label">Step 6 — Boundary weight</div>
+  <div class="section-label">Step 6 &mdash; Boundary weight (Expansion)</div>
   <div class="row"><span class="label">$\Omega_\Lambda$</span><span class="value">0.6847 <span class="dim">(predicted)</span></span></div>
   <div class="row"><span class="label">w*</span><span class="value">0.8281</span></div>
   <div class="row"><span class="label">effective modes</span><span class="value">12.66</span></div>
@@ -539,7 +405,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 7 -->
 <section>
-  <div class="section-label">Step 7 — The gap twin</div>
+  <div class="section-label">Step 7 &mdash; The gap twin (Expansion)</div>
   <div class="row"><span class="label">gap fraction</span><span class="value">0.187 of frequency axis</span></div>
   <div class="row"><span class="label">per dimension</span><span class="value">0.572</span></div>
   <div class="row"><span class="label">twin's cycles</span><span class="value">0.5</span></div>
@@ -555,7 +421,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 
 <!-- Step 8 -->
 <section>
-  <div class="section-label">Step 8 — What's been computed</div>
+  <div class="section-label">Step 8 &mdash; What's been computed (Self-consistency check)</div>
   <p style="color: var(--m-text-muted); margin-bottom: 16px;">Digits available: <span style="color: var(--m-text); font-weight: 600;">9</span></p>
 
   <div class="pred-grid">
@@ -580,1300 +446,8 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 <div class="phi-spacer"></div>
 
 <div class="closing" style="text-align:left; font-size:var(--fs-base); line-height:1.8;">
-  <p>The recurrence $x_{n+1} = 1/(1+x_n)$ has completed 47 iterations. Each settles one more ratio on the tree, at a convergence rate of $2/\pi \approx 0.6366$ per Hubble cycle. The coherence parameter $|r|$ is determined to 9 significant digits.</p>
+  <p>The recurrence $x_{n+1} = 1/(1+x_n)$ has completed 47 iterations. Each settles one more ratio at the convergence rate $2/\pi \approx 0.6366$ per Hubble cycle. The coherence parameter $|r|$ is determined to 9 significant digits.</p>
   <p style="margin-top:0.6rem;">The next self-consistency checkpoint is iteration 76 ($L_9$, the next Lucas number), where $\varphi^n + \psi^n$ is again an integer and a new set of predictions becomes simultaneously confirmable from both roots. At the current Hubble rate, that is approximately $8 \times 10^9$ years from now.</p>
 </div>
 
-<div class="phi-spacer-sm"></div>
-
-<!-- The Minimum Self-Predicting Universe -->
-<section id="mspu">
-  <h2 style="font-size:var(--fs-xl); color:var(--m-text,#e6edf3); font-weight:300; text-align:center; margin-bottom:var(--sp); font-family:sans-serif;">
-    The Minimum Self-Predicting Universe
-  </h2>
-
-  <!-- Section 1: The Stern-Brocot Tree -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        All rationals emerge from one operation: the mediant. The tree is the address space.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <canvas id="mspu-tree" width="600" height="320" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        $\text{mediant}\!\left(\frac{a}{b},\;\frac{c}{d}\right) = \frac{a+c}{b+d}$
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        Starting from 0/1 and 1/0, every positive rational appears exactly once.
-        The golden ratio sits at the widest gap. 146 levels separate Planck from Hubble.
-      </p>
-    </div>
-  </div>
-
-  <!-- Section 2: Tongues and Gaps -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The tree fills with locked modes along the path of least resistance. The gaps &mdash; 18.7% of the frequency axis &mdash; are where coherence has not yet been reached.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <canvas id="mspu-tongues" width="600" height="120" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        $\text{width}(p/q) \propto K^q / q^2$
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        18.7% of the frequency axis remains unlocked. The gap twin at 1/&phi; accumulates phase
-        at $10^{-59}$ radians per oscillation.
-      </p>
-    </div>
-  </div>
-
-  <!-- Section 3: Four Phase States -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Two binary choices (locked/unlocked &times; twist locked/unlocked) produce four states.
-        Three observable, one dark &mdash; spacetime signature $(3,1)$.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <div id="mspu-phases" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:360px; margin:0.5rem 0;">
-        <div style="background:rgba(30,118,184,0.25); border:1px solid #1E76B8; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
-          <div style="font-size:var(--fs-lg); font-weight:600; color:#1E76B8;">A</div>
-          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both locked</div>
-        </div>
-        <div style="background:rgba(8,169,83,0.25); border:1px solid #08A953; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
-          <div style="font-size:var(--fs-lg); font-weight:600; color:#08A953;">B</div>
-          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">osc in gap</div>
-        </div>
-        <div style="background:rgba(124,46,135,0.25); border:1px solid #7C2E87; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
-          <div style="font-size:var(--fs-lg); font-weight:600; color:#7C2E87;">C</div>
-          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">twist in gap</div>
-        </div>
-        <div style="background:rgba(13,17,23,0.7); border:1px solid var(--m-border,#30363d); border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
-          <div style="font-size:var(--fs-lg); font-weight:600; color:var(--m-text-muted,#8b949e);">D</div>
-          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both unlocked</div>
-        </div>
-      </div>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        3 observable + 1 dark = (3,1)<br>
-        <span style="font-size:var(--fs-sm);">$i^2 = -1 = J^2$ = double half-twist</span>
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        Three generations = three spatial dimensions = $2^2 - 1$.
-        The dark state is the unobservable fourth phase.
-      </p>
-    </div>
-  </div>
-
-  <!-- Section 4: The Figure-8 -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Two loops share one crossing point. The crossing fraction gives the Weinberg angle.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <canvas id="mspu-figure8" width="600" height="260" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        $\sin^2\theta_W = 8/35 = 0.2286$
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        8 cross-sector transitions = 8 gluons. The crossing point is the present moment.
-      </p>
-    </div>
-  </div>
-
-  <!-- Section 5: Predictions -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Every row below follows from the tree. $|F_6| = 13$ locked modes, 12 coupling channels, four phase states giving $(3,1)$ signature. No free parameters.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <div style="overflow:hidden; margin:0.5rem 0;">
-        <table id="mspu-predictions" style="width:100%; max-width:600px; border-collapse:collapse; font-family:sans-serif; font-size:var(--fs-sm);">
-          <thead>
-            <tr style="border-bottom:1px solid var(--m-border,#30363d);">
-              <th style="text-align:left; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Prediction</th>
-              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Value</th>
-              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Residual</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td style="padding:4px 8px; color:#08A953;">$\Omega_\Lambda$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.6847</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.07$\sigma$</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">$\alpha_s/\alpha_2$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">27/8 = 3.375</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.3$\sigma$</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">sin<sup>2</sup>&theta;<sub>W</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">8/35 = 0.2286</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.2$\sigma$</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">$n_s$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.965</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.1$\sigma$</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">d</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
-            <tr><td style="padding:4px 8px; color:#08A953;">generations</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
-            <tr><td style="padding:4px 8px; color:var(--m-text-muted,#8b949e); opacity:0.5;">hierarchy R</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">$6 \times 13^{54}$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">15 digits</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        $\Omega_\Lambda$ = (11 + 2w*) / (16 + 3w*) = 0.6847<br>
-        <span style="font-size:var(--fs-sm);">$\alpha_s / \alpha_2 = 27/8$</span>
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        Every row is derived from the Stern-Brocot address and the four phase states.
-        No fitted constants. The residuals measure distance from experiment, not from a fit.
-      </p>
-    </div>
-  </div>
-
-  <!-- Section 6: The Fixed Point -->
-  <div class="fmt-section">
-    <div class="fmt-level fmt-level-0">
-      <span class="fmt-tag fmt-tag-conjecture">claim</span>
-      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Thirteen locked modes, twelve coupling channels, four phase states. The fixed point $x = f(x)$ is where the tree's path of least resistance terminates.
-      </p>
-      <span class="fmt-expand">visual +</span>
-    </div>
-    <div class="fmt-level fmt-level-1">
-      <span class="fmt-tag fmt-tag-visual">visual</span>
-      <canvas id="mspu-fixedpt" width="600" height="300" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
-    </div>
-    <div class="fmt-level fmt-level-2">
-      <span class="fmt-tag fmt-tag-math">math</span>
-      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
-        x = f(x)
-      </p>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); margin:0.2rem 0;">
-        Four primitives: <strong style="color:var(--m-text,#e6edf3);">Z</strong> (integers) &middot;
-        <strong style="color:var(--m-text,#e6edf3);">mediant</strong> &middot;
-        <strong style="color:var(--m-text,#e6edf3);">fixed point</strong> &middot;
-        <strong style="color:var(--m-text,#e6edf3);">parabola</strong>
-      </p>
-    </div>
-    <div class="fmt-level fmt-level-3">
-      <span class="fmt-tag fmt-tag-explanation">explanation</span>
-      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
-        13 modes &middot; 12 channels &middot; 4 states &middot; 3 dimensions &middot; 1 dark &middot; 0 parameters
-      </p>
-    </div>
-  </div>
-
-  <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1.5rem; text-align:center; font-family:sans-serif;">
-    Four primitives (integers, mediant, fixed point, parabola) compose into every structure on this page. No additional axioms.
-  </p>
-</section>
-
-<script>
-// ── MSPU Canvas Renderers ──────────────────────────────────────────────
-(function() {
-  var PHI = (1 + Math.sqrt(5)) / 2;
-  var ROSE = '#DE3373';
-  var GREEN = '#08A953';
-  var GOLD = '#FCCA28';
-  var BLUE = '#1E76B8';
-  var PURPLE = '#7C2E87';
-  var MUTED = '#8b949e';
-  var BG = '#000000';
-
-  // Palette array for tongue coloring by q
-  var PALETTE = [ROSE, GOLD, GREEN, '#F5712A', '#F59EAF', '#EE1B3E',
-                 BLUE, PURPLE, '#7A0434', '#F98F81', '#37BA9B', '#C0C2C2'];
-
-  function dpr() { return window.devicePixelRatio || 1; }
-
-  function setupCanvas(id) {
-    var c = document.getElementById(id);
-    if (!c) return null;
-    var r = dpr();
-    var w = c.width, h = c.height;
-    c.width = w * r; c.height = h * r;
-    c.style.width = w + 'px';
-    c.style.maxWidth = '100%';
-    var ctx = c.getContext('2d');
-    ctx.scale(r, r);
-    return { ctx: ctx, w: w, h: h };
-  }
-
-  // ── 1. Stern-Brocot Tree ──
-  function drawTree() {
-    var s = setupCanvas('mspu-tree');
-    if (!s) return;
-    var ctx = s.ctx, W = s.w, H = s.h;
-    var DEPTH = 4;
-    var rootX = W / 2, rootY = 24;
-    var treeH = H - 50;
-
-    // Track Fibonacci backbone: fractions p/q where p,q are consecutive Fibonacci numbers
-    var fibs = [1,1,2,3,5,8,13,21];
-
-    function isFib(n) {
-      for (var i = 0; i < fibs.length; i++) { if (fibs[i] === n) return true; }
-      return false;
-    }
-
-    function drawNode(a, b, c, d, level, parentX, parentY) {
-      if (level > DEPTH) return;
-      var p = a + c, q = b + d;
-      var frac = p / q;
-      var nx = W * (0.06 + 0.88 * frac);
-      var ny = rootY + (level / DEPTH) * treeH;
-
-      // Fibonacci backbone?
-      var onFib = isFib(p) && isFib(q);
-      var isLeft = frac < 0.5;
-      var col = onFib ? GOLD : (isLeft ? ROSE : GREEN);
-      var lw = onFib ? 2.5 : Math.max(0.8, 2.2 - level * 0.35);
-      var alpha = onFib ? 0.95 : (0.85 - level * 0.12);
-
-      // Branch line
-      if (parentX !== undefined) {
-        ctx.beginPath();
-        ctx.moveTo(parentX, parentY);
-        ctx.lineTo(nx, ny);
-        ctx.strokeStyle = col;
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = lw;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
-
-      // Node dot
-      ctx.beginPath();
-      var dotR = onFib ? 4 : Math.max(2, 4 - level * 0.6);
-      ctx.arc(nx, ny, dotR, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.globalAlpha = alpha + 0.1;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-
-      // Label
-      if (level <= 3) {
-        ctx.font = (level <= 1 ? '600 13px' : '11px') + ' sans-serif';
-        ctx.fillStyle = onFib ? GOLD : MUTED;
-        ctx.globalAlpha = level <= 1 ? 0.9 : 0.6;
-        ctx.textAlign = 'center';
-        ctx.fillText(p + '/' + q, nx, ny - dotR - 4);
-        ctx.globalAlpha = 1;
-      }
-
-      drawNode(a, b, p, q, level + 1, nx, ny);
-      drawNode(p, q, c, d, level + 1, nx, ny);
-    }
-
-    // Root 1/1
-    ctx.beginPath();
-    ctx.arc(rootX, rootY, 5, 0, Math.PI * 2);
-    ctx.fillStyle = GOLD;
-    ctx.fill();
-    ctx.font = '600 14px sans-serif';
-    ctx.fillStyle = GOLD;
-    ctx.textAlign = 'center';
-    ctx.fillText('1/1', rootX, rootY - 10);
-
-    drawNode(0, 1, 1, 1, 1, rootX, rootY);
-    drawNode(1, 1, 1, 0, 1, rootX, rootY);
-  }
-
-  // ── 2. Arnold Tongues ──
-  function drawTongues() {
-    var s = setupCanvas('mspu-tongues');
-    if (!s) return;
-    var ctx = s.ctx, W = s.w, H = s.h;
-    var barY = 30, barH = 50;
-
-    // Background bar (dark gap)
-    ctx.fillStyle = '#161b22';
-    ctx.fillRect(0, barY, W, barH);
-
-    // Generate Farey-like fractions for tongues
-    var tongues = [];
-    for (var q = 1; q <= 8; q++) {
-      for (var p = 0; p <= q; p++) {
-        // Check coprime
-        if (gcd(p, q) !== 1 && !(p === 0 && q === 1) && !(p === q)) continue;
-        var val = p / q;
-        var width = Math.max(3, (1 / (q * q)) * W * 0.7);
-        tongues.push({ p: p, q: q, val: val, width: width });
-      }
-    }
-
-    // Draw tongues
-    for (var i = 0; i < tongues.length; i++) {
-      var t = tongues[i];
-      var x = t.val * W;
-      var col = PALETTE[(t.q - 1) % PALETTE.length];
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.7 - t.q * 0.05;
-      ctx.fillRect(x - t.width / 2, barY, t.width, barH);
-      ctx.globalAlpha = 1;
-    }
-
-    // Labels
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = MUTED;
-    ctx.textAlign = 'left';
-    ctx.fillText('0', 4, barY + barH + 16);
-    ctx.textAlign = 'right';
-    ctx.fillText('1', W - 4, barY + barH + 16);
-    ctx.textAlign = 'center';
-    ctx.fillText('frequency axis', W / 2, barY - 8);
-
-    // Mark 1/phi gap
-    var phiInv = 1 / PHI;
-    ctx.beginPath();
-    ctx.moveTo(phiInv * W, barY - 4);
-    ctx.lineTo(phiInv * W, barY + barH + 4);
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 3]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.font = '600 10px sans-serif';
-    ctx.fillStyle = GOLD;
-    ctx.fillText('1/\u03C6', phiInv * W, barY + barH + 16);
-
-    // Dark gap label
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = MUTED;
-    ctx.globalAlpha = 0.5;
-    ctx.fillText('18.7% dark gaps', W / 2, 16);
-    ctx.globalAlpha = 1;
-  }
-
-  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
-
-  // ── 4. Figure-8 (lemniscate) ──
-  function drawFigure8() {
-    var s = setupCanvas('mspu-figure8');
-    if (!s) return;
-    var ctx = s.ctx, W = s.w, H = s.h;
-    var cx = W / 2, cy = H / 2;
-    var a = W * 0.22; // half-width of lemniscate
-
-    // Parametric lemniscate of Bernoulli: x = a*cos(t)/(1+sin^2(t)), y = a*sin(t)*cos(t)/(1+sin^2(t))
-    var steps = 200;
-
-    // Left loop (t from pi/2 to 3pi/2) - blue
-    ctx.beginPath();
-    for (var i = 0; i <= steps; i++) {
-      var t = Math.PI / 2 + (i / steps) * Math.PI;
-      var s2 = Math.sin(t) * Math.sin(t);
-      var denom = 1 + s2;
-      var x = cx + a * Math.cos(t) / denom;
-      var y = cy + a * Math.sin(t) * Math.cos(t) / denom;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = BLUE;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Right loop (t from -pi/2 to pi/2) - rose
-    ctx.beginPath();
-    for (var i = 0; i <= steps; i++) {
-      var t = -Math.PI / 2 + (i / steps) * Math.PI;
-      var s2 = Math.sin(t) * Math.sin(t);
-      var denom = 1 + s2;
-      var x = cx + a * Math.cos(t) / denom;
-      var y = cy + a * Math.sin(t) * Math.cos(t) / denom;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = ROSE;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Crossing point at center
-    ctx.beginPath();
-    ctx.arc(cx, cy, 7, 0, Math.PI * 2);
-    ctx.fillStyle = GOLD;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-    ctx.fillStyle = BG;
-    ctx.fill();
-
-    // Labels
-    ctx.font = '600 12px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = BLUE;
-    ctx.fillText('left loop', cx - a * 0.45, cy + a * 0.55);
-    ctx.fillStyle = ROSE;
-    ctx.fillText('right loop', cx + a * 0.45, cy + a * 0.55);
-    ctx.fillStyle = GOLD;
-    ctx.fillText('crossing', cx, cy - 14);
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = MUTED;
-    ctx.fillText('sin\u00B2\u03B8_W = 8/35', cx, cy + a * 0.75);
-  }
-
-  // ── 6. Fixed Point x=f(x) ──
-  var fixedPtFrame = 0;
-  function drawFixedPoint() {
-    var s = setupCanvas('mspu-fixedpt');
-    if (!s) return;
-    var ctx = s.ctx, W = s.w, H = s.h;
-    var pad = 40;
-    var plotW = W - pad * 2, plotH = H - pad * 2;
-
-    // Axes
-    ctx.strokeStyle = MUTED;
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH);
-    ctx.lineTo(pad + plotW, pad + plotH);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // y = x line
-    ctx.beginPath();
-    ctx.moveTo(pad, pad + plotH);
-    ctx.lineTo(pad + plotW, pad);
-    ctx.strokeStyle = MUTED;
-    ctx.globalAlpha = 0.25;
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6, 4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-
-    // f(x) = parabola that crosses y=x at golden ratio: f(x) = x^2 - x + 1/phi
-    // Fixed point: x = 1/phi
-    var phiInv = 1 / PHI;
-    function f(x) { return x * x; }
-
-    // Draw f(x) curve
-    ctx.beginPath();
-    for (var i = 0; i <= 200; i++) {
-      var x = i / 200;
-      var y = f(x);
-      var px = pad + x * plotW;
-      var py = pad + plotH - y * plotH;
-      if (py < pad) continue;
-      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    }
-    ctx.strokeStyle = ROSE;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Cobweb iteration from start to fixed point
-    // x^2 = x => x = 0 or x = 1; use f(x) = x(2-x) which has fixed point at 1
-    // Better: use f(x) = sqrt(x) with fixed point at 1
-    // Actually, for golden ratio: f(x) = 1/(1+x), fixed point at 1/phi
-    function fg(x) { return 1 / (1 + x); }
-
-    // Cobweb animation
-    var nSteps = 12;
-    var animStep = Math.min(nSteps, Math.floor(fixedPtFrame / 8));
-    var xn = 0.1; // start
-    ctx.beginPath();
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.8;
-    for (var i = 0; i < animStep; i++) {
-      var yn = fg(xn);
-      // horizontal to curve
-      var px1 = pad + xn * plotW;
-      var py1 = pad + plotH - xn * plotH; // on y=x
-      var py2 = pad + plotH - yn * plotH; // on f(x)
-      if (i === 0) ctx.moveTo(px1, py1);
-      ctx.lineTo(px1, py2); // vertical to f(x)
-      ctx.lineTo(pad + yn * plotW, py2); // horizontal to y=x
-      xn = yn;
-    }
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // Draw f(x) = 1/(1+x) curve
-    ctx.beginPath();
-    for (var i = 1; i <= 200; i++) {
-      var x = i / 200;
-      var y = fg(x);
-      var px = pad + x * plotW;
-      var py = pad + plotH - y * plotH;
-      if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    }
-    ctx.strokeStyle = GREEN;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Mark fixed point 1/phi
-    var fpx = pad + phiInv * plotW;
-    var fpy = pad + plotH - phiInv * plotH;
-    ctx.beginPath();
-    ctx.arc(fpx, fpy, 6, 0, Math.PI * 2);
-    ctx.fillStyle = GOLD;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(fpx, fpy, 3, 0, Math.PI * 2);
-    ctx.fillStyle = BG;
-    ctx.fill();
-
-    // Labels
-    ctx.font = '600 12px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = GREEN;
-    ctx.fillText('f(x) = 1/(1+x)', pad + plotW * 0.55, pad + 20);
-    ctx.fillStyle = MUTED;
-    ctx.globalAlpha = 0.4;
-    ctx.fillText('y = x', pad + plotW - 40, pad + 20);
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = GOLD;
-    ctx.fillText('1/\u03C6', fpx + 10, fpy - 8);
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = MUTED;
-    ctx.textAlign = 'center';
-    ctx.fillText('x = f(x)', W / 2, H - 8);
-
-    // Animate
-    if (fixedPtFrame < nSteps * 8 + 60) {
-      fixedPtFrame++;
-      requestAnimationFrame(function() {
-        // Clear and redraw
-        ctx.clearRect(0, 0, W, H);
-        // Re-setup not needed since we keep the same ctx, just re-call the draw internals
-        drawFixedPointInner(ctx, W, H, pad, plotW, plotH);
-      });
-    }
-  }
-
-  // Inner draw for animation loop
-  function drawFixedPointInner(ctx, W, H, pad, plotW, plotH) {
-    var phiInv = 1 / PHI;
-    function fg(x) { return 1 / (1 + x); }
-
-    // Axes
-    ctx.strokeStyle = MUTED;
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH);
-    ctx.lineTo(pad + plotW, pad + plotH);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // y = x line
-    ctx.beginPath();
-    ctx.moveTo(pad, pad + plotH);
-    ctx.lineTo(pad + plotW, pad);
-    ctx.strokeStyle = MUTED;
-    ctx.globalAlpha = 0.25;
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6, 4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-
-    // f(x) = 1/(1+x) curve
-    ctx.beginPath();
-    for (var i = 1; i <= 200; i++) {
-      var x = i / 200;
-      var y = fg(x);
-      var px = pad + x * plotW;
-      var py = pad + plotH - y * plotH;
-      if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    }
-    ctx.strokeStyle = GREEN;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Cobweb
-    var nSteps = 12;
-    var animStep = Math.min(nSteps, Math.floor(fixedPtFrame / 8));
-    var xn = 0.1;
-    ctx.beginPath();
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.8;
-    for (var i = 0; i < animStep; i++) {
-      var yn = fg(xn);
-      var px1 = pad + xn * plotW;
-      var py1 = pad + plotH - xn * plotH;
-      var py2 = pad + plotH - yn * plotH;
-      if (i === 0) ctx.moveTo(px1, py1);
-      ctx.lineTo(px1, py2);
-      ctx.lineTo(pad + yn * plotW, py2);
-      xn = yn;
-    }
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // Fixed point
-    var fpx = pad + phiInv * plotW;
-    var fpy = pad + plotH - phiInv * plotH;
-    ctx.beginPath();
-    ctx.arc(fpx, fpy, 6, 0, Math.PI * 2);
-    ctx.fillStyle = GOLD;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(fpx, fpy, 3, 0, Math.PI * 2);
-    ctx.fillStyle = BG;
-    ctx.fill();
-
-    // Labels
-    ctx.font = '600 12px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = GREEN;
-    ctx.fillText('f(x) = 1/(1+x)', pad + plotW * 0.55, pad + 20);
-    ctx.fillStyle = MUTED;
-    ctx.globalAlpha = 0.4;
-    ctx.fillText('y = x', pad + plotW - 40, pad + 20);
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = GOLD;
-    ctx.fillText('1/\u03C6', fpx + 10, fpy - 8);
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = MUTED;
-    ctx.textAlign = 'center';
-    ctx.fillText('x = f(x)', W / 2, H - 8);
-
-    if (fixedPtFrame < nSteps * 8 + 60) {
-      fixedPtFrame++;
-      requestAnimationFrame(function() {
-        ctx.clearRect(0, 0, W, H);
-        drawFixedPointInner(ctx, W, H, pad, plotW, plotH);
-      });
-    }
-  }
-
-  // ── Init all canvases ──
-  function initMSPU() {
-    drawTree();
-    drawTongues();
-    drawFigure8();
-    drawFixedPoint();
-  }
-
-  // Run after DOM ready and after mobius-theme.js inits the accordion
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMSPU);
-  } else {
-    // Slight delay to let accordion init first
-    setTimeout(initMSPU, 50);
-  }
-})();
-</script>
-
 <div class="phi-spacer"></div>
-
-</main>
-
-<script src="_static/mobius-theme.js"></script>
-<script>
-// ── Background: Kuramoto particles (subtler version) ────────────────────
-const bgCanvas = document.getElementById('bg');
-const bgCtx = bgCanvas.getContext('2d');
-
-let W, H;
-var bgDpr = window.devicePixelRatio || 1;
-function resizeBg() {
-  W = window.innerWidth;
-  H = window.innerHeight;
-  bgCanvas.width = W * bgDpr;
-  bgCanvas.height = H * bgDpr;
-  bgCtx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0);
-}
-resizeBg();
-window.addEventListener('resize', resizeBg);
-
-const PHI = (1 + Math.sqrt(5)) / 2;
-const N_PARTICLES = 120; // fewer than original
-const particles = [];
-
-for (let i = 0; i < N_PARTICLES; i++) {
-  particles.push({
-    x: Math.random() * 2 - 1,
-    y: Math.random() * 2 - 1,
-    phase: Math.random() * Math.PI * 2,
-    freq: (0.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : PHI),
-    radius: 0.4 + Math.random() * 1.0,
-    drift_x: (Math.random() - 0.5) * 0.00015,
-    drift_y: (Math.random() - 0.5) * 0.00012,
-  });
-}
-
-const tongues = [
-  { p: 1, q: 2, amp: 0.08 },
-  { p: 1, q: 3, amp: 0.05 },
-  { p: 2, q: 5, amp: 0.04 },
-];
-
-let bgT = 0;
-
-function drawBg() {
-  var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
-  bgCtx.fillStyle = bgColor;
-  bgCtx.fillRect(0, 0, W, H);
-
-  // Tongue wave bands — very subtle
-  for (const tg of tongues) {
-    const yCenter = (tg.p / tg.q) * H;
-    const omega = tg.p / tg.q * 0.4;
-    bgCtx.beginPath();
-    for (let x = 0; x < W; x += 4) {
-      const wave = Math.sin(x * 0.008 + bgT * omega) * tg.amp * 30;
-      const y = yCenter + wave;
-      const alpha = 0.012 * (1 + 0.5 * Math.sin(bgT * omega * 0.3));
-      bgCtx.fillStyle = `rgba(60, 80, 120, ${alpha})`;
-      bgCtx.fillRect(x, y - 0.5, 4, 1);
-    }
-  }
-
-  // Particles — dimmer and slower
-  for (const p of particles) {
-    p.phase += p.freq * 0.006;
-    p.x += p.drift_x;
-    p.y += p.drift_y;
-
-    if (p.x > 1.1) p.x = -1.1;
-    if (p.x < -1.1) p.x = 1.1;
-    if (p.y > 1.1) p.y = -1.1;
-    if (p.y < -1.1) p.y = 1.1;
-
-    const sx = (p.x + 1) * 0.5 * W;
-    const sy = (p.y + 1) * 0.5 * H;
-
-    const brightness = 0.06 + 0.04 * Math.sin(p.phase);
-    const r = p.radius * (1 + 0.15 * Math.sin(p.phase * PHI));
-
-    bgCtx.beginPath();
-    bgCtx.arc(sx, sy, r, 0, Math.PI * 2);
-    bgCtx.fillStyle = `rgba(180, 190, 220, ${brightness})`;
-    bgCtx.fill();
-  }
-
-  // Coupling lines — even fainter
-  for (let i = 0; i < N_PARTICLES; i += 4) {
-    const a = particles[i];
-    const b = particles[(i + 7) % N_PARTICLES];
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 0.12) {
-      const alpha = 0.02 * (1 - dist / 0.12) * (0.5 + 0.5 * Math.cos(a.phase - b.phase));
-      bgCtx.beginPath();
-      bgCtx.moveTo((a.x + 1) * 0.5 * W, (a.y + 1) * 0.5 * H);
-      bgCtx.lineTo((b.x + 1) * 0.5 * W, (b.y + 1) * 0.5 * H);
-      bgCtx.strokeStyle = `rgba(100, 130, 200, ${alpha})`;
-      bgCtx.lineWidth = 0.4;
-      bgCtx.stroke();
-    }
-  }
-
-  // ── Stern-Brocot tree: the observable universe's address space ──
-  // Rose (#DE3373) for left branches, green (#08A953) for right
-  // Grows downward from top center, ~5 levels deep
-  drawSternBrocotTree(bgCtx, W, H);
-
-  // ── Arrow of time: horizontal gradient at tree root level ──
-  var arrowY = H * 0.04;
-  var grad = bgCtx.createLinearGradient(0, arrowY, W, arrowY);
-  grad.addColorStop(0, "rgba(222,51,115,0)");
-  grad.addColorStop(0.2, "rgba(222,51,115,0.04)");
-  grad.addColorStop(0.95, "rgba(8,169,83,0.06)");  // 0.95 = current progress
-  grad.addColorStop(1, "rgba(8,169,83,0)");
-  bgCtx.fillStyle = grad;
-  bgCtx.fillRect(0, arrowY - 1, W, 3);
-  // Small arrowhead at 0.95 * W
-  bgCtx.beginPath();
-  bgCtx.moveTo(W * 0.95, arrowY - 4);
-  bgCtx.lineTo(W * 0.95 + 6, arrowY);
-  bgCtx.lineTo(W * 0.95, arrowY + 4);
-  bgCtx.fillStyle = "rgba(8,169,83,0.08)";
-  bgCtx.fill();
-
-  bgT += 1;
-  requestAnimationFrame(drawBg);
-}
-
-// ── Stern-Brocot tree: fixed to viewport, curved branches, shuffling ──
-// Time is always a curve. The tree reshuffles continuously.
-// The root is inaccessible. Leaves loop back through a half-twist.
-
-// Pre-compute tree nodes once, then animate their positions
-var treeNodes = [];
-var treeEdges = [];
-var treeInited = false;
-
-function initTreeNodes() {
-  treeNodes = [];
-  treeEdges = [];
-  var depth = 5;
-
-  function addNode(a, b, c, d, level, parentIdx) {
-    if (level > depth) return;
-    var p = a + c, q = b + d;
-    var frac = p / q;
-    var idx = treeNodes.length;
-    treeNodes.push({
-      frac: frac, level: level, p: p, q: q,
-      isLeft: frac < 0.5,
-      // Base position (will be perturbed)
-      baseX: frac, baseY: level / depth,
-      // Current animated position
-      x: 0, y: 0,
-      // Shuffle offset (unique per node, evolves slowly)
-      seed: idx * PHI
-    });
-    if (parentIdx >= 0) {
-      treeEdges.push([parentIdx, idx]);
-    }
-    addNode(a, b, p, q, level + 1, idx);
-    addNode(p, q, c, d, level + 1, idx);
-  }
-
-  // Root (inaccessible, index 0)
-  treeNodes.push({
-    frac: 1, level: 0, p: 1, q: 1, isLeft: false, isRoot: true,
-    baseX: 0.5, baseY: 0, x: 0, y: 0, seed: 0
-  });
-  addNode(0, 1, 1, 1, 1, 0);
-  addNode(1, 1, 1, 0, 1, 0);
-  treeInited = true;
-}
-
-function drawSternBrocotTree(ctx, W, H) {
-  if (!treeInited) initTreeNodes();
-
-  var treeTop = H * 0.06;
-  var treeBot = H * 0.52;
-  var treeH = treeBot - treeTop;
-  var t = bgT * 0.001; // slow time
-
-  // Update node positions: shuffle + curve
-  for (var i = 0; i < treeNodes.length; i++) {
-    var n = treeNodes[i];
-    // Shuffle: each node drifts on a unique Lissajous path
-    var sx = Math.sin(t * 0.7 + n.seed * 2.3) * 0.02;
-    var sy = Math.sin(t * 0.5 + n.seed * 1.7) * 0.015;
-    n.x = W * (0.08 + 0.84 * (n.baseX + sx));
-    n.y = treeTop + (n.baseY + sy) * treeH;
-  }
-
-  // Draw edges as quadratic curves (time is always curved)
-  for (var i = 0; i < treeEdges.length; i++) {
-    var parent = treeNodes[treeEdges[i][0]];
-    var child = treeNodes[treeEdges[i][1]];
-    var isLeft = child.isLeft;
-    var r = isLeft ? 222 : 8;
-    var g = isLeft ? 51 : 169;
-    var bl = isLeft ? 115 : 83;
-    var alpha = 0.14 - child.level * 0.018;
-    if (alpha < 0.03) alpha = 0.03;
-
-    // Curve control point: offset horizontally for organic feel
-    var cpx = (parent.x + child.x) / 2 + Math.sin(t + i * 0.3) * 15;
-    var cpy = (parent.y + child.y) / 2;
-
-    ctx.beginPath();
-    ctx.moveTo(parent.x, parent.y);
-    ctx.quadraticCurveTo(cpx, cpy, child.x, child.y);
-    ctx.strokeStyle = "rgba(" + r + "," + g + "," + bl + "," + alpha + ")";
-    ctx.lineWidth = Math.max(0.4, 1.4 - child.level * 0.18);
-    ctx.stroke();
-  }
-
-  // Draw nodes
-  for (var i = 0; i < treeNodes.length; i++) {
-    var n = treeNodes[i];
-    var isLeft = n.isLeft;
-    var r = isLeft ? 222 : 8;
-    var g = isLeft ? 51 : 169;
-    var bl = isLeft ? 115 : 83;
-    var alpha = 0.15 - n.level * 0.02;
-    if (alpha < 0.04) alpha = 0.04;
-
-    if (n.isRoot) {
-      // Inaccessible root: void ring
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(252,202,40,0.12)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.setLineDash([2, 3]);
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(252,202,40,0.06)";
-      ctx.stroke();
-      ctx.setLineDash([]);
-      continue;
-    }
-
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, Math.max(1, 2.5 - n.level * 0.3), 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(" + r + "," + g + "," + bl + "," + (alpha + 0.04) + ")";
-    ctx.fill();
-
-    if (n.level <= 2) {
-      ctx.fillStyle = "rgba(200,200,200,0.09)";
-      ctx.font = Math.max(8, 11 - n.level * 2) + "px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(n.p + "/" + n.q, n.x, n.y - 5);
-    }
-  }
-
-  // ── Half-twist loop-back: deepest leaves curve to twisted twins ──
-  var twistPhase = Math.sin(t * 3) * 0.12;
-  for (var i = 0; i < treeNodes.length; i++) {
-    var n = treeNodes[i];
-    if (n.level !== 5) continue;
-
-    var twinFrac = 1 - n.frac + twistPhase;
-    if (twinFrac > 1) twinFrac -= 1;
-    if (twinFrac < 0) twinFrac += 1;
-    var twinX = W * (0.08 + 0.84 * twinFrac);
-    var twinY = treeTop + treeH * 0.18;
-    var midY = treeBot + H * 0.04;
-
-    ctx.beginPath();
-    ctx.moveTo(n.x, n.y);
-    ctx.bezierCurveTo(n.x, midY, twinX, midY, twinX, twinY);
-    var la = 0.025 + 0.01 * Math.sin(t * 5 + i * 0.5);
-    ctx.strokeStyle = n.isLeft
-      ? "rgba(222,51,115," + la + ")"
-      : "rgba(8,169,83," + la + ")";
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([2, 4]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  // Restart point
-  var restartFrac = 0.5 + twistPhase;
-  var restartX = W * (0.08 + 0.84 * restartFrac);
-  var restartY = treeTop + treeH * 0.18;
-  var rr = 2 + Math.sin(t * 20) * 0.8;
-  ctx.beginPath();
-  ctx.arc(restartX, restartY, rr, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(252,202,40," + (0.08 + 0.04 * Math.sin(t * 20)) + ")";
-  ctx.fill();
-}
-
-requestAnimationFrame(drawBg);
-
-
-// ── Analog Clock with Stern-Brocot markings ─────────────────────────────
-const clockCanvas = document.getElementById('clock');
-const cCtx = clockCanvas.getContext('2d');
-const CW = clockCanvas.width;
-const CH = clockCanvas.height;
-const cx = CW / 2;
-const cy = CH / 2;
-const radius = CW * 0.42;
-
-// Stern-Brocot tree: generate fractions in (0, 1] up to a certain depth
-// These will serve as "hour" markings around the clock
-function sternBrocotLevel(maxDepth) {
-  // Build the Stern-Brocot tree and collect fractions at each depth
-  const fractions = [];
-  function mediant(a, b) { return [a[0] + b[0], a[1] + b[1]]; }
-
-  function recurse(left, right, depth) {
-    if (depth > maxDepth) return;
-    const m = mediant(left, right);
-    recurse(left, m, depth + 1);
-    fractions.push({ n: m[0], d: m[1], depth: depth });
-    recurse(m, right, depth + 1);
-  }
-
-  // Start with 0/1 and 1/0 (the Stern-Brocot root boundaries)
-  // 1/1 is the root mediant
-  recurse([0, 1], [1, 1], 1);
-  // Add 1/1 explicitly
-  fractions.push({ n: 1, d: 1, depth: 0 });
-
-  return fractions.sort((a, b) => (a.n / a.d) - (b.n / b.d));
-}
-
-const sbFractions = sternBrocotLevel(4);
-
-// Map fraction value to angle (0 at top, clockwise)
-function fracToAngle(n, d) {
-  return (n / d) * Math.PI * 2 - Math.PI / 2;
-}
-
-// Get CSS variable value for theming
-function getCSSVar(name, fallback) {
-  const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return val || fallback;
-}
-
-// Golden ratio spiral points (for decoration inside clock)
-function goldenSpiralPoints(cx, cy, maxR, numPoints) {
-  const points = [];
-  const goldenAngle = Math.PI * 2 * (1 - 1 / PHI); // ~137.5 degrees
-  for (let i = 0; i < numPoints; i++) {
-    const t = i / numPoints;
-    const r = maxR * Math.sqrt(t);
-    const theta = i * goldenAngle;
-    points.push({
-      x: cx + r * Math.cos(theta),
-      y: cy + r * Math.sin(theta),
-    });
-  }
-  return points;
-}
-
-let clockTime = 0;
-
-function drawClock() {
-  cCtx.clearRect(0, 0, CW, CH);
-
-  const bg = getCSSVar('--m-bg', '#000000');
-  const text = getCSSVar('--m-text', '#e6edf3');
-  const muted = getCSSVar('--m-text-muted', '#8b949e');
-  const accent = getCSSVar('--m-accent', '#DE3373');
-  const accent2 = getCSSVar('--m-accent2', '#FCCA28');
-  const border = getCSSVar('--m-border', '#30363d');
-  const surface = getCSSVar('--m-surface', '#161b22');
-
-  // ── Golden ratio spiral (subtle background decoration) ──
-  const spiralPts = goldenSpiralPoints(cx, cy, radius * 0.85, 200);
-  cCtx.beginPath();
-  for (let i = 1; i < spiralPts.length; i++) {
-    const prev = spiralPts[i - 1];
-    const curr = spiralPts[i];
-    if (i === 1) cCtx.moveTo(prev.x, prev.y);
-    cCtx.lineTo(curr.x, curr.y);
-  }
-  cCtx.strokeStyle = border;
-  cCtx.globalAlpha = 0.15;
-  cCtx.lineWidth = 0.8;
-  cCtx.stroke();
-  cCtx.globalAlpha = 1;
-
-  // ── Clock face outline ──
-  cCtx.beginPath();
-  cCtx.arc(cx, cy, radius, 0, Math.PI * 2);
-  cCtx.strokeStyle = border;
-  cCtx.lineWidth = 1.5;
-  cCtx.stroke();
-
-  // Inner circle
-  cCtx.beginPath();
-  cCtx.arc(cx, cy, radius * 0.92, 0, Math.PI * 2);
-  cCtx.strokeStyle = border;
-  cCtx.lineWidth = 0.5;
-  cCtx.globalAlpha = 0.3;
-  cCtx.stroke();
-  cCtx.globalAlpha = 1;
-
-  // ── Stern-Brocot tick marks ──
-  for (const frac of sbFractions) {
-    const angle = fracToAngle(frac.n, frac.d);
-    const value = frac.n / frac.d;
-
-    // Tick length based on depth (deeper = shorter)
-    const tickOuter = radius * 0.96;
-    const tickInner = radius * (0.96 - (0.12 / (frac.depth + 1)));
-    const labelR = radius * 1.06;
-
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-
-    // Tick mark
-    cCtx.beginPath();
-    cCtx.moveTo(cx + tickInner * cos, cy + tickInner * sin);
-    cCtx.lineTo(cx + tickOuter * cos, cy + tickOuter * sin);
-    const tickAlpha = frac.depth <= 1 ? 0.8 : frac.depth <= 2 ? 0.4 : 0.2;
-    cCtx.strokeStyle = muted;
-    cCtx.globalAlpha = tickAlpha;
-    cCtx.lineWidth = frac.depth <= 1 ? 2 : 1;
-    cCtx.stroke();
-    cCtx.globalAlpha = 1;
-
-    // Labels for first 2 levels only
-    if (frac.depth <= 2 && frac.d <= 5) {
-      const labelText = `${frac.n}/${frac.d}`;
-      cCtx.font = frac.depth <= 1
-        ? '600 16px -apple-system, BlinkMacSystemFont, sans-serif'
-        : '13px -apple-system, BlinkMacSystemFont, sans-serif';
-      cCtx.fillStyle = frac.depth <= 1 ? text : muted;
-      cCtx.globalAlpha = frac.depth <= 1 ? 0.9 : 0.5;
-      cCtx.textAlign = 'center';
-      cCtx.textBaseline = 'middle';
-      cCtx.fillText(labelText, cx + labelR * cos, cy + labelR * sin);
-      cCtx.globalAlpha = 1;
-    }
-  }
-
-  // ── Ghost hand: 0.5 revolutions (the gap twin) ──
-  const ghostAngle = 0.5 * Math.PI * 2 - Math.PI / 2;
-  const ghostLen = radius * 0.7;
-  const ghostPulse = 0.4 + 0.1 * Math.sin(clockTime * 0.02);
-  cCtx.beginPath();
-  cCtx.moveTo(cx, cy);
-  cCtx.lineTo(cx + ghostLen * Math.cos(ghostAngle), cy + ghostLen * Math.sin(ghostAngle));
-  cCtx.strokeStyle = accent2;
-  cCtx.globalAlpha = ghostPulse;
-  cCtx.lineWidth = 2;
-  cCtx.setLineDash([6, 4]);
-  cCtx.stroke();
-  cCtx.setLineDash([]);
-  cCtx.globalAlpha = 1;
-
-  // Ghost hand label
-  cCtx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-  cCtx.fillStyle = accent2;
-  cCtx.globalAlpha = ghostPulse * 0.8;
-  cCtx.textAlign = 'center';
-  cCtx.fillText('gap twin (0.5)', cx + (ghostLen + 24) * Math.cos(ghostAngle), cy + (ghostLen + 24) * Math.sin(ghostAngle));
-  cCtx.globalAlpha = 1;
-
-  // ── Main hand: 0.95 revolutions (universe's progress) ──
-  // Slight tick forward over time for liveliness
-  const baseProgress = 0.95;
-  const tick = 0.0005 * Math.sin(clockTime * 0.005);
-  const mainAngle = (baseProgress + tick) * Math.PI * 2 - Math.PI / 2;
-  const handLen = radius * 0.78;
-
-  // Hand shadow
-  cCtx.beginPath();
-  cCtx.moveTo(cx + 1, cy + 1);
-  cCtx.lineTo(cx + 1 + handLen * Math.cos(mainAngle), cy + 1 + handLen * Math.sin(mainAngle));
-  cCtx.strokeStyle = 'rgba(0,0,0,0.3)';
-  cCtx.lineWidth = 4;
-  cCtx.stroke();
-
-  // Hand
-  cCtx.beginPath();
-  cCtx.moveTo(cx, cy);
-  cCtx.lineTo(cx + handLen * Math.cos(mainAngle), cy + handLen * Math.sin(mainAngle));
-  cCtx.strokeStyle = accent;
-  cCtx.lineWidth = 3;
-  cCtx.lineCap = 'round';
-  cCtx.stroke();
-
-  // Hand tip
-  const tipX = cx + handLen * Math.cos(mainAngle);
-  const tipY = cy + handLen * Math.sin(mainAngle);
-  cCtx.beginPath();
-  cCtx.arc(tipX, tipY, 4, 0, Math.PI * 2);
-  cCtx.fillStyle = accent;
-  cCtx.fill();
-
-  // Center cap
-  cCtx.beginPath();
-  cCtx.arc(cx, cy, 6, 0, Math.PI * 2);
-  cCtx.fillStyle = accent;
-  cCtx.fill();
-  cCtx.beginPath();
-  cCtx.arc(cx, cy, 3, 0, Math.PI * 2);
-  cCtx.fillStyle = bg;
-  cCtx.fill();
-
-  // ── Arc showing progress (0 to 0.95) ──
-  const arcStart = -Math.PI / 2;
-  const arcEnd = baseProgress * Math.PI * 2 - Math.PI / 2;
-  cCtx.beginPath();
-  cCtx.arc(cx, cy, radius * 0.85, arcStart, arcEnd);
-  cCtx.strokeStyle = accent;
-  cCtx.globalAlpha = 0.12;
-  cCtx.lineWidth = 8;
-  cCtx.stroke();
-  cCtx.globalAlpha = 1;
-
-  // ── "0.95" label near hand ──
-  const labelAngle = mainAngle + 0.08;
-  cCtx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
-  cCtx.fillStyle = accent;
-  cCtx.textAlign = 'center';
-  cCtx.fillText('0.95', cx + (handLen * 0.55) * Math.cos(labelAngle), cy + (handLen * 0.55) * Math.sin(labelAngle));
-
-  clockTime++;
-  requestAnimationFrame(drawClock);
-}
-
-requestAnimationFrame(drawClock);
-
-
-// ── Binary clock: 9 digits in binary ────────────────────────────────────
-// The 9 "computed digits" represented as binary columns
-// Using digits 1-9 as placeholders for the computed values
-const computedDigits = [3, 2, 3, 0, 6, 8, 4, 7, 0]; // d=3, q2=2, q3=3, etc — symbolic
-
-function buildBinaryClock() {
-  const container = document.getElementById('binary-clock');
-  container.innerHTML = '';
-
-  for (let i = 0; i < 9; i++) {
-    const col = document.createElement('div');
-    col.className = 'binary-digit';
-
-    // 4-bit representation (0-9 fits in 4 bits)
-    const val = computedDigits[i];
-    for (let bit = 3; bit >= 0; bit--) {
-      const dot = document.createElement('div');
-      dot.className = 'bit' + ((val >> bit) & 1 ? ' on' : '');
-      col.appendChild(dot);
-    }
-
-    const label = document.createElement('div');
-    label.className = 'label';
-    label.textContent = `d${i + 1}`;
-    col.appendChild(label);
-
-    container.appendChild(col);
-  }
-}
-
-buildBinaryClock();
-</script>
-
-<nav id="page-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:100;
-  background:var(--m-surface, rgba(30,35,44,0.97)); backdrop-filter:blur(10px);
-  border-top:1px solid rgba(200,200,200,0.25);
-  display:flex; justify-content:center; align-items:center; gap:2rem; padding:10px 16px;
-  font-size:0.8rem; font-family:sans-serif;">
-  <a href="first-principles.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">First Principles</a>
-  <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
-  <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
-  <a href="our_address.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Our Address</a>
-  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
-  <a href="simulations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Simulations</a>
-</nav>
-</body>
-</html>
