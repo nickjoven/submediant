@@ -451,3 +451,200 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 </div>
 
 <div class="phi-spacer"></div>
+
+<!-- The Minimum Self-Predicting Universe -->
+<section id="mspu">
+  <h2 style="font-size:var(--fs-xl); color:var(--m-text,#e6edf3); font-weight:300; text-align:center; margin-bottom:var(--sp); font-family:sans-serif;">
+    The Minimum Self-Predicting Universe
+  </h2>
+
+  <!-- Section 1: The Rule -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">rule</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Self-consistency: the fixed point $x = f(x)$ is where the computation terminates. The address must predict itself.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-fixedpt" width="600" height="300" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        $N = N_{\text{total}} \times g \times w(K_0 F[N])$
+      </p>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); margin:0.2rem 0;">
+        Four primitives: <strong style="color:var(--m-text,#e6edf3);">Z</strong> (integers) &middot;
+        <strong style="color:var(--m-text,#e6edf3);">mediant</strong> &middot;
+        <strong style="color:var(--m-text,#e6edf3);">fixed point</strong> &middot;
+        <strong style="color:var(--m-text,#e6edf3);">parabola</strong>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        The rule is not derived from the coordinates. The coordinates are consequences of the rule. Self-consistency uniquely determines where the loop closes.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Clocks -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">clocks</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        The recurrence $x_{n+1} = 1/(1+x_n)$ has two roots: $\varphi$ and $-1/\varphi$. Their product is $-1$. Three dimensions where the arms reinforce, one where they cancel &mdash; spacetime signature $(3,1)$.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-figure8" width="600" height="260" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        $\sin^2\theta_W = 8/35 = 0.2286$
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Two loops share one crossing point. 8 cross-sector transitions = 8 gluons. The crossing fraction gives the Weinberg angle.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 3: Expansion (Tongues and Gaps) -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">expansion</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Coupled oscillators lock along the path of least resistance. Simple ratios first, complex ratios later. The gaps &mdash; 18.7% of the frequency axis &mdash; are where coherence has not yet been reached.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <canvas id="mspu-tongues" width="600" height="120" style="width:100%; max-width:600px; height:auto; display:block; margin:0.5rem 0;"></canvas>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        $\text{width}(p/q) \propto K^q / q^2$
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        The gap twin at $1/\varphi$ accumulates phase at $10^{-59}$ radians per oscillation. It will take $5.6 \times 10^{68}$ years to register a single bit.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 4: Four Phase States -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">depth</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Two binary choices (locked/unlocked &times; twist locked/unlocked) produce four states.
+        Three observable, one dark &mdash; spacetime signature $(3,1)$.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <div id="mspu-phases" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:360px; margin:0.5rem 0;">
+        <div style="background:rgba(30,118,184,0.25); border:1px solid #1E76B8; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#1E76B8;">A</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both locked</div>
+        </div>
+        <div style="background:rgba(8,169,83,0.25); border:1px solid #08A953; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#08A953;">B</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">osc in gap</div>
+        </div>
+        <div style="background:rgba(124,46,135,0.25); border:1px solid #7C2E87; border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:#7C2E87;">C</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">twist in gap</div>
+        </div>
+        <div style="background:rgba(13,17,23,0.7); border:1px solid var(--m-border,#30363d); border-radius:6px; padding:12px; text-align:center; font-family:sans-serif;">
+          <div style="font-size:var(--fs-lg); font-weight:600; color:var(--m-text-muted,#8b949e);">D</div>
+          <div style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e);">both unlocked</div>
+        </div>
+      </div>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        3 observable + 1 dark = (3,1)<br>
+        <span style="font-size:var(--fs-sm);">$i^2 = -1 = J^2$ = double half-twist</span>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Three generations = three spatial dimensions = $2^2 - 1$.
+        The dark state is the unobservable fourth phase.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 5: Predictions -->
+  <div class="fmt-section">
+    <div class="fmt-level fmt-level-0">
+      <span class="fmt-tag fmt-tag-conjecture">predictions</span>
+      <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
+        Every row below follows from the three coordinates and the rule. $|F_6| = 13$ locked modes, 12 coupling channels, four phase states giving $(3,1)$ signature. No free parameters.
+      </p>
+      <span class="fmt-expand">visual +</span>
+    </div>
+    <div class="fmt-level fmt-level-1">
+      <span class="fmt-tag fmt-tag-visual">visual</span>
+      <div style="overflow:hidden; margin:0.5rem 0;">
+        <table id="mspu-predictions" style="width:100%; max-width:600px; border-collapse:collapse; font-family:sans-serif; font-size:var(--fs-sm);">
+          <thead>
+            <tr style="border-bottom:1px solid var(--m-border,#30363d);">
+              <th style="text-align:left; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Prediction</th>
+              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Value</th>
+              <th style="text-align:right; padding:6px 8px; color:var(--m-text-muted,#8b949e); font-weight:400; text-transform:uppercase; letter-spacing:0.08em; font-size:var(--fs-xs);">Residual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:4px 8px; color:#08A953;">$\Omega_\Lambda$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.6847</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.07$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">$\alpha_s/\alpha_2$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">27/8 = 3.375</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.3$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">sin<sup>2</sup>&theta;<sub>W</sub></td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">8/35 = 0.2286</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.2$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">$n_s$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">0.965</td><td style="padding:4px 8px; text-align:right; color:#08A953;">0.1$\sigma$</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">d</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
+            <tr><td style="padding:4px 8px; color:#08A953;">generations</td><td style="padding:4px 8px; text-align:right; color:var(--m-text,#e6edf3);">3</td><td style="padding:4px 8px; text-align:right; color:#08A953;">exact</td></tr>
+            <tr><td style="padding:4px 8px; color:var(--m-text-muted,#8b949e); opacity:0.5;">hierarchy R</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">$6 \times 13^{54}$</td><td style="padding:4px 8px; text-align:right; color:var(--m-text-muted,#8b949e); opacity:0.5;">15 digits</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="fmt-level fmt-level-2">
+      <span class="fmt-tag fmt-tag-math">math</span>
+      <p style="font-family:sans-serif; color:var(--m-accent2,#FCCA28); font-size:var(--fs-base); margin:0.3rem 0;">
+        $\Omega_\Lambda$ = (11 + 2w*) / (16 + 3w*) = 0.6847<br>
+        <span style="font-size:var(--fs-sm);">$\alpha_s / \alpha_2 = 27/8$</span>
+      </p>
+    </div>
+    <div class="fmt-level fmt-level-3">
+      <span class="fmt-tag fmt-tag-explanation">explanation</span>
+      <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
+        Every row is derived from the three coordinates and the self-consistency rule.
+        No fitted constants. The residuals measure distance from experiment, not from a fit.
+      </p>
+    </div>
+  </div>
+
+  <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1.5rem; text-align:center; font-family:sans-serif;">
+    13 modes &middot; 12 channels &middot; 4 states &middot; 3 dimensions &middot; 1 dark &middot; 0 parameters
+  </p>
+</section>
+
+<div class="phi-spacer"></div>
+
+</main>
