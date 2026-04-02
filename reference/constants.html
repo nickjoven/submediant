@@ -16,7 +16,7 @@ html { overflow-x: clip; }
 
 :root {
   --phi: 1.618;
-  --fs-base: clamp(18px, 1.2vw + 8px, 22px);
+  --fs-base: clamp(20px, 1.2vw + 8px, 22px);
   --fs-sm: calc(var(--fs-base) / var(--phi));
   --fs-xs: calc(var(--fs-sm) / var(--phi));
   --fs-lg: calc(var(--fs-base) * var(--phi));
@@ -141,19 +141,27 @@ a:hover { text-decoration: underline; }
 
 /* responsive */
 @media (max-width: 600px) {
+  :root {
+    --fs-base: clamp(20px, 1.2vw + 8px, 22px);
+    --fs-sm: max(15px, calc(var(--fs-base) / var(--phi)));
+    --fs-xs: max(13px, calc(var(--fs-sm) / var(--phi)));
+  }
   main { padding: 0 12px 120px !important; }
   .equation-block { padding: 0.5em 0; }
   .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
   .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
   .decomp-table { font-size: var(--fs-xs); }
   .decomp-table th, .decomp-table td { padding: 0.4em 0.5em; }
+  /* diagrams: fill width, more breathing room */
+  .diagram-row, .diagram-center { padding: 1.5em 0.75em; margin: 1.5em -12px; border-radius: 8px; }
+  .diagram-row { gap: 1.2em; }
 }
 
 /* inline diagrams */
 .diagram-row,
 .diagram-center {
-  background: rgba(124, 46, 135, 0.10);
-  border: 1px solid rgba(124, 46, 135, 0.20);
+  background: rgba(124, 46, 135, 0.22);
+  border: 1px solid rgba(124, 46, 135, 0.35);
   border-radius: 12px;
   padding: 2em 1.5em;
   margin: 2.5em 0;
