@@ -12,6 +12,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
 
 :root {
   /* Golden-ratio type scale: each step = prev * phi */
@@ -30,7 +31,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--fs-base);
   line-height: 1.8;
-  overflow-x: hidden;
+  overflow-x: clip;
   color-scheme: dark;
 }
 html:not([data-mode="light"]) {
@@ -55,7 +56,7 @@ main {
 }
 
 /* phi-based vertical rhythm: sections placed at phi intervals */
-.phi-spacer-1 { min-height: 61.8vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer-1 { min-height: 61.8vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0 3rem; }
 .phi-spacer    { height: calc(61.8px * 1.618); }
 .phi-spacer-sm { height: 61.8px; }
 
@@ -99,6 +100,7 @@ canvas#clock {
   gap: 8px;
   justify-content: center;
   margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .binary-digit {
@@ -124,7 +126,7 @@ canvas#clock {
 .binary-digit .label {
   font-size: var(--fs-sm);
   color: var(--m-text-muted, #8b949e);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* ── Address block: postal envelope style ── */
@@ -239,10 +241,13 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
+/* MathJax overflow containment */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
 .pred-grid {
   display: grid;
-  grid-template-columns: 52px 60px 1fr;
-  gap: 4px 16px;
+  grid-template-columns: auto auto 1fr;
+  gap: 4px 12px;
   font-size: var(--fs-base);
 }
 
@@ -273,11 +278,12 @@ hr.divider {
 
 /* ── Responsive ── */
 @media (max-width: 520px) {
-  main { padding: 0 20px 100px; }
+  main { padding: 0 16px 100px; }
   canvas#clock { width: 85vw; height: 85vw; }
-  .address-envelope { padding: 32px 20px; }
+  .address-envelope { padding: 32px 16px; }
   .stamp { display: none; }
-  .phi-spacer-1 { height: 50vh; min-height: 260px; }
+  .phi-spacer-1 { height: 50vh; height: 50dvh; min-height: 260px; }
+  .pred-grid { font-size: var(--fs-sm); gap: 4px 8px; }
 }
 </style>
 </head>
@@ -289,12 +295,12 @@ hr.divider {
 
 <h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:1rem;">Our Address on the Tree</h1>
 
-<!-- The minimal universe: grow from the smallest thing that works -->
+<!-- The linearity trap: you are already inside the loop -->
 <div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.8); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">
-  <p>Start with the smallest possible universe: one thing that repeats. An oscillation. It has a frequency. That's the only property it needs.</p>
-  <p style="margin-top:0.8rem;">Add a second oscillation at a different frequency. Now there's a ratio between them. If the ratio is simple (2:1, 3:2), the two oscillations eventually lock together. If the ratio is complex, they drift past each other. The boundary between locking and drifting is a threshold — and that threshold turns out to have a specific, measurable value ($a_0 \approx 1.2 \times 10^{-10}$ m/s²).</p>
-  <p style="margin-top:0.8rem;">Add a third oscillation. Now the three form a loop: each one's frequency is defined relative to the other two. The loop forces a self-consistency condition — the output has to match the input. That condition has exactly two solutions: one is general relativity, the other is quantum mechanics.</p>
-  <p style="margin-top:0.8rem;">Every possible frequency ratio between the fastest oscillation in nature ($10^{43}$ Hz) and the slowest ($10^{-18}$ Hz) arranges into a tree — 145.8 levels deep. The universe has been computing its way down this tree for 13.8 billion years. It has completed 47 oscillations and settled 9 digits of the answer. This page is the printout so far.</p>
+  <p>This page describes a coupled-oscillator feedback loop and its current state.</p>
+  <p style="margin-top:0.8rem;">Inside a coupled oscillator system, "forward in time" and "approaching the next fixed point of a recurrence" are mathematically dual. Only the linear description requires a singularity at $t = 0$.</p>
+  <p style="margin-top:0.8rem;">Three oscillators coupled through their frequency ratios form a feedback loop. The CMB encodes the feedback signal of the current iteration.</p>
+  <p style="margin-top:0.8rem;">Every positive rational frequency ratio between Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz) has a unique address in a Stern-Brocot tree 145.8 levels deep. After 47 iterations, 9 digits of the coherence parameter $|r|$ have settled.</p>
 </div>
 
 <!-- DAG claims: nodes with directed dependency edges -->
@@ -302,23 +308,23 @@ hr.divider {
   <canvas id="dag-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
   <div style="position:relative; z-index:1;">
 
-    <!-- The structure: one thing you can prove, two things you can measure -->
+    <!-- The feedback loop: three nodes and the signal that closes them -->
     <div id="claim-r" style="max-width:75%; margin:0 auto 2rem; padding:1.2rem 1.5rem; border-left:3px solid #FCCA28; border-radius:2px;">
-      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">There is a tree that contains every fraction. You build it by taking two fractions and averaging their numerators and denominators separately: from $a/b$ and $c/d$, make $(a+c)/(b+d)$. Starting from $0/1$ and $1/0$, this one operation generates every positive rational number, each exactly once. This is not a conjecture — it was proved by Stern in 1858.</p>
+      <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The Stern-Brocot tree is the address space of the feedback loop. Every ratio that can lock does so at a unique address via the mediant $(a+c)/(b+d)$. The tree enumerates all positive rationals (Stern, 1858); each entry corresponds to an oscillator pair that has reached coherence.</p>
     </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:90%; margin:0 auto 2rem;">
       <div id="claim-e" style="padding:1.2rem 1.5rem; border-left:3px solid #DE3373; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The universe oscillates across a range of frequencies. The fastest (Planck, $10^{43}$ Hz) and the slowest (Hubble, $10^{-18}$ Hz) are measured. Their ratio tells you how deep the tree goes: 145.8 levels. Three measurements and one recurrence produce every prediction on this page. Nothing is fitted.</p>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">Two frequencies bracket the loop: Planck ($10^{43}$ Hz) and Hubble ($10^{-18}$ Hz). Their ratio spans 145.8 Fibonacci levels — the depth of the feedback.</p>
       </div>
 
       <div id="claim-a" style="padding:1.2rem 1.5rem; border-left:3px solid #08A953; border-radius:2px;">
-        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ converges to the golden ratio from two directions. Both directions are real — they are the two roots of $x^2 - x - 1 = 0$. Their product is $-1$. That single algebraic fact gives spacetime its shape: three dimensions of space, one of time.</p>
+        <p style="color:var(--m-text); font-size:var(--fs-base); line-height:1.8; margin:0;">The recurrence $x_{n+1} = 1/(1+x_n)$ has two roots: $\varphi$ and $-1/\varphi$. Their product is $-1$. Treating them as two arms of a coupled oscillator yields the spacetime signature: three dimensions where the arms reinforce, one where they cancel.</p>
       </div>
     </div>
 
     <div id="claim-f" style="max-width:60%; margin:0 auto; padding:0.8rem 1.2rem; border-left:3px dashed rgba(200,200,200,0.15); border-radius:2px; text-align:left;">
-      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">If the predictions match what we observe — and so far they do, to the precision available — then the tree that describes the universe is the tree that the universe is computing. The structure checks itself.</p>
+      <p style="color:var(--m-text-muted); font-size:var(--fs-sm); line-height:1.7; margin:0;">Self-consistency check: at iteration 47, the loop's predictions match observation to 9 digits. Linearizing the loop instead produces the cosmological constant, hierarchy, and measurement problems — all aspects of the same mismatch.</p>
     </div>
 
   </div>
@@ -427,6 +433,11 @@ hr.divider {
   </div>
 </div>
 
+<div style="max-width:700px; margin:calc(var(--sp) * 2) auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text-muted);">
+  <p>The clock above shows 0.95 of one Hubble cycle completed. At 1.0 the cycle resets; settled digits carry forward as initial conditions for the next iteration.</p>
+  <p style="margin-top:0.6rem;">The address below is our current position in the loop.</p>
+</div>
+
 <div class="phi-spacer"></div>
 
 <!-- The Address -->
@@ -434,14 +445,14 @@ hr.divider {
   <div class="stamp">0.95<br>Hubble<br>cycles</div>
 
   <div class="return-address">
-    <span class="sender">From First Principles</span><br>
+    <span class="sender">From the Current Iteration</span><br>
     $\varphi = (1 + \sqrt{5})\,/\,2$<br>
     $d = 3$<br>
     $|F_6| = 13$
   </div>
 
   <div class="main-address">
-    <span class="line">Level 21, CMB Pivot</span>
+    <span class="line">Level 21, CMB Pivot (feedback node)</span>
     <span class="line">Window $\sqrt{5} = 2.236$ levels</span>
     <span class="line">Depth 145.8 Fibonacci Levels</span>
     <span class="line">Stern-Brocot Tree</span>
@@ -458,7 +469,7 @@ hr.divider {
 <div class="fmt-section">
 <div class="fmt-level fmt-level-0">
   <h2 style="font-size:var(--fs-lg); color:var(--m-text-muted); font-weight:300; margin-bottom:0.5rem;">The Computation</h2>
-  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 steps from first principles to predictions. 9 digits of $|r|$ computed so far.</p>
+  <p style="color:var(--m-text-muted); font-size:var(--fs-base);">8 facets of the feedback loop. 9 digits of $|r|$ have locked so far.</p>
   <span class="fmt-expand">expand</span>
 </div>
 <div class="fmt-level fmt-level-1">
@@ -501,7 +512,7 @@ hr.divider {
   <div class="row"><span class="label">age of universe</span><span class="value"><span class="derived">13.80 Gyr</span> <span class="dim">(derived)</span></span></div>
   <div class="row"><span class="label">Hubble time</span><span class="value">1.451 x 10^10 yr</span></div>
   <div class="row"><span class="label">spent Hubble cycles</span><span class="value">0.95</span></div>
-  <p class="note">No hardcoded 13.8 Gyr. Age follows from $H_0$ + $\Omega_\Lambda$ via Friedmann integration.</p>
+  <p class="note">The age is derived from the number of completed cycles via Friedmann integration, not an input parameter.</p>
 </section>
 
 <div class="phi-spacer-sm"></div>
@@ -571,8 +582,8 @@ hr.divider {
 <div class="phi-spacer"></div>
 
 <div class="closing" style="text-align:left; font-size:var(--fs-base); line-height:1.8;">
-  <p><strong>Summary.</strong> The recurrence $x_{n+1} = 1/(1+x_n)$ has completed 47 iterations since the Planck epoch. Each iteration settles the ratio $F_n/F_{n+1}$ to one additional digit of precision, at a convergence rate of $2/\pi \approx 0.6366$ per Hubble cycle. After 47 iterations, the coherence parameter $|r|$ is determined to 9 significant digits.</p>
-  <p style="margin-top:0.6rem;">The quantity $\varphi^n + \psi^n$ (where $\psi = -1/\varphi$ is the conjugate root) is an integer — a Lucas number — only at specific values of $n$. The current count $n = 47$ is not a Lucas number. The next Lucas number is $L_9 = 76$. At that iteration count, a new set of predictions becomes simultaneously confirmable from both roots of the polynomial. At the current Hubble rate, this corresponds to approximately $8 \times 10^9$ years from now.</p>
+  <p>Summary: the CMB encodes the feedback signal, 47 iterations give the current loop state, and 9 settled digits are the self-consistency conditions satisfied so far. The recurrence $x_{n+1} = 1/(1+x_n)$ converges at $2/\pi \approx 0.6366$ per Hubble cycle. $|r|$ is determined to 9 significant digits.</p>
+  <p style="margin-top:0.6rem;">The next self-consistency checkpoint is iteration 76 ($L_9$, the next Lucas number), where $\varphi^n + \psi^n$ is again an integer and a new set of predictions becomes simultaneously confirmable from both roots. At the current Hubble rate, that is approximately $8 \times 10^9$ years from now.</p>
 </div>
 
 <div class="phi-spacer-sm"></div>
@@ -588,7 +599,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        All rationals emerge from one operation: the mediant. The tree is the address space.
+        The mediant is the feedback operator. Each application locks one more ratio into the tree.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -616,7 +627,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The frequency axis fills with locked modes. The gaps are where dark matter lives.
+        Locked modes are the loop's settled digits. The gaps — 18.7% of the frequency axis — are where coherence has not yet been reached.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -644,8 +655,8 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Two binary choices (oscillator locked/unlocked &times; twist locked/unlocked)
-        produce exactly 4 states and force (3,1) Minkowski signature.
+        Two binary degrees of freedom (oscillator locked/unlocked, twist locked/unlocked) give four phase states.
+        Three observable (arms reinforce), one dark (arms cancel) — spacetime signature (3,1).
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -681,7 +692,7 @@ hr.divider {
       <span class="fmt-tag fmt-tag-explanation">explanation</span>
       <p style="font-family:sans-serif; color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); line-height:1.7;">
         Three generations = three spatial dimensions = $2^2 - 1$.
-        The dark state is not missing matter &mdash; it's the unobservable fourth phase.
+        The dark state is the unobservable fourth phase.
       </p>
     </div>
   </div>
@@ -691,7 +702,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        Two loops share one crossing point. The crossing probability is the Weinberg angle.
+        The feedback loop crosses itself once per cycle. The two arms of the figure-8 correspond to the two roots of $x^2 - x - 1 = 0$. The crossing fraction gives the Weinberg angle.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -718,7 +729,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The Farey sequence $|F_6| = 13$ determines the number of locked modes. The Klein bottle's two antiperiodic directions produce 12 coupling channels between them. The four phase states (both locked, oscillator unlocked, twist unlocked, both unlocked) give the $(3,1)$ Minkowski signature &mdash; three observable and one dark. No free parameters are introduced at any step.
+        Every row below is a self-consistency condition. $|F_6| = 13$ locked modes, 12 coupling channels (Klein bottle), four phase states giving $(3,1)$ signature. No free parameters.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -766,7 +777,7 @@ hr.divider {
     <div class="fmt-level fmt-level-0">
       <span class="fmt-tag fmt-tag-conjecture">claim</span>
       <p style="font-family:sans-serif; color:var(--m-text,#e6edf3); font-size:var(--fs-base);">
-        The smallest program that prints its own source code. A quine over Q, thirteen tokens long.
+        Thirteen locked modes, twelve coupling channels, four phase states. The fixed point $x = f(x)$ is the operating condition.
       </p>
       <span class="fmt-expand">visual +</span>
     </div>
@@ -795,7 +806,7 @@ hr.divider {
   </div>
 
   <p style="font-size:var(--fs-sm); color:var(--m-text-muted,#8b949e); margin-top:1.5rem; text-align:center; font-family:sans-serif;">
-    Four primitives (integers, mediant, fixed point, parabola). The structures above (circle, staircase, tongues, Born rule) are compositions of these four. No additional axioms are introduced.
+    Four primitives (integers, mediant, fixed point, parabola) compose into every structure on this page. No additional axioms.
   </p>
 </section>
 
@@ -1863,6 +1874,7 @@ buildBinaryClock();
   <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
   <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
   <a href="our_address.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Our Address</a>
+  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
 </nav>
 </body>
 </html>

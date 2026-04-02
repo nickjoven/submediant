@@ -12,6 +12,7 @@ MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
 
 :root {
   --phi: 1.618;
@@ -32,7 +33,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--fs-base);
   line-height: 1.8;
-  overflow-x: hidden;
+  overflow-x: clip;
   color-scheme: dark;
 }
 html:not([data-mode="light"]) {
@@ -56,7 +57,7 @@ main {
 }
 
 /* phi-based vertical rhythm */
-.phi-spacer-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
 .phi-spacer { height: calc(61.8px * var(--phi)); }
 .phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
 .phi-spacer-sm { height: 61.8px; }
@@ -89,6 +90,8 @@ main {
   padding: 1em 0;
   text-align: center;
   font-size: var(--fs-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* prose */
@@ -118,6 +121,80 @@ section ul li strong {
 /* links */
 a { color: var(--m-accent, #DE3373); text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+/* MathJax overflow containment */
+.MathJax, mjx-container {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* responsive padding for mobile */
+@media (max-width: 600px) {
+  main {
+    padding: 0 16px 120px !important;
+  }
+  .equation-block {
+    font-size: var(--fs-base) !important;
+    padding: 0.5em 0;
+  }
+  .section-title {
+    font-size: var(--fs-lg) !important;
+    word-break: break-word;
+  }
+  .phi-spacer-lg {
+    height: calc(61.8px * var(--phi)) !important;
+  }
+  section ul {
+    padding-left: 1em;
+  }
+}
+
+/* visualization containers */
+.viz-container {
+  position: relative;
+  width: 100%;
+  margin: 1.618em 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.viz-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viz-label {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.viz-side-by-side {
+  display: flex;
+  gap: 1em;
+  margin: 1.618em 0;
+}
+
+.viz-side-by-side .viz-container {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .viz-side-by-side {
+    flex-direction: column;
+  }
+}
 
 /* fade-in on scroll */
 section {
@@ -589,6 +666,517 @@ function revealSections() {
 window.addEventListener("scroll", revealSections, { passive: true });
 revealSections();
 
+// ═══════════════════════════════════════════════════════════════════════
+// KLEIN BOTTLE VISUALIZATION — Section IX
+// ═══════════════════════════════════════════════════════════════════════
+(function kleinBottleViz() {
+  var c = document.getElementById("klein-bottle-viz");
+  if (!c) return;
+  var kctx = c.getContext("2d");
+  var kW, kH;
+
+  function kResize() {
+    var rect = c.parentElement.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    kW = rect.width;
+    kH = rect.height;
+    c.width = kW * dpr;
+    c.height = kH * dpr;
+    kctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", kResize);
+  kResize();
+
+  // Klein bottle parametric immersion (figure-8 / Bauer-Pisanski style)
+  function kleinPoint(u, v) {
+    var cu = Math.cos(u), su = Math.sin(u);
+    var cv = Math.cos(v), sv = Math.sin(v);
+    var chv = Math.cos(v / 2), shv = Math.sin(v / 2);
+    var r = 2.2 + cu * (chv * 1.0 - shv * Math.sin(2 * u) * 0.3);
+    return {
+      x: r * cv,
+      y: r * sv,
+      z: su * shv + Math.sin(2 * u) * chv * 0.5
+    };
+  }
+
+  // Project 3D -> 2D with gentle rotation
+  function project(p, angle) {
+    var ca = Math.cos(angle), sa = Math.sin(angle);
+    var x2 = p.x * ca - p.z * sa;
+    var z2 = p.x * sa + p.z * ca;
+    // Tilt slightly
+    var cb = Math.cos(0.35), sb = Math.sin(0.35);
+    var y2 = p.y * cb - z2 * sb;
+    var z3 = p.y * sb + z2 * cb;
+    var perspective = 6 / (6 + z3 * 0.3);
+    return { x: x2 * perspective, y: y2 * perspective, z: z3 };
+  }
+
+  // The 4 surviving modes placed on the Klein bottle surface
+  // Map (px, py) to (u, v) parameters: u = px * 2PI, v = py * 2PI
+  var survivingModes = [
+    { px: 1/3, py: 1/2, label: "(1/3, 1/2)" },
+    { px: 1/2, py: 1/3, label: "(1/2, 1/3)" },
+    { px: 1/2, py: 2/3, label: "(1/2, 2/3)" },
+    { px: 2/3, py: 1/2, label: "(2/3, 1/2)" }
+  ];
+  var modeColors = ["#F98F81", "#37BA9B", "#A45474", "#FCCA28"];
+
+  var kAngle = 0;
+
+  function drawKlein(timestamp) {
+    kAngle += 0.003;
+    kctx.clearRect(0, 0, kW, kH);
+
+    var cx = kW / 2;
+    var cy = kH / 2;
+    var scale = Math.min(kW, kH) * 0.13;
+
+    // Draw wireframe
+    var uSteps = 40, vSteps = 24;
+    kctx.lineWidth = 0.6;
+
+    // Collect line segments with depth for painter's algorithm
+    var segments = [];
+
+    // u-lines
+    for (var vi = 0; vi <= vSteps; vi++) {
+      var v = (vi / vSteps) * Math.PI * 2;
+      for (var ui = 0; ui < uSteps; ui++) {
+        var u1 = (ui / uSteps) * Math.PI * 2;
+        var u2 = ((ui + 1) / uSteps) * Math.PI * 2;
+        var p1 = project(kleinPoint(u1, v), kAngle);
+        var p2 = project(kleinPoint(u2, v), kAngle);
+        segments.push({
+          x1: cx + p1.x * scale, y1: cy + p1.y * scale,
+          x2: cx + p2.x * scale, y2: cy + p2.y * scale,
+          z: (p1.z + p2.z) / 2,
+          type: "wire"
+        });
+      }
+    }
+
+    // v-lines
+    for (var ui = 0; ui <= uSteps; ui++) {
+      var u = (ui / uSteps) * Math.PI * 2;
+      for (var vi = 0; vi < vSteps; vi++) {
+        var v1 = (vi / vSteps) * Math.PI * 2;
+        var v2 = ((vi + 1) / vSteps) * Math.PI * 2;
+        var p1 = project(kleinPoint(u, v1), kAngle);
+        var p2 = project(kleinPoint(u, v2), kAngle);
+        segments.push({
+          x1: cx + p1.x * scale, y1: cy + p1.y * scale,
+          x2: cx + p2.x * scale, y2: cy + p2.y * scale,
+          z: (p1.z + p2.z) / 2,
+          type: "wire"
+        });
+      }
+    }
+
+    // Add mode points
+    for (var m = 0; m < survivingModes.length; m++) {
+      var mode = survivingModes[m];
+      var u = mode.px * Math.PI * 2;
+      var v = mode.py * Math.PI * 2;
+      var pt = project(kleinPoint(u, v), kAngle);
+      segments.push({
+        x1: cx + pt.x * scale, y1: cy + pt.y * scale,
+        x2: 0, y2: 0,
+        z: pt.z,
+        type: "mode",
+        idx: m
+      });
+    }
+
+    // Sort by depth (back to front)
+    segments.sort(function(a, b) { return a.z - b.z; });
+
+    // Draw
+    for (var i = 0; i < segments.length; i++) {
+      var seg = segments[i];
+      if (seg.type === "wire") {
+        var depthAlpha = 0.04 + 0.18 * ((seg.z + 4) / 8);
+        if (depthAlpha < 0.02) depthAlpha = 0.02;
+        if (depthAlpha > 0.22) depthAlpha = 0.22;
+        kctx.beginPath();
+        kctx.moveTo(seg.x1, seg.y1);
+        kctx.lineTo(seg.x2, seg.y2);
+        kctx.strokeStyle = "rgba(200,200,220," + depthAlpha + ")";
+        kctx.stroke();
+      } else if (seg.type === "mode") {
+        var color = modeColors[seg.idx];
+        var pulse = 1 + 0.18 * Math.sin(kAngle * 3 + seg.idx * 1.5);
+        var r = 5 * pulse;
+
+        // Glow
+        var grd = kctx.createRadialGradient(seg.x1, seg.y1, 0, seg.x1, seg.y1, r * 4);
+        grd.addColorStop(0, color);
+        grd.addColorStop(1, "transparent");
+        kctx.beginPath();
+        kctx.arc(seg.x1, seg.y1, r * 4, 0, Math.PI * 2);
+        kctx.fillStyle = grd;
+        kctx.globalAlpha = 0.35;
+        kctx.fill();
+        kctx.globalAlpha = 1;
+
+        // Dot
+        kctx.beginPath();
+        kctx.arc(seg.x1, seg.y1, r, 0, Math.PI * 2);
+        kctx.fillStyle = color;
+        kctx.fill();
+
+        // Label
+        kctx.font = "10px -apple-system, sans-serif";
+        kctx.fillStyle = color;
+        kctx.globalAlpha = 0.8;
+        kctx.fillText(survivingModes[seg.idx].label, seg.x1 + r + 4, seg.y1 + 3);
+        kctx.globalAlpha = 1;
+      }
+    }
+
+    requestAnimationFrame(drawKlein);
+  }
+  requestAnimationFrame(drawKlein);
+})();
+
+// ═══════════════════════════════════════════════════════════════════════
+// LINEAR vs ADJUSTED SPIRAL — Section X side-by-side
+// ═══════════════════════════════════════════════════════════════════════
+(function spiralViz() {
+  var cLinear = document.getElementById("viz-linear");
+  var cAdjusted = document.getElementById("viz-adjusted");
+  if (!cLinear || !cAdjusted) return;
+  var ctxL = cLinear.getContext("2d");
+  var ctxA = cAdjusted.getContext("2d");
+
+  // Generate Stern-Brocot tree fractions up to given depth
+  function sternBrocotFractions(maxDepth) {
+    var fracs = [];
+    function recurse(lp, lq, rp, rq, depth) {
+      if (depth > maxDepth) return;
+      var mp = lp + rp;
+      var mq = lq + rq;
+      if (mq > 42) return; // cap denominator for display
+      recurse(lp, lq, mp, mq, depth + 1);
+      fracs.push({ p: mp, q: mq, depth: depth });
+      recurse(mp, mq, rp, rq, depth + 1);
+    }
+    recurse(0, 1, 1, 1, 1);
+    return fracs;
+  }
+
+  var allFracs = sternBrocotFractions(6);
+
+  // Generate mode pairs: all (px/qx, py/qy) combos from the tree
+  // For visualization, we show a representative sample spiraling outward
+  var modePairs = [];
+  for (var i = 0; i < allFracs.length; i++) {
+    for (var j = 0; j < allFracs.length; j++) {
+      if (modePairs.length >= 1764) break;
+      modePairs.push({
+        fx: allFracs[i],
+        fy: allFracs[j],
+        xorSurvives: (allFracs[i].p % 2) !== (allFracs[j].p % 2) // XOR parity
+      });
+    }
+    if (modePairs.length >= 1764) break;
+  }
+
+  // The 4 actual survivors
+  var survivors = [
+    { px: 1, qx: 3, py: 1, qy: 2 },
+    { px: 1, qx: 2, py: 1, qy: 3 },
+    { px: 1, qx: 2, py: 2, qy: 3 },
+    { px: 2, qx: 3, py: 1, qy: 2 }
+  ];
+
+  function isSurvivor(fx, fy) {
+    for (var s = 0; s < survivors.length; s++) {
+      if (fx.p === survivors[s].px && fx.q === survivors[s].qx &&
+          fy.p === survivors[s].py && fy.q === survivors[s].qy) return true;
+    }
+    return false;
+  }
+
+  var lW, lH, aW, aH;
+
+  function sResize() {
+    var dpr = window.devicePixelRatio || 1;
+
+    var rectL = cLinear.parentElement.getBoundingClientRect();
+    lW = rectL.width; lH = rectL.height;
+    cLinear.width = lW * dpr; cLinear.height = lH * dpr;
+    ctxL.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var rectA = cAdjusted.parentElement.getBoundingClientRect();
+    aW = rectA.width; aH = rectA.height;
+    cAdjusted.width = aW * dpr; cAdjusted.height = aH * dpr;
+    ctxA.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", sResize);
+  sResize();
+
+  var sAngle = 0;
+  var revealProgress = 0;
+
+  function drawSpiral(ctx, w, h, showAll, filterXOR, time) {
+    ctx.clearRect(0, 0, w, h);
+    var cx = w / 2;
+    var cy = h / 2 - 10;
+    var maxR = Math.min(w, h) * 0.40;
+
+    // Draw nodes in a spiral
+    var count = Math.min(modePairs.length, Math.floor(revealProgress));
+    for (var i = 0; i < count; i++) {
+      var pair = modePairs[i];
+      var t = i / 1764;
+      var angle = t * Math.PI * 16 + time * 0.2;
+      var radius = t * maxR;
+      var nx = cx + Math.cos(angle) * radius;
+      var ny = cy + Math.sin(angle) * radius;
+
+      var isS = isSurvivor(pair.fx, pair.fy);
+
+      if (filterXOR) {
+        // Adjusted view: only show XOR survivors prominently
+        if (isS) {
+          // Draw connecting lines between survivors
+          ctx.beginPath();
+          ctx.arc(nx, ny, 5, 0, Math.PI * 2);
+          var colors = ["#F98F81", "#37BA9B", "#A45474", "#FCCA28"];
+          var sIdx = 0;
+          for (var s = 0; s < survivors.length; s++) {
+            if (pair.fx.p === survivors[s].px && pair.fx.q === survivors[s].qx &&
+                pair.fy.p === survivors[s].py && pair.fy.q === survivors[s].qy) { sIdx = s; break; }
+          }
+          ctx.fillStyle = colors[sIdx];
+          ctx.globalAlpha = 1;
+          ctx.fill();
+
+          // Glow
+          var grd = ctx.createRadialGradient(nx, ny, 0, nx, ny, 18);
+          grd.addColorStop(0, colors[sIdx]);
+          grd.addColorStop(1, "transparent");
+          ctx.beginPath();
+          ctx.arc(nx, ny, 18, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.globalAlpha = 0.4 + 0.15 * Math.sin(time * 2 + sIdx);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        } else if (pair.xorSurvives) {
+          // XOR passes but not a final survivor: dim
+          ctx.beginPath();
+          ctx.arc(nx, ny, 1.2, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(200,200,220,0.08)";
+          ctx.fill();
+        } else {
+          // Forbidden: very faint red
+          ctx.beginPath();
+          ctx.arc(nx, ny, 0.8, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(120,20,40,0.06)";
+          ctx.fill();
+        }
+      } else {
+        // Linear view: show all nodes uniformly
+        var dotAlpha = 0.15 + 0.15 * (1 - t);
+        var dotR = 1.5;
+        if (isS) {
+          dotAlpha = 0.9;
+          dotR = 3;
+        }
+        ctx.beginPath();
+        ctx.arc(nx, ny, dotR, 0, Math.PI * 2);
+        ctx.fillStyle = isS ? "#F98F81" : "rgba(200,200,220," + dotAlpha + ")";
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawBoth(timestamp) {
+    sAngle += 0.008;
+    if (revealProgress < 1764) {
+      revealProgress += 12;
+      if (revealProgress > 1764) revealProgress = 1764;
+    }
+
+    drawSpiral(ctxL, lW, lH, true, false, sAngle);
+    drawSpiral(ctxA, aW, aH, false, true, sAngle);
+
+    requestAnimationFrame(drawBoth);
+  }
+  requestAnimationFrame(drawBoth);
+})();
+
+// ═══════════════════════════════════════════════════════════════════════
+// FAREY SEQUENCE VISUALIZATION — Section XI
+// ═══════════════════════════════════════════════════════════════════════
+(function fareyViz() {
+  var c = document.getElementById("viz-farey");
+  if (!c) return;
+  var fctx = c.getContext("2d");
+  var fW, fH;
+
+  function fResize() {
+    var rect = c.parentElement.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    fW = rect.width;
+    fH = rect.height;
+    c.width = fW * dpr;
+    c.height = fH * dpr;
+    fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", fResize);
+  fResize();
+
+  // Farey sequence F_6
+  function fareySequence(n) {
+    var fracs = [];
+    for (var q = 1; q <= n; q++) {
+      for (var p = 0; p <= q; p++) {
+        if (gcd(p, q) === 1) {
+          fracs.push({ p: p, q: q, val: p / q });
+        }
+      }
+    }
+    fracs.sort(function(a, b) { return a.val - b.val; });
+    return fracs;
+  }
+
+  function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+  var f6 = fareySequence(6);
+  // Full budget fractions (structural elements at denominator 2,3)
+  var budgetExtra = 6; // q2 * q3
+  var totalBudget = 19; // 13 + 6
+
+  var fAngle = 0;
+
+  function drawFarey(timestamp) {
+    fAngle += 0.004;
+    fctx.clearRect(0, 0, fW, fH);
+
+    var cx = fW / 2;
+    var cy = fH / 2 - 10;
+    var mainR = Math.min(fW, fH) * 0.32;
+
+    // Draw the outer ring (total budget = 19)
+    fctx.beginPath();
+    fctx.arc(cx, cy, mainR, 0, Math.PI * 2);
+    fctx.strokeStyle = "rgba(200,200,220,0.1)";
+    fctx.lineWidth = 1;
+    fctx.stroke();
+
+    // Inner ring for the 6 structural slots
+    var innerR = mainR * 0.55;
+    fctx.beginPath();
+    fctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+    fctx.strokeStyle = "rgba(200,200,220,0.06)";
+    fctx.stroke();
+
+    // Draw the 13 Farey fractions on outer ring
+    // Skip 0/1 and 1/1 for the irreducible interior fractions
+    var interiorFracs = [];
+    for (var i = 0; i < f6.length; i++) {
+      if (f6[i].val > 0 && f6[i].val < 1) interiorFracs.push(f6[i]);
+    }
+    // interiorFracs should be 11, plus 0/1 and 1/1 = 13 total
+
+    for (var i = 0; i < f6.length; i++) {
+      var frac = f6[i];
+      var theta = fAngle + (i / f6.length) * Math.PI * 2;
+      var nx = cx + Math.cos(theta) * mainR;
+      var ny = cy + Math.sin(theta) * mainR;
+
+      // Color by denominator
+      var color;
+      if (frac.q <= 2) color = "#F98F81"; // salmon — octave class
+      else if (frac.q === 3) color = "#37BA9B"; // teal — fifth class
+      else if (frac.q <= 4) color = "#A45474"; // maroon
+      else color = "#FCCA28"; // gold
+
+      // Node
+      var pulse = 1 + 0.12 * Math.sin(fAngle * 2.5 + i * 0.7);
+      var r = (3 + 1.5 * (7 - frac.q) / 6) * pulse;
+
+      // Glow
+      var grd = fctx.createRadialGradient(nx, ny, 0, nx, ny, r * 3.5);
+      grd.addColorStop(0, color);
+      grd.addColorStop(1, "transparent");
+      fctx.beginPath();
+      fctx.arc(nx, ny, r * 3.5, 0, Math.PI * 2);
+      fctx.fillStyle = grd;
+      fctx.globalAlpha = 0.25;
+      fctx.fill();
+      fctx.globalAlpha = 1;
+
+      // Dot
+      fctx.beginPath();
+      fctx.arc(nx, ny, r, 0, Math.PI * 2);
+      fctx.fillStyle = color;
+      fctx.fill();
+
+      // Spoke to center
+      fctx.beginPath();
+      fctx.moveTo(cx, cy);
+      fctx.lineTo(nx, ny);
+      fctx.strokeStyle = color;
+      fctx.globalAlpha = 0.06;
+      fctx.lineWidth = 0.5;
+      fctx.stroke();
+      fctx.globalAlpha = 1;
+
+      // Label
+      if (fW > 360) {
+        fctx.font = "9px -apple-system, sans-serif";
+        fctx.fillStyle = color;
+        fctx.globalAlpha = 0.65;
+        var lx = cx + Math.cos(theta) * (mainR + 14);
+        var ly = cy + Math.sin(theta) * (mainR + 14);
+        fctx.textAlign = "center";
+        fctx.fillText(frac.p + "/" + frac.q, lx, ly + 3);
+        fctx.globalAlpha = 1;
+      }
+    }
+
+    // Draw 6 structural nodes on inner ring
+    for (var i = 0; i < budgetExtra; i++) {
+      var theta = fAngle + (i / budgetExtra) * Math.PI * 2 + Math.PI / 6;
+      var nx = cx + Math.cos(theta) * innerR;
+      var ny = cy + Math.sin(theta) * innerR;
+
+      fctx.beginPath();
+      fctx.arc(nx, ny, 3, 0, Math.PI * 2);
+      fctx.fillStyle = "rgba(200,200,220,0.4)";
+      fctx.fill();
+
+      // Connect to neighbors on outer ring
+      var nearestOuter = Math.round((theta - fAngle) / (Math.PI * 2) * f6.length) % f6.length;
+      var outerTheta = fAngle + (nearestOuter / f6.length) * Math.PI * 2;
+      var ox = cx + Math.cos(outerTheta) * mainR;
+      var oy = cy + Math.sin(outerTheta) * mainR;
+      fctx.beginPath();
+      fctx.moveTo(nx, ny);
+      fctx.lineTo(ox, oy);
+      fctx.strokeStyle = "rgba(200,200,220,0.05)";
+      fctx.lineWidth = 0.5;
+      fctx.stroke();
+    }
+
+    // Center: ratio display
+    fctx.font = "bold 16px -apple-system, sans-serif";
+    fctx.textAlign = "center";
+    fctx.fillStyle = "#F98F81";
+    fctx.globalAlpha = 0.7;
+    fctx.fillText("13 / 19", cx, cy + 5);
+    fctx.globalAlpha = 1;
+
+    requestAnimationFrame(drawFarey);
+  }
+  requestAnimationFrame(drawFarey);
+})();
+
 })();
 </script>
 
@@ -604,6 +1192,7 @@ revealSections();
   <a href="three-body.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Three Bodies</a>
   <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
   <a href="our_address.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Our Address</a>
+  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
 </nav>
 </body>
 </html>
