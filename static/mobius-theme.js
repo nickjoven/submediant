@@ -387,6 +387,44 @@ function initCurvedSpace() {
   }, { passive: true });
 }
 
+// ── Scale-to-fit for overflowing display math on narrow viewports ────────
+function initMathScaleToFit() {
+  var selectors = [
+    'mjx-container[display="true"]',
+    '.MathJax[display="true"]'
+  ];
+
+  function fitMath() {
+    var els = document.querySelectorAll(selectors.join(', '));
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      // Reset any previous scaling to measure natural width
+      el.style.transform = '';
+      el.style.transformOrigin = '';
+      var parent = el.closest('.equation-block') || el.parentElement;
+      if (!parent) continue;
+      var available = parent.clientWidth;
+      var natural = el.scrollWidth;
+      if (natural > available + 1 && available > 0) {
+        var scale = available / natural;
+        // Don't scale below 0.55 — becomes unreadable
+        scale = Math.max(scale, 0.55);
+        el.style.transform = 'scale(' + scale + ')';
+        el.style.transformOrigin = 'center center';
+      }
+    }
+  }
+
+  // Run after MathJax renders (async)
+  setTimeout(fitMath, 1500);
+  setTimeout(fitMath, 4000);
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitMath, 200);
+  });
+}
+
 // ── Copy-on-hover for overflowing math/equation blocks ──────────────────
 function initCopyOverflow() {
   // Selectors for elements that may overflow with fraction content
@@ -483,6 +521,7 @@ function init() {
   applyPalette();
   initFormatAccordion();
   initCurvedSpace();
+  initMathScaleToFit();
   initCopyOverflow();
 }
 

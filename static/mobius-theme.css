@@ -129,14 +129,12 @@ table tbody tr:nth-child(even) th {
 /* ── Mobile containment: prevent horizontal scroll ── */
 html { overflow-x: clip; }
 main { overflow-wrap: break-word; }
-/* MathJax: prefer fitting without overflow; hide scrollbars */
-.MathJax, mjx-container { max-width: 100% !important; overflow: hidden !important; scrollbar-width: none !important; -ms-overflow-style: none !important; }
-.MathJax::-webkit-scrollbar, mjx-container::-webkit-scrollbar { display: none !important; }
-.MathJax[display="true"], mjx-container[display="true"] { max-width: 100% !important; overflow: hidden !important; }
+/* Display math: allow natural width so JS scale-to-fit can measure & shrink */
+mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
+/* Inline math: no constraints */
 .MathJax:not([display="true"]), mjx-container:not([display="true"]) { overflow: visible !important; }
-/* Equation blocks: no scrollbars */
-.equation-block { scrollbar-width: none; -ms-overflow-style: none; }
-.equation-block::-webkit-scrollbar { display: none; }
+/* Equation blocks: visible overflow (JS scale-to-fit handles containment; html overflow-x:clip is safety net) */
+.equation-block { overflow: visible; }
 
 /* ── Copy-on-hover for overflowing content ── */
 .copy-overflow-wrap { position: relative; }
@@ -191,8 +189,8 @@ main { overflow-wrap: break-word; }
   /* Stack grids vertically */
   [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
 
-  /* Reduce padding on standalone pages */
-  main { padding-left: 16px !important; padding-right: 16px !important; }
+  /* Reduce padding on standalone pages — fill more horizontal space */
+  main { padding-left: 12px !important; padding-right: 12px !important; }
 
   /* Format accordion: less indent on mobile */
   .fmt-level-1 { padding-left: 0.5rem; }

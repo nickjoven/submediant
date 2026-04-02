@@ -17,7 +17,7 @@ html { overflow-x: clip; }
 :root {
   /* Golden-ratio type scale: each step = prev * phi */
   --phi: 1.618;
-  --fs-base: clamp(16px, 1.2vw + 8px, 22px);  /* responsive base */
+  --fs-base: clamp(18px, 1.2vw + 8px, 22px);  /* responsive base */
   --fs-sm: calc(var(--fs-base) / var(--phi));    /* ~11-14px */
   --fs-xs: calc(var(--fs-sm) / var(--phi));      /* ~7-9px */
   --fs-lg: calc(var(--fs-base) * var(--phi));    /* ~26-36px */
@@ -241,8 +241,8 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
-/* MathJax overflow containment — no scrollbars */
-.MathJax, mjx-container { max-width: 100% !important; overflow: hidden !important; }
+/* MathJax display math: allow natural width for scale-to-fit */
+mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
 
 .pred-grid {
   display: grid;
