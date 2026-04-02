@@ -467,6 +467,71 @@ section.visible {
   </p>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- IV. BOWED STRING (STICK-SLIP) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s4">
+  <span class="section-num">IV</span>
+  <h2 class="section-title">Bowed String</h2>
+  <p>
+    A bow drawn across a string. Velocity-dependent friction creates a
+    <strong>stick-slip</strong> cycle: the contact point grips, loads, snaps free,
+    and grips again. The limit cycle in phase space is the physical mechanism
+    behind mode-locking. Different bow pressures select different overtones &mdash;
+    the Arnold tongue structure made audible.
+  </p>
+  <div class="equation-block">
+    $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu(v_b - \dot{x}), \qquad \mu(v) = \frac{\mu_s}{1 + |v|/v_0}\,\text{sgn}(v)$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="bow-motion-canvas"></canvas>
+      <div class="viz-label">String displacement &mdash; stick (gold) &amp; slip (teal)</div>
+    </div>
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="bow-phase-canvas"></canvas>
+      <div class="viz-label">Phase portrait &mdash; $(x, \dot{x})$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Bow speed v<sub>b</sub></label>
+      <div class="row">
+        <input type="range" id="bow-speed" min="5" max="80" value="30" step="1">
+        <span class="val" id="bow-speed-val">0.30</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Bow pressure F<sub>N</sub></label>
+      <div class="row">
+        <input type="range" id="bow-pressure" min="5" max="150" value="60" step="1">
+        <span class="val" id="bow-pressure-val">0.60</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Damping &gamma;</label>
+      <div class="row">
+        <input type="range" id="bow-damping" min="1" max="40" value="8" step="1">
+        <span class="val" id="bow-damping-val">0.08</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="bow-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    Increase <strong>bow pressure</strong> to deepen the stick phase.
+    Increase <strong>bow speed</strong> to change the oscillation period.
+    With low damping, the limit cycle is wide and sawtooth-like &mdash; the
+    classic Helmholtz motion of a bowed string. This connects directly to
+    the <a href="our_address.html">stick-slip framework</a> for dark matter.
+  </p>
+</section>
+
 <div class="phi-spacer-lg"></div>
 <div id="sim-sections-placeholder"></div>
 
@@ -1234,6 +1299,234 @@ function rk4(state, derivs, dt) {
   resizeStair();
   computeTongueImage();
   redraw();
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// IV. BOWED STRING (STICK-SLIP)
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var motionCanvas = document.getElementById("bow-motion-canvas");
+  var phaseCanvas = document.getElementById("bow-phase-canvas");
+  var motionContainer = motionCanvas.parentElement;
+  var phaseContainer = phaseCanvas.parentElement;
+  var mctx, pctx;
+  var mW, mH, pW, pH;
+
+  // Parameters
+  var vBow = 0.30;    // bow speed
+  var FN = 0.60;      // normal force (pressure)
+  var gamma = 0.08;   // damping
+  var m = 1.0;        // mass
+  var k = 4.0;        // spring constant (sets natural frequency)
+  var muS = 1.0;      // static friction coefficient
+  var v0 = 0.15;      // characteristic velocity
+
+  // State: [x, xdot]
+  var state;
+  var motionHistory = []; // time series of x
+  var phaseHistory = [];  // (x, xdot) pairs
+  var HIST_MAX = 800;
+  var PHASE_MAX = 1200;
+  var simTime = 0;
+
+  function initState() {
+    state = [0.01, 0]; // small perturbation
+    motionHistory = [];
+    phaseHistory = [];
+    simTime = 0;
+  }
+
+  function friction(vrel) {
+    // Velocity-dependent friction: Stribeck curve
+    return FN * muS * vrel / (Math.abs(vrel) + v0);
+  }
+
+  function derivs(s) {
+    var x = s[0], xd = s[1];
+    var vrel = vBow - xd;
+    var f = friction(vrel);
+    return [
+      xd,
+      (f - gamma * xd - k * x) / m
+    ];
+  }
+
+  function isSticking(s) {
+    var vrel = vBow - s[1];
+    return Math.abs(vrel) < v0 * 0.5;
+  }
+
+  function resizeMotion() {
+    mW = motionContainer.clientWidth;
+    mH = motionContainer.clientHeight;
+    mctx = setupCanvas(motionCanvas, mW, mH);
+  }
+  function resizePhase() {
+    pW = phaseContainer.clientWidth;
+    pH = phaseContainer.clientHeight;
+    pctx = setupCanvas(phaseCanvas, pW, pH);
+  }
+
+  function drawMotion() {
+    mctx.clearRect(0, 0, mW, mH);
+    var pad = 30;
+    var plotW = mW - 2 * pad;
+    var plotH = mH - 2 * pad;
+
+    // Axes
+    mctx.strokeStyle = "rgba(200,200,200,0.2)";
+    mctx.lineWidth = 1;
+    mctx.beginPath();
+    mctx.moveTo(pad, pad + plotH / 2);
+    mctx.lineTo(pad + plotW, pad + plotH / 2);
+    mctx.stroke();
+
+    mctx.fillStyle = "rgba(200,200,200,0.3)";
+    mctx.font = "10px 'SF Mono', monospace";
+    mctx.textAlign = "right";
+    mctx.fillText("x(t)", pad - 4, pad + plotH / 2 - 4);
+
+    if (motionHistory.length < 2) return;
+
+    // Auto-scale y
+    var ymax = 0;
+    for (var i = 0; i < motionHistory.length; i++) {
+      var a = Math.abs(motionHistory[i][0]);
+      if (a > ymax) ymax = a;
+    }
+    ymax = Math.max(ymax * 1.2, 0.05);
+
+    // Draw trace, colored by stick/slip
+    for (var i = 1; i < motionHistory.length; i++) {
+      var x0 = pad + ((i - 1) / HIST_MAX) * plotW;
+      var x1 = pad + (i / HIST_MAX) * plotW;
+      var y0 = pad + plotH / 2 - (motionHistory[i - 1][0] / ymax) * (plotH / 2);
+      var y1 = pad + plotH / 2 - (motionHistory[i][0] / ymax) * (plotH / 2);
+      mctx.strokeStyle = motionHistory[i][1] ? "rgba(252,202,40,0.8)" : "rgba(55,186,155,0.8)";
+      mctx.lineWidth = 1.5;
+      mctx.beginPath();
+      mctx.moveTo(x0, y0);
+      mctx.lineTo(x1, y1);
+      mctx.stroke();
+    }
+  }
+
+  function drawPhase() {
+    pctx.clearRect(0, 0, pW, pH);
+    var pad = 30;
+    var plotW = pW - 2 * pad;
+    var plotH = pH - 2 * pad;
+    var cx = pad + plotW / 2;
+    var cy = pad + plotH / 2;
+
+    // Axes
+    pctx.strokeStyle = "rgba(200,200,200,0.2)";
+    pctx.lineWidth = 1;
+    pctx.beginPath();
+    pctx.moveTo(pad, cy); pctx.lineTo(pad + plotW, cy);
+    pctx.stroke();
+    pctx.beginPath();
+    pctx.moveTo(cx, pad); pctx.lineTo(cx, pad + plotH);
+    pctx.stroke();
+
+    pctx.fillStyle = "rgba(200,200,200,0.3)";
+    pctx.font = "10px 'SF Mono', monospace";
+    pctx.textAlign = "center";
+    pctx.fillText("x", pad + plotW + 10, cy + 4);
+    pctx.fillText("x\u0307", cx, pad - 6);
+
+    if (phaseHistory.length < 2) return;
+
+    // Auto-scale
+    var xmax = 0, vmax = 0;
+    for (var i = 0; i < phaseHistory.length; i++) {
+      var ax = Math.abs(phaseHistory[i][0]);
+      var av = Math.abs(phaseHistory[i][1]);
+      if (ax > xmax) xmax = ax;
+      if (av > vmax) vmax = av;
+    }
+    xmax = Math.max(xmax * 1.2, 0.05);
+    vmax = Math.max(vmax * 1.2, 0.05);
+
+    // Trace with fading
+    pctx.beginPath();
+    for (var i = 0; i < phaseHistory.length; i++) {
+      var px = cx + (phaseHistory[i][0] / xmax) * (plotW / 2);
+      var py = cy - (phaseHistory[i][1] / vmax) * (plotH / 2);
+      if (i === 0) pctx.moveTo(px, py);
+      else pctx.lineTo(px, py);
+    }
+    pctx.strokeStyle = "rgba(222,51,115,0.6)";
+    pctx.lineWidth = 1;
+    pctx.stroke();
+
+    // Current point
+    var last = phaseHistory[phaseHistory.length - 1];
+    var px = cx + (last[0] / xmax) * (plotW / 2);
+    var py = cy - (last[1] / vmax) * (plotH / 2);
+    pctx.fillStyle = "#FCCA28";
+    pctx.beginPath();
+    pctx.arc(px, py, 3, 0, Math.PI * 2);
+    pctx.fill();
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    var steps = 16;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) {
+      state = rk4(state, derivs, dt);
+      simTime += dt;
+    }
+
+    var stick = isSticking(state);
+    motionHistory.push([state[0], stick]);
+    if (motionHistory.length > HIST_MAX) motionHistory.shift();
+
+    phaseHistory.push([state[0], state[1]]);
+    if (phaseHistory.length > PHASE_MAX) phaseHistory.shift();
+
+    drawMotion();
+    drawPhase();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var speedSlider = document.getElementById("bow-speed");
+  var pressureSlider = document.getElementById("bow-pressure");
+  var dampingSlider = document.getElementById("bow-damping");
+  var speedVal = document.getElementById("bow-speed-val");
+  var pressureVal = document.getElementById("bow-pressure-val");
+  var dampingVal = document.getElementById("bow-damping-val");
+  var resetBtn = document.getElementById("bow-reset");
+
+  speedSlider.addEventListener("input", function() {
+    vBow = +this.value / 100;
+    speedVal.textContent = vBow.toFixed(2);
+  });
+  pressureSlider.addEventListener("input", function() {
+    FN = +this.value / 100;
+    pressureVal.textContent = FN.toFixed(2);
+  });
+  dampingSlider.addEventListener("input", function() {
+    gamma = +this.value / 100;
+    dampingVal.textContent = gamma.toFixed(2);
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", function() { resizeMotion(); resizePhase(); });
+  resizeMotion();
+  resizePhase();
+  requestAnimationFrame(animate);
 })();
 
 // ── Background canvas ────────────────────────────────────────────────────
