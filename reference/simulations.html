@@ -342,6 +342,72 @@ section.visible {
   </p>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- II. KURAMOTO RING -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s2">
+  <span class="section-num">II</span>
+  <h2 class="section-title">Kuramoto Ring</h2>
+  <p>
+    $N$ oscillators on a circle, each with its own natural frequency.
+    Below a critical coupling $K_c$, they drift independently. Above it,
+    they coalesce &mdash; first in clusters, then globally. The
+    <strong>order parameter</strong> $r$ measures coherence: $r = 0$ is
+    incoherence, $r = 1$ is perfect synchrony.
+  </p>
+  <div class="equation-block">
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i), \qquad r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="kuramoto-circle"></canvas>
+      <div class="viz-label">Phase circle &mdash; color = natural frequency</div>
+    </div>
+    <div class="viz-container" style="height: 360px;">
+      <canvas id="kuramoto-rplot"></canvas>
+      <div class="viz-label">Order parameter $r(t)$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>N oscillators</label>
+      <div class="row">
+        <input type="range" id="kura-n" min="3" max="80" value="30" step="1">
+        <span class="val" id="kura-n-val">30</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Coupling K</label>
+      <div class="row">
+        <input type="range" id="kura-k" min="0" max="200" value="40" step="1">
+        <span class="val" id="kura-k-val">0.40</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Frequency spread &Delta;&omega;</label>
+      <div class="row">
+        <input type="range" id="kura-spread" min="10" max="200" value="100" step="1">
+        <span class="val" id="kura-spread-val">1.00</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="kura-reset">Reset</button>
+    </div>
+  </div>
+
+  <p>
+    The <strong>frequency spread</strong> controls the period distribution &mdash;
+    how different the oscillators' natural periods are. The <strong>coupling</strong>
+    is the amplitude of the interaction. At $K = 0$ they're independent; past
+    $K_c = 2\Delta\omega/\pi$ they begin to lock. This is the framework's
+    core dynamical system. At critical coupling $K = 1$ in the continuum limit,
+    you get <a href="first-principles.html">Einstein</a>.
+  </p>
+</section>
+
 <div class="phi-spacer-lg"></div>
 <div id="sim-sections-placeholder"></div>
 
@@ -598,6 +664,242 @@ function rk4(state, derivs, dt) {
   // Set initial period display
   var T0 = 2 * Math.PI * Math.sqrt((length/100) / g);
   periodVal.textContent = T0.toFixed(2) + "s";
+  requestAnimationFrame(animate);
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// II. KURAMOTO RING
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var circleCanvas = document.getElementById("kuramoto-circle");
+  var rCanvas = document.getElementById("kuramoto-rplot");
+  var circleContainer = circleCanvas.parentElement;
+  var rContainer = rCanvas.parentElement;
+  var cctx, rctx;
+  var cW, cH, rW, rH;
+
+  // Parameters
+  var N = 30;
+  var K = 0.40;
+  var spread = 1.0;
+
+  // State
+  var theta, omega, colors;
+  var rHistory = [];
+  var R_MAX = 400;
+  var simTime = 0;
+
+  function hsl(h) { return "hsl(" + h + ", 70%, 60%)"; }
+
+  function initState() {
+    theta = new Array(N);
+    omega = new Array(N);
+    colors = new Array(N);
+    for (var i = 0; i < N; i++) {
+      theta[i] = Math.random() * 2 * Math.PI;
+      omega[i] = (i / (N - 1) - 0.5) * 2 * spread; // uniform in [-spread, spread]
+      colors[i] = hsl(Math.round(240 + (omega[i] / spread) * 120)); // blue-red
+    }
+    rHistory = [];
+    simTime = 0;
+  }
+
+  function step(dt) {
+    // Euler (fast enough for Kuramoto — first-order ODE, no stiffness)
+    var dtheta = new Array(N);
+    for (var i = 0; i < N; i++) {
+      var sum = 0;
+      for (var j = 0; j < N; j++) {
+        sum += Math.sin(theta[j] - theta[i]);
+      }
+      dtheta[i] = omega[i] + (K / N) * sum;
+    }
+    for (var i = 0; i < N; i++) {
+      theta[i] += dtheta[i] * dt;
+    }
+    simTime += dt;
+  }
+
+  function orderParam() {
+    var cx = 0, cy = 0;
+    for (var i = 0; i < N; i++) {
+      cx += Math.cos(theta[i]);
+      cy += Math.sin(theta[i]);
+    }
+    cx /= N; cy /= N;
+    return { r: Math.sqrt(cx * cx + cy * cy), psi: Math.atan2(cy, cx) };
+  }
+
+  function resizeCircle() {
+    cW = circleContainer.clientWidth;
+    cH = circleContainer.clientHeight;
+    cctx = setupCanvas(circleCanvas, cW, cH);
+  }
+  function resizeR() {
+    rW = rContainer.clientWidth;
+    rH = rContainer.clientHeight;
+    rctx = setupCanvas(rCanvas, rW, rH);
+  }
+
+  function drawCircle() {
+    cctx.clearRect(0, 0, cW, cH);
+    var cx = cW / 2, cy = cH / 2;
+    var R = Math.min(cW, cH) * 0.38;
+
+    // Unit circle
+    cctx.strokeStyle = "rgba(200,200,200,0.15)";
+    cctx.lineWidth = 1;
+    cctx.beginPath();
+    cctx.arc(cx, cy, R, 0, Math.PI * 2);
+    cctx.stroke();
+
+    // Order parameter vector
+    var op = orderParam();
+    cctx.strokeStyle = "rgba(252,202,40,0.7)";
+    cctx.lineWidth = 2;
+    cctx.beginPath();
+    cctx.moveTo(cx, cy);
+    cctx.lineTo(cx + op.r * R * Math.cos(op.psi), cy - op.r * R * Math.sin(op.psi));
+    cctx.stroke();
+
+    // r value text
+    cctx.fillStyle = "rgba(252,202,40,0.8)";
+    cctx.font = "bold 14px 'SF Mono', monospace";
+    cctx.textAlign = "center";
+    cctx.fillText("r = " + op.r.toFixed(3), cx, cy - R - 12);
+
+    // Oscillator dots
+    for (var i = 0; i < N; i++) {
+      var x = cx + R * Math.cos(theta[i]);
+      var y = cy - R * Math.sin(theta[i]);
+      cctx.fillStyle = colors[i];
+      cctx.beginPath();
+      cctx.arc(x, y, Math.max(3, 8 - N * 0.06), 0, Math.PI * 2);
+      cctx.fill();
+    }
+  }
+
+  function drawR() {
+    rctx.clearRect(0, 0, rW, rH);
+    var pad = 30;
+    var plotW = rW - 2 * pad;
+    var plotH = rH - 2 * pad;
+
+    // Axes
+    rctx.strokeStyle = "rgba(200,200,200,0.2)";
+    rctx.lineWidth = 1;
+    rctx.beginPath();
+    rctx.moveTo(pad, pad);
+    rctx.lineTo(pad, pad + plotH);
+    rctx.lineTo(pad + plotW, pad + plotH);
+    rctx.stroke();
+
+    // y-axis labels
+    rctx.fillStyle = "rgba(200,200,200,0.4)";
+    rctx.font = "10px 'SF Mono', monospace";
+    rctx.textAlign = "right";
+    rctx.fillText("1.0", pad - 4, pad + 4);
+    rctx.fillText("0.5", pad - 4, pad + plotH / 2 + 4);
+    rctx.fillText("0.0", pad - 4, pad + plotH + 4);
+
+    // 0.5 line
+    rctx.strokeStyle = "rgba(200,200,200,0.08)";
+    rctx.beginPath();
+    rctx.moveTo(pad, pad + plotH / 2);
+    rctx.lineTo(pad + plotW, pad + plotH / 2);
+    rctx.stroke();
+
+    // K_c line
+    var Kc = 2 * spread / Math.PI;
+    if (K > 0) {
+      // Mark theoretical r_inf = sqrt(1 - Kc/K) for K > Kc
+      if (K >= Kc) {
+        var rInf = Math.sqrt(1 - Kc / K);
+        var yInf = pad + plotH * (1 - rInf);
+        rctx.strokeStyle = "rgba(222,51,115,0.3)";
+        rctx.setLineDash([4,4]);
+        rctx.beginPath();
+        rctx.moveTo(pad, yInf);
+        rctx.lineTo(pad + plotW, yInf);
+        rctx.stroke();
+        rctx.setLineDash([]);
+        rctx.fillStyle = "rgba(222,51,115,0.5)";
+        rctx.textAlign = "left";
+        rctx.fillText("r\u221e=" + rInf.toFixed(2), pad + plotW - 50, yInf - 4);
+      }
+    }
+
+    // r(t) trace
+    if (rHistory.length > 1) {
+      rctx.beginPath();
+      for (var i = 0; i < rHistory.length; i++) {
+        var x = pad + (i / R_MAX) * plotW;
+        var y = pad + plotH * (1 - rHistory[i]);
+        if (i === 0) rctx.moveTo(x, y);
+        else rctx.lineTo(x, y);
+      }
+      rctx.strokeStyle = "rgba(252,202,40,0.8)";
+      rctx.lineWidth = 1.5;
+      rctx.stroke();
+    }
+  }
+
+  var lastTime = 0;
+  function animate(ts) {
+    if (!lastTime) lastTime = ts;
+    var dtReal = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    var steps = 4;
+    var dt = dtReal / steps;
+    for (var i = 0; i < steps; i++) step(dt);
+
+    var op = orderParam();
+    rHistory.push(op.r);
+    if (rHistory.length > R_MAX) rHistory.shift();
+
+    drawCircle();
+    drawR();
+    requestAnimationFrame(animate);
+  }
+
+  // Controls
+  var nSlider = document.getElementById("kura-n");
+  var kSlider = document.getElementById("kura-k");
+  var spreadSlider = document.getElementById("kura-spread");
+  var nVal = document.getElementById("kura-n-val");
+  var kVal = document.getElementById("kura-k-val");
+  var spreadVal = document.getElementById("kura-spread-val");
+  var resetBtn = document.getElementById("kura-reset");
+
+  nSlider.addEventListener("input", function() {
+    N = +this.value;
+    nVal.textContent = N;
+    initState();
+  });
+  kSlider.addEventListener("input", function() {
+    K = +this.value / 100;
+    kVal.textContent = K.toFixed(2);
+  });
+  spreadSlider.addEventListener("input", function() {
+    spread = +this.value / 100;
+    spreadVal.textContent = spread.toFixed(2);
+    // Rebuild frequencies without resetting phases
+    for (var i = 0; i < N; i++) {
+      omega[i] = (i / (N - 1) - 0.5) * 2 * spread;
+      colors[i] = hsl(Math.round(240 + (omega[i] / spread) * 120));
+    }
+  });
+  resetBtn.addEventListener("click", function() {
+    initState();
+    lastTime = 0;
+  });
+
+  // Init
+  initState();
+  window.addEventListener("resize", function() { resizeCircle(); resizeR(); });
+  resizeCircle();
+  resizeR();
   requestAnimationFrame(animate);
 })();
 
