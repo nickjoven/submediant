@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
+<title>Constants</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+  --purple: #7C2E87;
+}
+
+body {
+  background: transparent;
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: clip;
+  color-scheme: dark;
+}
+html:not([data-mode="light"]) {
+  --m-bg: #000000;
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 40px 160px;
+}
+
+/* phi-based vertical rhythm */
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.phi-spacer { height: calc(61.8px * var(--phi)); }
+.phi-spacer-lg { height: calc(61.8px * var(--phi) * var(--phi)); }
+.phi-spacer-sm { height: 61.8px; }
+
+/* section titles */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.section-num {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--purple);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.618em;
+  opacity: 0.7;
+}
+
+/* equation blocks */
+.equation-block {
+  margin: 1.618em 0;
+  padding: 1em 0;
+  text-align: center;
+  font-size: var(--fs-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* MathJax overflow containment */
+.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+
+/* prose */
+section p {
+  color: var(--m-text-muted, #8b949e);
+  margin-bottom: 1em;
+}
+
+section p strong {
+  color: var(--m-text, #e6edf3);
+}
+
+/* decomposition table */
+.decomp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  margin: 1.618em 0;
+}
+
+.decomp-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--purple);
+  padding: 0.618em 1em;
+  border-bottom: 1px solid var(--m-border, #30363d);
+  white-space: nowrap;
+}
+
+.decomp-table td {
+  padding: 0.618em 1em;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-border, #30363d) 40%, transparent);
+  color: var(--m-text-muted, #8b949e);
+}
+
+.decomp-table tbody tr:nth-child(odd) { background: var(--m-surface, #161b22); }
+.decomp-table tbody tr:nth-child(even) { background: transparent; }
+
+.decomp-table td:first-child {
+  color: var(--m-text, #e6edf3);
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  white-space: nowrap;
+}
+
+/* links */
+a { color: var(--m-accent, #DE3373); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* responsive */
+@media (max-width: 600px) {
+  main { padding: 0 16px 120px !important; }
+  .equation-block { font-size: var(--fs-base) !important; padding: 0.5em 0; }
+  .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
+  .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
+  .decomp-table { font-size: var(--fs-xs); }
+  .decomp-table th, .decomp-table td { padding: 0.4em 0.5em; }
+}
+
+/* fade-in on scroll */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HERO                                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-hero">
+  <div style="text-align:center;">
+    <div class="section-title" style="font-weight:100; letter-spacing:0.15em;">Constants</div>
+    <p style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); max-width:500px; margin:0 auto;">
+      Every parameter is $K$ at a different address.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- I. K — THE ONLY DIAL                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s1">
+  <span class="section-num">I</span>
+  <h2 class="section-title">K</h2>
+  <div class="equation-block">
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_j \sin(\theta_j - \theta_i)$$
+  </div>
+  <p>
+    The coupling strength. The only free parameter in the framework, and it is <strong>not free</strong> &mdash; it is determined self-consistently by the population it generates. $K$ is the dial that selects which physics applies.
+  </p>
+  <p>
+    <strong>$K \ll 1$</strong>: free phases, no structure, quantum vacuum.
+    <strong>$K &lt; 1$</strong>: partial locking &mdash; Schr&ouml;dinger governs.
+    <strong>$K = 1$</strong>: critical coupling &mdash; Einstein takes over.
+    <strong>$K &gt; 1$</strong>: rigidity, cascading failure.
+  </p>
+  <p>
+    Every other constant is $K$ evaluated at a specific rational address $p/q$ in the Stern-Brocot tree. The standard model does not have 19 free parameters. It has <strong>one parameter at 19 addresses</strong>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- II. c — THE SPEED OF SYNCHRONIZATION                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s2">
+  <span class="section-num">II</span>
+  <h2 class="section-title">c</h2>
+  <div class="equation-block">
+    $$c = \lim_{\Delta t \to 0} \frac{\Delta(\text{phase information})}{\Delta t}$$
+  </div>
+  <p>
+    The maximum rate at which one oscillator can learn about another&rsquo;s phase. Not a property of light &mdash; a property of the <strong>coupling topology</strong>. The causal bound exists before photons do.
+  </p>
+  <p>
+    In the Kuramoto model, coupling propagates through the mean field. At $K = 1$, the coherence tensor $C_{ij}$ becomes the spatial metric $\gamma_{ij}$, and the <strong>lapse function $N$</strong> (local clock rate) is the Kuramoto order parameter $|r|$. The speed at which the lapse can change &mdash; the speed at which synchronization updates propagate through the metric &mdash; is $c$.
+  </p>
+  <p>
+    Newton assumed infinite propagation: every body knows where every other body <em>is</em>. Reality: each body only knows where the others <strong>were</strong>. This finite propagation is not imposed. It <strong>emerges</strong> from the topology of the self-consistency loop &mdash; information cannot outrun the iteration that generates it.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- III. e — TWO FACES                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s3">
+  <span class="section-num">III</span>
+  <h2 class="section-title">e</h2>
+
+  <p style="color:var(--purple); font-size:var(--fs-sm); letter-spacing:0.1em; margin-bottom:1.618em;">EULER&rsquo;S NUMBER</p>
+  <div class="equation-block">
+    $$\delta x_n = \delta x_0 \cdot (f')^n = \delta x_0 \cdot e^{\,n \ln f'(x^*)}$$
+  </div>
+  <p>
+    The third primitive generates it. Near a fixed point $x^* = f(x^*)$, small perturbations evolve as $(f')^n$. The moment you have <strong>iteration + fixed points</strong>, you have $e$. It is not imported &mdash; it is the natural base of the map&rsquo;s linearization. The Floquet multipliers governing mode-lock stability go as $e^{-\lambda}$. Convergence rates, Lyapunov exponents, decay constants &mdash; all expressions of $e$ emerging from the fixed-point primitive.
+  </p>
+
+  <div class="phi-spacer-sm"></div>
+
+  <p style="color:var(--purple); font-size:var(--fs-sm); letter-spacing:0.1em; margin-bottom:1.618em;">ELEMENTARY CHARGE</p>
+  <div class="equation-block">
+    $$\alpha = \frac{e^2}{4\pi\varepsilon_0 \hbar c} \approx \frac{1}{137}$$
+  </div>
+  <p>
+    The fine structure constant $\alpha$ is the <strong>Arnold tongue width</strong> at the electromagnetic address in the tree. The elementary charge $e$ is the coupling quantum for the U(1) mode-locking &mdash; the minimum coupling strength that locks two oscillators at the photon frequency ratio. That $\alpha \approx 1/137$ is not a coincidence to be explained; it is a <strong>tree depth</strong>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- IV. m — SYNCHRONIZATION COST                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s4">
+  <span class="section-num">IV</span>
+  <h2 class="section-title">m</h2>
+  <div class="equation-block">
+    $$C(p/q) = \frac{1}{q^2 \sin^2(\pi\, p/q)}$$
+  </div>
+  <p>
+    Mass is not substance. Mass is <strong>how much coupling budget a frequency ratio consumes</strong>. High-denominator rationals are expensive to lock. A proton is not heavy because it contains stuff &mdash; it is heavy because its internal frequency ratios sit at <strong>costly addresses</strong> in the tree.
+  </p>
+  <p>
+    The particle mass spectrum is a map of the Stern-Brocot tree weighted by synchronization cost. Light particles live at simple rationals (low $q$). Heavy particles live at complex rationals (high $q$). The mass hierarchy is not a mystery &mdash; it is the <strong>denominator hierarchy</strong>.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- V. THE DECOMPOSITION                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s5">
+  <span class="section-num">V</span>
+  <h2 class="section-title">The decomposition</h2>
+  <p>
+    The standard model&rsquo;s 19 parameters, decomposed. Each is $K$ at an address, filtered through the four primitives.
+  </p>
+
+  <table class="decomp-table">
+    <thead>
+      <tr><th>Parameter</th><th>Tree expression</th><th>Primitive</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>$g_1, g_2, g_3$</td>
+        <td>Arnold tongue widths at U(1), SU(2), SU(3) addresses</td>
+        <td>Parabola</td>
+      </tr>
+      <tr>
+        <td>$m_u, m_c, m_t$</td>
+        <td>$C(p/q)$ at up-type quark frequency ratios</td>
+        <td>Fixed point</td>
+      </tr>
+      <tr>
+        <td>$m_d, m_s, m_b$</td>
+        <td>$C(p/q)$ at down-type quark frequency ratios</td>
+        <td>Fixed point</td>
+      </tr>
+      <tr>
+        <td>$m_e, m_\mu, m_\tau$</td>
+        <td>$C(p/q)$ at charged lepton frequency ratios</td>
+        <td>Fixed point</td>
+      </tr>
+      <tr>
+        <td>$\theta_{12}, \theta_{13}, \theta_{23}$</td>
+        <td>Rotation angles between mass eigenstates on the tree</td>
+        <td>Mediant</td>
+      </tr>
+      <tr>
+        <td>$\delta_{\text{CP}}$</td>
+        <td>Phase offset at the CP-violating node</td>
+        <td>Integers</td>
+      </tr>
+      <tr>
+        <td>$v$ (Higgs VEV)</td>
+        <td>Critical coupling threshold: $K = 1$ energy scale</td>
+        <td>Fixed point</td>
+      </tr>
+      <tr>
+        <td>$\lambda_H$</td>
+        <td>Self-coupling curvature at the $K = 1$ fixed point</td>
+        <td>Parabola</td>
+      </tr>
+      <tr>
+        <td>$\theta_{\text{QCD}}$</td>
+        <td>Winding number of the strong coupling path</td>
+        <td>Integers</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Three gauge couplings: <strong>parabola</strong> (Arnold tongue boundaries are saddle-node bifurcations).
+    Nine masses: <strong>fixed point</strong> (synchronization cost at self-consistent addresses).
+    Three mixing angles: <strong>mediant</strong> (rotation between Farey neighbors).
+    Two phases: <strong>integers</strong> (winding numbers on the circle).
+    Two Higgs parameters: the <strong>fixed point</strong> that is $K = 1$ and the <strong>parabola</strong> that is its local curvature.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- CODA                                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="coda" style="text-align:center; padding:4em 0;">
+  <p style="color:var(--m-text-muted,#8b949e); font-style:italic; font-size:var(--fs-sm);">
+    One parameter. Four primitives. Nineteen addresses.<br>
+    The rest is topology.
+  </p>
+</section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- BACKGROUND CANVAS: Four purple traversals of a 12-node circle          -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+"use strict";
+
+var canvas = document.getElementById("bg");
+var ctx = canvas.getContext("2d");
+var W, H;
+
+// 12 purple hues: HSL from 260 to 320, evenly spaced
+var PURPLES = [];
+for (var i = 0; i < 12; i++) {
+  PURPLES.push("hsl(" + (260 + i * 5) + ", 60%, " + (35 + i * 2.5) + "%)");
+}
+
+// Four traversal orderings of 12 positions on a circle
+// Forward chromatic: 0, 1, 2, ..., 11
+var FORWARD = [0,1,2,3,4,5,6,7,8,9,10,11];
+// Backward chromatic: 11, 10, ..., 0
+var BACKWARD = [11,10,9,8,7,6,5,4,3,2,1,0];
+// Forward fifths: step by 7 (mod 12)
+var FIFTHS_FWD = [0,7,2,9,4,11,6,1,8,3,10,5];
+// Backward fifths: step by 5 (mod 12)
+var FIFTHS_BWD = [0,5,10,3,8,1,6,11,4,9,2,7];
+
+var SEQUENCES = [FORWARD, BACKWARD, FIFTHS_FWD, FIFTHS_BWD];
+var SEQ_COLORS = [
+  "rgba(124, 46, 135, 0.6)",   // deep purple
+  "rgba(160, 80, 170, 0.5)",   // medium purple
+  "rgba(100, 40, 120, 0.45)",  // dark purple
+  "rgba(180, 100, 190, 0.4)"   // light purple
+];
+
+var startTime = performance.now();
+
+function resize() {
+  var dpr = window.devicePixelRatio || 1;
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+function scrollFraction() {
+  var max = document.body.scrollHeight - window.innerHeight;
+  if (max <= 0) return 0;
+  return Math.min(1, Math.max(0, window.scrollY / max));
+}
+
+// Get position of node i on a circle
+function nodePos(i, cx, cy, r) {
+  var angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+}
+
+function draw(timestamp) {
+  var dt = (timestamp - startTime) / 1000;
+  var sf = scrollFraction();
+
+  var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, W, H);
+
+  var cx = W * 0.5;
+  var cy = H * 0.5;
+  var r = Math.min(W, H) * 0.25;
+
+  // Slowly rotate the whole circle
+  var globalRotation = dt * 0.03;
+
+  // Draw the 12 nodes (subtle)
+  for (var i = 0; i < 12; i++) {
+    var angle = (i / 12) * Math.PI * 2 - Math.PI / 2 + globalRotation;
+    var nx = cx + Math.cos(angle) * r;
+    var ny = cy + Math.sin(angle) * r;
+
+    ctx.beginPath();
+    ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = PURPLES[i];
+    ctx.globalAlpha = 0.3 + sf * 0.2;
+    ctx.fill();
+  }
+
+  // Draw the four traversal sequences
+  // Each sequence reveals progressively with scroll
+  var activeSeqs = Math.max(1, Math.ceil(sf * 4));
+  // How many nodes in current sequence are connected
+  var progress = (dt * 0.15) % 1;
+
+  for (var s = 0; s < activeSeqs; s++) {
+    var seq = SEQUENCES[s];
+    var seqOffset = s * 0.25; // phase offset per sequence
+    var seqProgress = ((dt * 0.08 + seqOffset) % 1);
+    var nodesActive = Math.floor(seqProgress * 13); // 0 to 12
+
+    if (nodesActive < 2) continue;
+
+    ctx.beginPath();
+    ctx.strokeStyle = SEQ_COLORS[s];
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = 0.15 + sf * 0.15;
+
+    for (var n = 0; n < Math.min(nodesActive, 12); n++) {
+      var idx = seq[n];
+      var angle = (idx / 12) * Math.PI * 2 - Math.PI / 2 + globalRotation;
+      var nx = cx + Math.cos(angle) * r;
+      var ny = cy + Math.sin(angle) * r;
+
+      if (n === 0) ctx.moveTo(nx, ny);
+      else ctx.lineTo(nx, ny);
+    }
+
+    ctx.stroke();
+
+    // Draw the leading node brighter
+    if (nodesActive > 0 && nodesActive <= 12) {
+      var leadIdx = seq[Math.min(nodesActive - 1, 11)];
+      var leadAngle = (leadIdx / 12) * Math.PI * 2 - Math.PI / 2 + globalRotation;
+      var lx = cx + Math.cos(leadAngle) * r;
+      var ly = cy + Math.sin(leadAngle) * r;
+
+      ctx.beginPath();
+      ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+      ctx.fillStyle = SEQ_COLORS[s];
+      ctx.globalAlpha = 0.4 + sf * 0.3;
+      ctx.fill();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+
+// Scroll-triggered section fade-in
+function revealSections() {
+  var sections = document.querySelectorAll("section");
+  var trigger = window.innerHeight * 0.82;
+  for (var i = 0; i < sections.length; i++) {
+    var rect = sections[i].getBoundingClientRect();
+    if (rect.top < trigger) {
+      sections[i].classList.add("visible");
+    }
+  }
+}
+
+window.addEventListener("scroll", revealSections, { passive: true });
+revealSections();
+
+})();
+</script>
+
+<!-- Mobius theme: moon toggle -->
+<script src="_static/mobius-theme.js"></script>
+
+<nav id="page-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:var(--m-surface, rgba(30,35,44,0.97)); backdrop-filter:blur(10px);
+  border-top:1px solid rgba(200,200,200,0.25);
+  display:flex; justify-content:center; align-items:center; gap:2rem; padding:10px 16px;
+  font-size:0.8rem; font-family:sans-serif;">
+  <a href="first-principles.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">First Principles</a>
+  <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
+  <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
+  <a href="our_address.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Our Address</a>
+  <a href="constants.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Constants</a>
+</nav>
+</body>
+</html>
