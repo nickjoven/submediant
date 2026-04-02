@@ -241,8 +241,8 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
-/* MathJax overflow containment */
-.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
+/* MathJax overflow containment — no scrollbars */
+.MathJax, mjx-container { max-width: 100% !important; overflow: hidden !important; }
 
 .pred-grid {
   display: grid;
@@ -733,7 +733,7 @@ hr.divider {
     </div>
     <div class="fmt-level fmt-level-1">
       <span class="fmt-tag fmt-tag-visual">visual</span>
-      <div style="overflow-x:auto; margin:0.5rem 0;">
+      <div style="overflow:hidden; margin:0.5rem 0;">
         <table id="mspu-predictions" style="width:100%; max-width:600px; border-collapse:collapse; font-family:sans-serif; font-size:var(--fs-sm);">
           <thead>
             <tr style="border-bottom:1px solid var(--m-border,#30363d);">
