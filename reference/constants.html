@@ -152,8 +152,8 @@ a:hover { text-decoration: underline; }
 /* inline diagrams */
 .diagram-row,
 .diagram-center {
-  background: rgba(124, 46, 135, 0.06);
-  border: 1px solid rgba(124, 46, 135, 0.12);
+  background: rgba(124, 46, 135, 0.10);
+  border: 1px solid rgba(124, 46, 135, 0.20);
   border-radius: 12px;
   padding: 2em 1.5em;
   margin: 2.5em 0;
@@ -574,17 +574,338 @@ section.visible {
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- CODA                                                                   -->
+<!-- VI. DEVIL'S STAIRCASE                                                  -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="phi-spacer-lg"></div>
-<section id="coda" style="text-align:center; padding:4em 0;">
-  <p style="color:var(--m-text-muted,#8b949e); font-style:italic; font-size:var(--fs-sm);">
-    One parameter. Four primitives. Nineteen addresses.<br>
-    The rest is topology.
+<section id="s6">
+  <span class="section-num">VI</span>
+  <h2 class="section-title">The staircase</h2>
+  <div class="equation-block">
+    $$W(\Omega) = \lim_{n\to\infty}\frac{\theta_n}{n}$$
+  </div>
+  <div class="diagram-center" style="padding:1em 0;">
+    <canvas id="staircase" style="width:100%; max-width:520px; height:auto;"></canvas>
+    <div class="diagram-caption">devil&rsquo;s staircase &mdash; $W(\Omega)$ at $K = 1$</div>
+  </div>
+  <p>
+    The winding number $W$ as a function of driving frequency $\Omega$ is a <strong>devil&rsquo;s staircase</strong>: a continuous, monotone function that is locally flat on every rational plateau and yet climbs from 0 to 1. The flat steps are mode-locked regions &mdash; Arnold tongues seen from the side. At $K = 1$ the steps touch and the staircase becomes a singular function: all rise, no slope. Every constant in the table above lives on one of these steps.
   </p>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- VII. Z × K — THE SOURCE                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s7">
+  <span class="section-num">VII</span>
+  <h2 class="section-title">&Zopf; &times; K</h2>
+  <div class="diagram-center" style="padding:1em 0;">
+    <canvas id="zk-loop" style="width:100%; max-width:520px; height:auto;"></canvas>
+    <div class="diagram-caption">everything falls out of $\mathbb{Z}$ and $K$</div>
+  </div>
+  <p>
+    The integers give the addresses. The coupling gives the physics. Together they generate the four primitives &mdash; parabola, fixed point, mediant, integers &mdash; and from those, every constant in the standard model. The loop above traces this: $\mathbb{Z}$ and $K$ on the left, the four primitives branching outward, the 19 parameters orbiting as their consequences. There is nothing else.
+  </p>
+</section>
+
+<div class="phi-spacer-lg"></div>
+
 </main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- DEVIL'S STAIRCASE CANVAS                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+"use strict";
+
+var canvas = document.getElementById("staircase");
+if (!canvas) return;
+var ctx = canvas.getContext("2d");
+
+var K = 1.0;
+var STEPS = 600;
+var pad = 36;
+
+function windingNumber(omega, k, iters, transient) {
+  var theta = 0;
+  for (var i = 0; i < transient; i++) {
+    theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+  }
+  var theta0 = theta;
+  for (var i = 0; i < iters; i++) {
+    theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+  }
+  return (theta - theta0) / iters;
+}
+
+function isLocked(w, tol) {
+  for (var q = 1; q <= 12; q++) {
+    var p = Math.round(w * q);
+    if (Math.abs(w - p / q) < tol) return { p: p, q: q };
+  }
+  return null;
+}
+
+// Pre-compute staircase data
+var staircaseData = [];
+for (var i = 0; i <= STEPS; i++) {
+  var om = i / STEPS;
+  staircaseData.push({ omega: om, w: windingNumber(om, K, 150, 80) });
+}
+
+function resize() {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  var w = Math.min(520, rect.width - 20);
+  canvas.style.width = w + "px";
+  canvas.style.height = (w * 0.65) + "px";
+  canvas.width = w * dpr;
+  canvas.height = (w * 0.65) * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawStaircase(w, w * 0.65);
+}
+
+function drawStaircase(W, H) {
+  var plotW = W - pad * 2;
+  var plotH = H - pad * 2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Axes
+  ctx.strokeStyle = "rgba(124, 46, 135, 0.2)";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH); ctx.lineTo(pad + plotW, pad + plotH);
+  ctx.stroke();
+
+  // Diagonal reference (W = Omega)
+  ctx.strokeStyle = "rgba(200,200,200,0.08)";
+  ctx.beginPath();
+  ctx.moveTo(pad, pad + plotH);
+  ctx.lineTo(pad + plotW, pad);
+  ctx.stroke();
+
+  // Rational grid lines
+  var rats = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
+  ctx.strokeStyle = "rgba(124, 46, 135, 0.06)";
+  ctx.lineWidth = 0.5;
+  for (var r = 0; r < rats.length; r++) {
+    var val = rats[r][0] / rats[r][1];
+    var y = pad + plotH * (1 - val);
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(pad + plotW, y); ctx.stroke();
+  }
+
+  // Staircase curve
+  ctx.beginPath();
+  for (var i = 0; i <= STEPS; i++) {
+    var d = staircaseData[i];
+    var x = pad + d.omega * plotW;
+    var y = pad + plotH * (1 - d.w);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = "var(--purple)";
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+
+  // Highlight locked plateaus
+  for (var i = 0; i <= STEPS; i++) {
+    var d = staircaseData[i];
+    var lock = isLocked(d.w, 0.003);
+    if (lock && lock.q <= 6) {
+      var x = pad + d.omega * plotW;
+      var y = pad + plotH * (1 - d.w);
+      ctx.fillStyle = "rgba(124, 46, 135, 0.25)";
+      ctx.fillRect(x - 0.5, y - 0.5, 1.5, 1.5);
+    }
+  }
+
+  // Labels
+  ctx.fillStyle = "rgba(200,200,200,0.35)";
+  ctx.font = "10px -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("\u03a9", pad + plotW / 2, pad + plotH + 16);
+  ctx.textAlign = "right";
+  ctx.fillText("W", pad - 6, pad + plotH / 2);
+  ctx.fillText("1", pad - 4, pad + 4);
+  ctx.fillText("0", pad - 4, pad + plotH + 4);
+
+  // Mark key rationals on Y axis
+  ctx.fillStyle = "rgba(124, 46, 135, 0.4)";
+  ctx.font = "9px 'SF Mono', monospace";
+  ctx.textAlign = "right";
+  var labels = [[1,2,"1/2"],[1,3,"1/3"],[2,3,"2/3"]];
+  for (var l = 0; l < labels.length; l++) {
+    var val = labels[l][0] / labels[l][1];
+    ctx.fillText(labels[l][2], pad - 4, pad + plotH * (1 - val) + 3);
+  }
+}
+
+window.addEventListener("resize", resize);
+resize();
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Z × K LOOP CANVAS                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+"use strict";
+
+var canvas = document.getElementById("zk-loop");
+if (!canvas) return;
+var ctx = canvas.getContext("2d");
+var startTime = performance.now();
+
+var PURPLE = "#7C2E87";
+
+// The 4 primitives and the 19 parameters
+var PRIMITIVES = ["parabola", "fixed pt", "mediant", "integers"];
+var PARAMS = [
+  { label: "g\u2081", prim: 0 }, { label: "g\u2082", prim: 0 }, { label: "g\u2083", prim: 0 },
+  { label: "m\u1d64", prim: 1 }, { label: "m\u1d9c", prim: 1 }, { label: "m\u209c", prim: 1 },
+  { label: "m\u1d48", prim: 1 }, { label: "m\u209b", prim: 1 }, { label: "m\u1d47", prim: 1 },
+  { label: "m\u2091", prim: 1 }, { label: "m\u03bc", prim: 1 }, { label: "m\u03c4", prim: 1 },
+  { label: "\u03b8\u2081\u2082", prim: 2 }, { label: "\u03b8\u2081\u2083", prim: 2 }, { label: "\u03b8\u2082\u2083", prim: 2 },
+  { label: "\u03b4CP", prim: 3 },
+  { label: "v", prim: 1 },
+  { label: "\u03bbH", prim: 0 },
+  { label: "\u03b8QCD", prim: 3 }
+];
+
+function resize() {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  var w = Math.min(520, rect.width - 20);
+  canvas.style.width = w + "px";
+  canvas.style.height = w + "px";
+  canvas.width = w * dpr;
+  canvas.height = w * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function draw(timestamp) {
+  var dt = (timestamp - startTime) / 1000;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  var W = Math.min(520, rect.width - 20);
+  var H = W;
+  var cx = W / 2;
+  var cy = H / 2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Central orbit: Z and K revolve around each other
+  var coreR = W * 0.06;
+  var coreAngle = dt * 0.4;
+  var zx = cx + Math.cos(coreAngle) * coreR;
+  var zy = cy + Math.sin(coreAngle) * coreR;
+  var kx = cx + Math.cos(coreAngle + Math.PI) * coreR;
+  var ky = cy + Math.sin(coreAngle + Math.PI) * coreR;
+
+  // Connection between Z and K
+  ctx.beginPath();
+  ctx.moveTo(zx, zy); ctx.lineTo(kx, ky);
+  ctx.strokeStyle = "rgba(124, 46, 135, 0.3)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Z node
+  ctx.beginPath();
+  ctx.arc(zx, zy, W * 0.03, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(124, 46, 135, 0.5)";
+  ctx.fill();
+  ctx.fillStyle = "#e6edf3";
+  ctx.font = "bold " + Math.round(W * 0.025) + "px -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("\u2124", zx, zy);
+
+  // K node
+  ctx.beginPath();
+  ctx.arc(kx, ky, W * 0.03, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(124, 46, 135, 0.5)";
+  ctx.fill();
+  ctx.fillStyle = "#e6edf3";
+  ctx.fillText("K", kx, ky);
+
+  // Four primitive nodes in intermediate ring
+  var primR = W * 0.2;
+  var primSize = W * 0.022;
+  for (var p = 0; p < 4; p++) {
+    var angle = (p / 4) * Math.PI * 2 - Math.PI / 2 + dt * 0.1;
+    var px = cx + Math.cos(angle) * primR;
+    var py = cy + Math.sin(angle) * primR;
+
+    // Lines from Z and K to each primitive
+    ctx.beginPath();
+    ctx.moveTo(zx, zy); ctx.lineTo(px, py);
+    ctx.strokeStyle = "rgba(124, 46, 135, 0.12)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(kx, ky); ctx.lineTo(px, py);
+    ctx.stroke();
+
+    // Primitive node
+    ctx.beginPath();
+    ctx.arc(px, py, primSize, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(124, 46, 135, 0.35)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(124, 46, 135, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(200, 200, 200, 0.6)";
+    ctx.font = Math.round(W * 0.018) + "px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(PRIMITIVES[p], px, py + primSize + W * 0.025);
+  }
+
+  // Outer ring: 19 parameters orbit, each connected to its primitive
+  var outerR = W * 0.38;
+  var paramSize = W * 0.014;
+  for (var i = 0; i < PARAMS.length; i++) {
+    var param = PARAMS[i];
+    var angle = (i / PARAMS.length) * Math.PI * 2 - Math.PI / 2 + dt * 0.05;
+    var ox = cx + Math.cos(angle) * outerR;
+    var oy = cy + Math.sin(angle) * outerR;
+
+    // Line to parent primitive
+    var primAngle = (param.prim / 4) * Math.PI * 2 - Math.PI / 2 + dt * 0.1;
+    var ppx = cx + Math.cos(primAngle) * primR;
+    var ppy = cy + Math.sin(primAngle) * primR;
+
+    ctx.beginPath();
+    ctx.moveTo(ppx, ppy); ctx.lineTo(ox, oy);
+    ctx.strokeStyle = "rgba(124, 46, 135, 0.08)";
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
+
+    // Parameter node
+    var pulse = 0.6 + 0.4 * Math.sin(dt * 0.8 + i * 0.33);
+    ctx.beginPath();
+    ctx.arc(ox, oy, paramSize, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(124, 46, 135, " + (0.2 + 0.2 * pulse) + ")";
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(200, 200, 200, " + (0.3 + 0.2 * pulse) + ")";
+    ctx.font = Math.round(W * 0.016) + "px 'SF Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(param.label, ox, oy + paramSize + W * 0.018);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener("resize", resize);
+resize();
+requestAnimationFrame(draw);
+})();
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <!-- BACKGROUND CANVAS: Four purple traversals of a 12-node circle          -->
