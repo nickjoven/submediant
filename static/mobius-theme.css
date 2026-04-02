@@ -189,8 +189,8 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
   /* Stack grids vertically */
   [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
 
-  /* Reduce padding on standalone pages */
-  main { padding-left: 16px !important; padding-right: 16px !important; }
+  /* Reduce padding on standalone pages — fill more horizontal space */
+  main { padding-left: 12px !important; padding-right: 12px !important; }
 
   /* Format accordion: less indent on mobile */
   .fmt-level-1 { padding-left: 0.5rem; }

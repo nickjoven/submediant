@@ -16,7 +16,7 @@ html { overflow-x: clip; }
 
 :root {
   --phi: 1.618;
-  --fs-base: clamp(16px, 1.2vw + 8px, 22px);
+  --fs-base: clamp(18px, 1.2vw + 8px, 22px);
   --fs-sm: calc(var(--fs-base) / var(--phi));
   --fs-xs: calc(var(--fs-sm) / var(--phi));
   --fs-lg: calc(var(--fs-base) * var(--phi));
@@ -129,10 +129,9 @@ mjx-container[display="true"], .MathJax[display="true"] {
 /* responsive padding for mobile */
 @media (max-width: 600px) {
   main {
-    padding: 0 16px 120px !important;
+    padding: 0 12px 120px !important;
   }
   .equation-block {
-    font-size: var(--fs-base) !important;
     padding: 0.5em 0;
   }
   .section-title {
