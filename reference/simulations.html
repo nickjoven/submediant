@@ -408,6 +408,65 @@ section.visible {
   </p>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- III. ARNOLD TONGUES / DEVIL'S STAIRCASE -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phi-spacer-lg"></div>
+<section id="s3">
+  <span class="section-num">III</span>
+  <h2 class="section-title">Arnold Tongues</h2>
+  <p>
+    A single oscillator driven at frequency ratio $\Omega$. As driving
+    amplitude $K$ grows, the oscillator locks into rational ratios &mdash;
+    the <strong>Arnold tongues</strong>. Between the tongues: chaos. The
+    winding number $W(\Omega)$ at fixed $K$ is the <strong>devil's staircase</strong>
+    &mdash; flat at every rational, with a Cantor set of irrationals between.
+  </p>
+  <div class="equation-block">
+    $$\theta_{n+1} = \theta_n + \Omega - \frac{K}{2\pi}\sin(2\pi\,\theta_n)$$
+  </div>
+
+  <div class="viz-side-by-side">
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="arnold-canvas"></canvas>
+      <div class="viz-label">Arnold tongues &mdash; $(\Omega, K)$ plane</div>
+    </div>
+    <div class="viz-container" style="height: 400px;">
+      <canvas id="staircase-canvas"></canvas>
+      <div class="viz-label">Devil's staircase &mdash; $W(\Omega)$ at current $K$</div>
+    </div>
+  </div>
+
+  <div class="sim-controls">
+    <div class="sim-control">
+      <label>Driving amplitude K</label>
+      <div class="row">
+        <input type="range" id="arnold-k" min="0" max="100" value="50" step="1">
+        <span class="val" id="arnold-k-val">0.50</span>
+      </div>
+    </div>
+    <div class="sim-control">
+      <label>Driving period &Omega;</label>
+      <div class="row">
+        <input type="range" id="arnold-omega" min="0" max="1000" value="618" step="1">
+        <span class="val" id="arnold-omega-val">0.618</span>
+      </div>
+    </div>
+    <div class="sim-control" style="justify-content:flex-end;">
+      <button class="sim-btn" id="arnold-recompute">Recompute</button>
+    </div>
+  </div>
+
+  <p>
+    The tongues are indexed by the <strong>Stern-Brocot tree</strong>. The widest
+    is $1/1$, then $1/2$, then $1/3$ and $2/3$. The golden ratio
+    $\Omega = 1/\varphi$ is the <strong>last to lock</strong> &mdash; it sits at the
+    narrowest gap, the most irrational point in the staircase. Drag
+    <strong>K</strong> to watch tongues widen; drag <strong>&Omega;</strong> to trace
+    the staircase.
+  </p>
+</section>
+
 <div class="phi-spacer-lg"></div>
 <div id="sim-sections-placeholder"></div>
 
@@ -901,6 +960,280 @@ function rk4(state, derivs, dt) {
   resizeCircle();
   resizeR();
   requestAnimationFrame(animate);
+})();
+
+// ═════════════════════════════════════════════════════════════════════════
+// III. ARNOLD TONGUES / DEVIL'S STAIRCASE
+// ═════════════════════════════════════════════════════════════════════════
+(function() {
+  var arnoldCanvas = document.getElementById("arnold-canvas");
+  var stairCanvas = document.getElementById("staircase-canvas");
+  var arnoldContainer = arnoldCanvas.parentElement;
+  var stairContainer = stairCanvas.parentElement;
+  var actx, sctx;
+  var aW, aH, sW, sH;
+
+  var Kval = 0.50;
+  var omegaVal = 0.618;
+
+  // Compute winding number for circle map
+  function windingNumber(omega, k, iters, transient) {
+    var theta = 0;
+    for (var i = 0; i < transient; i++) {
+      theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+    }
+    var theta0 = theta;
+    for (var i = 0; i < iters; i++) {
+      theta = theta + omega - (k / (2 * Math.PI)) * Math.sin(2 * Math.PI * theta);
+    }
+    return (theta - theta0) / iters;
+  }
+
+  // Pre-compute Arnold tongue image
+  var tongueImageData = null;
+  var TONGUE_RES_X = 300; // omega resolution
+  var TONGUE_RES_Y = 200; // K resolution
+
+  function computeTongueImage() {
+    var data = new Array(TONGUE_RES_X * TONGUE_RES_Y);
+    for (var ky = 0; ky < TONGUE_RES_Y; ky++) {
+      var k = ky / (TONGUE_RES_Y - 1); // K from 0 to 1
+      for (var ox = 0; ox < TONGUE_RES_X; ox++) {
+        var om = ox / (TONGUE_RES_X - 1); // omega from 0 to 1
+        var w = windingNumber(om, k, 80, 40);
+        data[ky * TONGUE_RES_X + ox] = w;
+      }
+    }
+    tongueImageData = data;
+  }
+
+  // Identify if winding number is "locked" (close to a rational p/q with small q)
+  function isLocked(w, tol) {
+    // Check rationals with denominator up to 12
+    for (var q = 1; q <= 12; q++) {
+      var p = Math.round(w * q);
+      if (Math.abs(w - p / q) < tol) return p / q;
+    }
+    return null;
+  }
+
+  // Color by winding number
+  function windingColor(w) {
+    var locked = isLocked(w, 0.005);
+    if (locked !== null) {
+      // Color by the rational — hue from value
+      var hue = (locked * 360 + 200) % 360;
+      return "hsl(" + hue + ", 50%, 35%)";
+    }
+    return "rgba(0,0,0,0.8)"; // chaotic region
+  }
+
+  function resizeArnold() {
+    aW = arnoldContainer.clientWidth;
+    aH = arnoldContainer.clientHeight;
+    actx = setupCanvas(arnoldCanvas, aW, aH);
+  }
+  function resizeStair() {
+    sW = stairContainer.clientWidth;
+    sH = stairContainer.clientHeight;
+    sctx = setupCanvas(stairCanvas, sW, sH);
+  }
+
+  function drawTongues() {
+    actx.clearRect(0, 0, aW, aH);
+    var pad = 30;
+    var plotW = aW - 2 * pad;
+    var plotH = aH - 2 * pad;
+
+    if (!tongueImageData) return;
+
+    // Draw the tongue map
+    for (var ky = 0; ky < TONGUE_RES_Y; ky++) {
+      for (var ox = 0; ox < TONGUE_RES_X; ox++) {
+        var w = tongueImageData[ky * TONGUE_RES_X + ox];
+        actx.fillStyle = windingColor(w);
+        var x = pad + (ox / TONGUE_RES_X) * plotW;
+        var y = pad + plotH - (ky / TONGUE_RES_Y) * plotH;
+        var dw = plotW / TONGUE_RES_X + 1;
+        var dh = plotH / TONGUE_RES_Y + 1;
+        actx.fillRect(x, y, dw, dh);
+      }
+    }
+
+    // Axes
+    actx.strokeStyle = "rgba(200,200,200,0.3)";
+    actx.lineWidth = 1;
+    actx.beginPath();
+    actx.moveTo(pad, pad);
+    actx.lineTo(pad, pad + plotH);
+    actx.lineTo(pad + plotW, pad + plotH);
+    actx.stroke();
+
+    actx.fillStyle = "rgba(200,200,200,0.5)";
+    actx.font = "10px 'SF Mono', monospace";
+    actx.textAlign = "center";
+    actx.fillText("\u03a9", pad + plotW / 2, pad + plotH + 18);
+    actx.textAlign = "right";
+    actx.fillText("K", pad - 8, pad + plotH / 2);
+    actx.fillText("1", pad - 4, pad + 4);
+    actx.fillText("0", pad - 4, pad + plotH + 4);
+    actx.textAlign = "center";
+    actx.fillText("0", pad, pad + plotH + 14);
+    actx.fillText("1", pad + plotW, pad + plotH + 14);
+
+    // Crosshair at current (omega, K)
+    var curX = pad + omegaVal * plotW;
+    var curY = pad + plotH - Kval * plotH;
+    actx.strokeStyle = "rgba(252,202,40,0.6)";
+    actx.lineWidth = 1;
+    actx.setLineDash([3,3]);
+    actx.beginPath();
+    actx.moveTo(curX, pad); actx.lineTo(curX, pad + plotH);
+    actx.stroke();
+    actx.beginPath();
+    actx.moveTo(pad, curY); actx.lineTo(pad + plotW, curY);
+    actx.stroke();
+    actx.setLineDash([]);
+
+    // Dot
+    actx.fillStyle = "#FCCA28";
+    actx.beginPath();
+    actx.arc(curX, curY, 4, 0, Math.PI * 2);
+    actx.fill();
+
+    // Label key rationals along bottom
+    var rats = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
+    actx.fillStyle = "rgba(200,200,200,0.3)";
+    actx.font = "8px 'SF Mono', monospace";
+    actx.textAlign = "center";
+    for (var i = 0; i < rats.length; i++) {
+      var r = rats[i][0] / rats[i][1];
+      actx.fillText(rats[i][0] + "/" + rats[i][1], pad + r * plotW, pad + plotH + 24);
+    }
+  }
+
+  function drawStaircase() {
+    sctx.clearRect(0, 0, sW, sH);
+    var pad = 30;
+    var plotW = sW - 2 * pad;
+    var plotH = sH - 2 * pad;
+
+    // Axes
+    sctx.strokeStyle = "rgba(200,200,200,0.3)";
+    sctx.lineWidth = 1;
+    sctx.beginPath();
+    sctx.moveTo(pad, pad);
+    sctx.lineTo(pad, pad + plotH);
+    sctx.lineTo(pad + plotW, pad + plotH);
+    sctx.stroke();
+
+    sctx.fillStyle = "rgba(200,200,200,0.5)";
+    sctx.font = "10px 'SF Mono', monospace";
+    sctx.textAlign = "center";
+    sctx.fillText("\u03a9", pad + plotW / 2, pad + plotH + 18);
+    sctx.textAlign = "right";
+    sctx.fillText("W", pad - 8, pad + plotH / 2);
+    sctx.fillText("1", pad - 4, pad + 4);
+    sctx.fillText("0", pad - 4, pad + plotH + 4);
+
+    // Diagonal reference (W = Omega, no locking)
+    sctx.strokeStyle = "rgba(200,200,200,0.1)";
+    sctx.beginPath();
+    sctx.moveTo(pad, pad + plotH);
+    sctx.lineTo(pad + plotW, pad);
+    sctx.stroke();
+
+    // Compute staircase at current K
+    var STAIR_N = 500;
+    sctx.beginPath();
+    for (var i = 0; i <= STAIR_N; i++) {
+      var om = i / STAIR_N;
+      var w = windingNumber(om, Kval, 120, 60);
+      var x = pad + om * plotW;
+      var y = pad + plotH * (1 - w);
+      if (i === 0) sctx.moveTo(x, y);
+      else sctx.lineTo(x, y);
+    }
+    sctx.strokeStyle = "#DE3373";
+    sctx.lineWidth = 1.5;
+    sctx.stroke();
+
+    // Mark current omega
+    var w0 = windingNumber(omegaVal, Kval, 120, 60);
+    var curX = pad + omegaVal * plotW;
+    var curY = pad + plotH * (1 - w0);
+    sctx.fillStyle = "#FCCA28";
+    sctx.beginPath();
+    sctx.arc(curX, curY, 5, 0, Math.PI * 2);
+    sctx.fill();
+
+    // Label
+    sctx.fillStyle = "rgba(252,202,40,0.8)";
+    sctx.font = "11px 'SF Mono', monospace";
+    sctx.textAlign = "left";
+    var locked = isLocked(w0, 0.01);
+    var label = "W = " + w0.toFixed(4);
+    if (locked !== null) {
+      // Find p/q
+      for (var q = 1; q <= 12; q++) {
+        var p = Math.round(w0 * q);
+        if (Math.abs(w0 - p / q) < 0.01) { label = "W = " + p + "/" + q + " (locked)"; break; }
+      }
+    }
+    sctx.fillText(label, curX + 8, curY - 8);
+
+    // Mark 1/phi
+    var phiInv = (Math.sqrt(5) - 1) / 2;
+    var phiX = pad + phiInv * plotW;
+    sctx.strokeStyle = "rgba(252,202,40,0.2)";
+    sctx.setLineDash([2,4]);
+    sctx.beginPath();
+    sctx.moveTo(phiX, pad); sctx.lineTo(phiX, pad + plotH);
+    sctx.stroke();
+    sctx.setLineDash([]);
+    sctx.fillStyle = "rgba(252,202,40,0.3)";
+    sctx.font = "9px 'SF Mono', monospace";
+    sctx.textAlign = "center";
+    sctx.fillText("1/\u03c6", phiX, pad - 4);
+  }
+
+  // Controls
+  var kSlider = document.getElementById("arnold-k");
+  var omegaSlider = document.getElementById("arnold-omega");
+  var kValEl = document.getElementById("arnold-k-val");
+  var omegaValEl = document.getElementById("arnold-omega-val");
+  var recomputeBtn = document.getElementById("arnold-recompute");
+
+  function redraw() {
+    drawTongues();
+    drawStaircase();
+  }
+
+  kSlider.addEventListener("input", function() {
+    Kval = +this.value / 100;
+    kValEl.textContent = Kval.toFixed(2);
+    drawStaircase();
+    drawTongues(); // just crosshair update + image
+  });
+
+  omegaSlider.addEventListener("input", function() {
+    omegaVal = +this.value / 1000;
+    omegaValEl.textContent = omegaVal.toFixed(3);
+    drawStaircase();
+    drawTongues();
+  });
+
+  recomputeBtn.addEventListener("click", function() {
+    computeTongueImage();
+    redraw();
+  });
+
+  // Init
+  window.addEventListener("resize", function() { resizeArnold(); resizeStair(); redraw(); });
+  resizeArnold();
+  resizeStair();
+  computeTongueImage();
+  redraw();
 })();
 
 // ── Background canvas ────────────────────────────────────────────────────
