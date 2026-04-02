@@ -129,11 +129,31 @@ table tbody tr:nth-child(even) th {
 /* ── Mobile containment: prevent horizontal scroll ── */
 html { overflow-x: clip; }
 main { overflow-wrap: break-word; }
-.MathJax, mjx-container { max-width: 100% !important; overflow-x: auto !important; }
-/* Display math: scrollable for wide equations */
-.MathJax[display="true"], mjx-container[display="true"] { max-width: 100% !important; overflow-x: auto !important; }
-/* Inline math: no scrollbars */
+/* MathJax: prefer fitting without overflow; hide scrollbars */
+.MathJax, mjx-container { max-width: 100% !important; overflow: hidden !important; }
+.MathJax[display="true"], mjx-container[display="true"] { max-width: 100% !important; overflow: hidden !important; }
 .MathJax:not([display="true"]), mjx-container:not([display="true"]) { overflow: visible !important; }
+
+/* ── Copy-on-hover for overflowing content ── */
+.copy-overflow-wrap { position: relative; }
+.copy-overflow-wrap > .copy-overflow-btn {
+  display: none;
+  position: absolute;
+  top: 2px; right: 2px;
+  background: var(--m-surface, #161b22);
+  border: 1px solid var(--m-border, #30363d);
+  color: var(--m-text-muted, #8b949e);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  z-index: 5;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.copy-overflow-wrap:hover > .copy-overflow-btn { display: block; }
+.copy-overflow-btn:hover { color: var(--m-text, #e6edf3); border-color: var(--m-text-muted, #8b949e); }
+.copy-overflow-btn.copied { color: var(--m-accent3, #08A953); border-color: var(--m-accent3, #08A953); }
 
 /* ── Responsive: mobile / vertical readers ── */
 @media (max-width: 768px) {

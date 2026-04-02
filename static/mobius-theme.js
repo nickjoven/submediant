@@ -387,12 +387,103 @@ function initCurvedSpace() {
   }, { passive: true });
 }
 
+// ── Copy-on-hover for overflowing math/equation blocks ──────────────────
+function initCopyOverflow() {
+  // Selectors for elements that may overflow with fraction content
+  var selectors = [
+    'mjx-container[display="true"]',
+    '.MathJax[display="true"]',
+    '.equation-block',
+    '.row .value',
+    '.pred-grid > span'
+  ];
+
+  function isOverflowing(el) {
+    return el.scrollWidth > el.clientWidth + 1;
+  }
+
+  function getTextContent(el) {
+    // For MathJax: try to get the original TeX source
+    var tex = el.querySelector('script[type="math/tex"], script[type="math/tex; mode=display"]');
+    if (tex) return tex.textContent.trim();
+    // mjx-container stores source in an attribute or assistive MathML
+    if (el.tagName && el.tagName.toLowerCase() === 'mjx-container') {
+      var assistive = el.querySelector('mjx-assistive-mml math');
+      if (assistive) return assistive.textContent.trim();
+    }
+    return el.textContent.trim();
+  }
+
+  function addCopyBtn(el) {
+    if (el.querySelector('.copy-overflow-btn')) return;
+    // Wrap if not already wrapped
+    if (!el.classList.contains('copy-overflow-wrap')) {
+      // For inline elements inside a flex/grid, wrap carefully
+      var parent = el.parentNode;
+      if (parent && getComputedStyle(el).display !== 'contents') {
+        el.classList.add('copy-overflow-wrap');
+      }
+    }
+    var btn = document.createElement('button');
+    btn.className = 'copy-overflow-btn';
+    btn.textContent = 'copy';
+    btn.setAttribute('aria-label', 'Copy to clipboard');
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var text = getTextContent(el);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = 'copied';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+        });
+      } else {
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'copied';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+      }
+    });
+    el.appendChild(btn);
+  }
+
+  function scan() {
+    var selector = selectors.join(', ');
+    var els = document.querySelectorAll(selector);
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (isOverflowing(el)) {
+        addCopyBtn(el);
+      } else {
+        // Remove button if no longer overflowing
+        var existing = el.querySelector('.copy-overflow-btn');
+        if (existing) existing.remove();
+      }
+    }
+  }
+
+  // Scan after layout settles (MathJax renders async)
+  setTimeout(scan, 1500);
+  setTimeout(scan, 4000);
+  window.addEventListener('resize', function() { setTimeout(scan, 200); });
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────
 function init() {
   createMoonToggle();  // button must exist before applyPalette sets its icon
   applyPalette();
   initFormatAccordion();
   initCurvedSpace();
+  initCopyOverflow();
 }
 
 if (document.readyState === "loading") {
