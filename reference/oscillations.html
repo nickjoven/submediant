@@ -65,7 +65,6 @@ main {
   font-size: var(--fs-xl);
   font-weight: 200;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--m-text, #e6edf3);
   margin-bottom: 1em;
   line-height: 1.2;
@@ -111,9 +110,7 @@ canvas.plot {
   border: 1px solid var(--m-border, #30363d);
   border-radius: 2px;
   padding: 1.618em;
-  overflow-x: auto;
-  max-height: 80vh;
-  overflow-y: auto;
+  overflow: hidden;
   white-space: pre;
 }
 
@@ -159,7 +156,7 @@ canvas.plot {
   background: color-mix(in srgb, var(--m-surface, #161b22) 70%, transparent);
   border: 1px solid var(--m-border, #30363d);
   border-radius: 2px;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 .sb-path .left { color: #FCCA28; }
@@ -256,7 +253,7 @@ a:hover { text-decoration: underline; }
   <div class="phi-spacer-sm"></div>
 
   <!-- Horizontal recursion chain -->
-  <div id="seq-chain" style="position:relative; overflow-x:auto; padding:2rem 0;">
+  <div id="seq-chain" style="position:relative; overflow:hidden; padding:2rem 0;">
     <canvas id="seq-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
     <div id="seq-nodes" style="position:relative; z-index:1; display:flex; align-items:center; gap:0; min-width:max-content; padding:0 1rem;"></div>
   </div>
