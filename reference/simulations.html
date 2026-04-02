@@ -137,15 +137,14 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 .viz-label {
   position: absolute;
   bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 12px;
+  right: 12px;
   font-size: var(--fs-xs);
   color: var(--m-text-muted, #8b949e);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   pointer-events: none;
   text-align: center;
-  white-space: nowrap;
 }
 .viz-side-by-side {
   display: flex;
@@ -355,7 +354,10 @@ section.visible {
     incoherence, $r = 1$ is perfect synchrony.
   </p>
   <div class="equation-block">
-    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i), \qquad r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i)$$
+  </div>
+  <div class="equation-block">
+    $$r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
   </div>
 
   <div class="viz-side-by-side">
