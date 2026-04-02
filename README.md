@@ -1,8 +1,6 @@
 # [submediant](https://nickjoven.github.io/submediant-site/intro.html)
 - https://nickjoven.github.io/submediant-site/intro.html
 
-One polynomial. Four primitives. Two PDEs.
-
 This site presents the derivation chain from `x² - x - 1 = 0` to
 the Einstein field equations and the Schrödinger equation, starting
 from the algebra and branching outward to the evidence.
