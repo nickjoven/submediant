@@ -149,6 +149,42 @@ a:hover { text-decoration: underline; }
   .decomp-table th, .decomp-table td { padding: 0.4em 0.5em; }
 }
 
+/* inline diagrams */
+.diagram-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+  margin: 2em 0;
+  flex-wrap: wrap;
+}
+.diagram-row svg {
+  flex-shrink: 0;
+}
+.diagram-caption {
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
+  text-align: center;
+  margin-top: 0.5em;
+  letter-spacing: 0.06em;
+}
+.diagram-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2em 0;
+}
+
+/* SVG animation keyframes */
+@keyframes ripple-expand {
+  0% { r: 4; opacity: 0.5; }
+  100% { r: 60; opacity: 0; }
+}
+@keyframes pulse-node {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
 /* fade-in on scroll */
 section {
   opacity: 0;
@@ -189,6 +225,62 @@ section.visible {
   <div class="equation-block">
     $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_j \sin(\theta_j - \theta_i)$$
   </div>
+  <!-- Diagram: four phase circles — incoherent → locked -->
+  <div class="diagram-row">
+    <div style="text-align:center;">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+        <!-- scattered phases -->
+        <circle cx="60" cy="28" r="2.5" fill="var(--purple)" opacity="0.6"/>
+        <circle cx="18" cy="52" r="2.5" fill="var(--purple)" opacity="0.6"/>
+        <circle cx="50" cy="58" r="2.5" fill="var(--purple)" opacity="0.6"/>
+        <circle cx="14" cy="26" r="2.5" fill="var(--purple)" opacity="0.6"/>
+        <circle cx="42" cy="12" r="2.5" fill="var(--purple)" opacity="0.6"/>
+        <circle cx="28" cy="62" r="2.5" fill="var(--purple)" opacity="0.6"/>
+      </svg>
+      <div class="diagram-caption">K ≪ 1</div>
+    </div>
+    <div style="text-align:center;">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+        <!-- partial locking: some cluster, some drift -->
+        <circle cx="36" cy="10" r="2.5" fill="var(--purple)" opacity="0.7"/>
+        <circle cx="40" cy="11" r="2.5" fill="var(--purple)" opacity="0.7"/>
+        <circle cx="32" cy="11" r="2.5" fill="var(--purple)" opacity="0.7"/>
+        <circle cx="18" cy="52" r="2.5" fill="var(--purple)" opacity="0.4"/>
+        <circle cx="56" cy="46" r="2.5" fill="var(--purple)" opacity="0.4"/>
+        <circle cx="52" cy="54" r="2.5" fill="var(--purple)" opacity="0.4"/>
+      </svg>
+      <div class="diagram-caption">K &lt; 1</div>
+    </div>
+    <div style="text-align:center;">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+        <!-- critical: most locked, one trailing -->
+        <circle cx="36" cy="10" r="3" fill="var(--purple)" opacity="0.85"/>
+        <circle cx="40" cy="10.5" r="2.5" fill="var(--purple)" opacity="0.8"/>
+        <circle cx="32" cy="10.5" r="2.5" fill="var(--purple)" opacity="0.8"/>
+        <circle cx="44" cy="12" r="2.5" fill="var(--purple)" opacity="0.7"/>
+        <circle cx="28" cy="12" r="2.5" fill="var(--purple)" opacity="0.7"/>
+        <circle cx="22" cy="50" r="2.5" fill="var(--purple)" opacity="0.35"/>
+      </svg>
+      <div class="diagram-caption">K = 1</div>
+    </div>
+    <div style="text-align:center;">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="26" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+        <!-- full lock: all at one point -->
+        <circle cx="36" cy="10" r="3" fill="var(--purple)" opacity="0.9"/>
+        <circle cx="38" cy="10.2" r="2.5" fill="var(--purple)" opacity="0.85"/>
+        <circle cx="34" cy="10.2" r="2.5" fill="var(--purple)" opacity="0.85"/>
+        <circle cx="40" cy="10.8" r="2.5" fill="var(--purple)" opacity="0.8"/>
+        <circle cx="32" cy="10.8" r="2.5" fill="var(--purple)" opacity="0.8"/>
+        <circle cx="36" cy="10.8" r="2.5" fill="var(--purple)" opacity="0.85"/>
+      </svg>
+      <div class="diagram-caption">K &gt; 1</div>
+    </div>
+  </div>
+
   <p>
     The coupling strength. The only free parameter in the framework, and it is <strong>not free</strong> &mdash; it is determined self-consistently by the population it generates. $K$ is the dial that selects which physics applies.
   </p>
@@ -213,6 +305,23 @@ section.visible {
   <div class="equation-block">
     $$c = \lim_{\Delta t \to 0} \frac{\Delta(\text{phase information})}{\Delta t}$$
   </div>
+  <!-- Diagram: concentric wavefronts with causal cone -->
+  <div class="diagram-center">
+    <svg width="200" height="120" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- causal cone lines -->
+      <line x1="100" y1="100" x2="30" y2="10" stroke="var(--purple)" stroke-width="0.6" opacity="0.25" stroke-dasharray="3,3"/>
+      <line x1="100" y1="100" x2="170" y2="10" stroke="var(--purple)" stroke-width="0.6" opacity="0.25" stroke-dasharray="3,3"/>
+      <!-- propagating wavefronts -->
+      <ellipse cx="100" cy="90" rx="10" ry="4" stroke="var(--purple)" stroke-width="0.8" opacity="0.5"/>
+      <ellipse cx="100" cy="72" rx="24" ry="8" stroke="var(--purple)" stroke-width="0.7" opacity="0.38"/>
+      <ellipse cx="100" cy="52" rx="40" ry="12" stroke="var(--purple)" stroke-width="0.6" opacity="0.26"/>
+      <ellipse cx="100" cy="30" rx="56" ry="16" stroke="var(--purple)" stroke-width="0.5" opacity="0.15"/>
+      <!-- source node -->
+      <circle cx="100" cy="100" r="3" fill="var(--purple)" opacity="0.7"/>
+    </svg>
+    <div class="diagram-caption">phase information propagating at finite speed</div>
+  </div>
+
   <p>
     The maximum rate at which one oscillator can learn about another&rsquo;s phase. Not a property of light &mdash; a property of the <strong>coupling topology</strong>. The causal bound exists before photons do.
   </p>
@@ -236,6 +345,30 @@ section.visible {
   <div class="equation-block">
     $$\delta x_n = \delta x_0 \cdot (f')^n = \delta x_0 \cdot e^{\,n \ln f'(x^*)}$$
   </div>
+  <!-- Diagram: spiral converging to fixed point -->
+  <div class="diagram-center">
+    <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- spiral path converging inward -->
+      <path d="M 70 20
+               C 110 20, 120 60, 110 80
+               C 100 100, 80 105, 70 95
+               C 55 85, 52 70, 60 62
+               C 65 56, 72 55, 76 60
+               C 80 65, 78 72, 74 74
+               C 71 76, 69 73, 70 71"
+            stroke="var(--purple)" stroke-width="1" opacity="0.5" fill="none"/>
+      <!-- fixed point -->
+      <circle cx="70" cy="70" r="2.5" fill="var(--purple)" opacity="0.8"/>
+      <!-- iterates fading as they approach -->
+      <circle cx="70" cy="20" r="1.8" fill="var(--purple)" opacity="0.3"/>
+      <circle cx="110" cy="80" r="1.5" fill="var(--purple)" opacity="0.35"/>
+      <circle cx="70" cy="95" r="1.3" fill="var(--purple)" opacity="0.4"/>
+      <circle cx="60" cy="62" r="1.2" fill="var(--purple)" opacity="0.5"/>
+      <circle cx="76" cy="60" r="1.1" fill="var(--purple)" opacity="0.6"/>
+    </svg>
+    <div class="diagram-caption">iterates spiraling to x*</div>
+  </div>
+
   <p>
     The third primitive generates it. Near a fixed point $x^* = f(x^*)$, small perturbations evolve as $(f')^n$. The moment you have <strong>iteration + fixed points</strong>, you have $e$. It is not imported &mdash; it is the natural base of the map&rsquo;s linearization. The Floquet multipliers governing mode-lock stability go as $e^{-\lambda}$. Convergence rates, Lyapunov exponents, decay constants &mdash; all expressions of $e$ emerging from the fixed-point primitive.
   </p>
@@ -246,6 +379,27 @@ section.visible {
   <div class="equation-block">
     $$\alpha = \frac{e^2}{4\pi\varepsilon_0 \hbar c} \approx \frac{1}{137}$$
   </div>
+  <!-- Diagram: Arnold tongue wedge -->
+  <div class="diagram-center">
+    <svg width="180" height="120" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- axis -->
+      <line x1="10" y1="110" x2="170" y2="110" stroke="var(--m-text-muted, #8b949e)" stroke-width="0.5" opacity="0.3"/>
+      <line x1="90" y1="110" x2="90" y2="8" stroke="var(--m-text-muted, #8b949e)" stroke-width="0.5" opacity="0.3"/>
+      <!-- tongue shape: triangle narrowing upward from base -->
+      <path d="M 60 110 L 88 15 Q 90 8 92 15 L 120 110 Z"
+            fill="var(--purple)" opacity="0.12"
+            stroke="var(--purple)" stroke-width="0.8" stroke-opacity="0.4"/>
+      <!-- width marker at a specific K -->
+      <line x1="76" y1="70" x2="104" y2="70" stroke="var(--purple)" stroke-width="0.7" opacity="0.5" stroke-dasharray="2,2"/>
+      <!-- label markers -->
+      <text x="90" y="5" text-anchor="middle" fill="var(--m-text-muted, #8b949e)" font-size="8" opacity="0.5">K</text>
+      <text x="175" y="113" text-anchor="end" fill="var(--m-text-muted, #8b949e)" font-size="8" opacity="0.5">&#x03C9;</text>
+      <!-- alpha width annotation -->
+      <text x="108" y="68" fill="var(--purple)" font-size="7" opacity="0.6">&#x03B1;</text>
+    </svg>
+    <div class="diagram-caption">tongue width at the EM address</div>
+  </div>
+
   <p>
     The fine structure constant $\alpha$ is the <strong>Arnold tongue width</strong> at the electromagnetic address in the tree. The elementary charge $e$ is the coupling quantum for the U(1) mode-locking &mdash; the minimum coupling strength that locks two oscillators at the photon frequency ratio. That $\alpha \approx 1/137$ is not a coincidence to be explained; it is a <strong>tree depth</strong>.
   </p>
@@ -261,6 +415,39 @@ section.visible {
   <div class="equation-block">
     $$C(p/q) = \frac{1}{q^2 \sin^2(\pi\, p/q)}$$
   </div>
+  <!-- Diagram: tree of rationals with node size ~ cost -->
+  <div class="diagram-center">
+    <svg width="260" height="130" viewBox="0 0 260 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- edges -->
+      <line x1="130" y1="18" x2="65" y2="55" stroke="var(--purple)" stroke-width="0.6" opacity="0.25"/>
+      <line x1="130" y1="18" x2="195" y2="55" stroke="var(--purple)" stroke-width="0.6" opacity="0.25"/>
+      <line x1="65" y1="55" x2="33" y2="95" stroke="var(--purple)" stroke-width="0.5" opacity="0.2"/>
+      <line x1="65" y1="55" x2="97" y2="95" stroke="var(--purple)" stroke-width="0.5" opacity="0.2"/>
+      <line x1="195" y1="55" x2="163" y2="95" stroke="var(--purple)" stroke-width="0.5" opacity="0.2"/>
+      <line x1="195" y1="55" x2="227" y2="95" stroke="var(--purple)" stroke-width="0.5" opacity="0.2"/>
+      <!-- depth 0: 1/1 — large node, low cost -->
+      <circle cx="130" cy="18" r="6" fill="var(--purple)" opacity="0.6"/>
+      <text x="130" y="21" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="7" font-weight="600">1/1</text>
+      <!-- depth 1: 1/2, 2/1 — medium -->
+      <circle cx="65" cy="55" r="4.5" fill="var(--purple)" opacity="0.45"/>
+      <text x="65" y="57.5" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="6">1/2</text>
+      <circle cx="195" cy="55" r="4.5" fill="var(--purple)" opacity="0.45"/>
+      <text x="195" y="57.5" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="6">2/1</text>
+      <!-- depth 2: 1/3, 2/3, 3/2, 3/1 — small nodes, higher cost -->
+      <circle cx="33" cy="95" r="3" fill="var(--purple)" opacity="0.3"/>
+      <text x="33" y="97" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="5">1/3</text>
+      <circle cx="97" cy="95" r="3.5" fill="var(--purple)" opacity="0.35"/>
+      <text x="97" y="97.5" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="5">2/3</text>
+      <circle cx="163" cy="95" r="3.5" fill="var(--purple)" opacity="0.35"/>
+      <text x="163" y="97.5" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="5">3/2</text>
+      <circle cx="227" cy="95" r="3" fill="var(--purple)" opacity="0.3"/>
+      <text x="227" y="97" text-anchor="middle" fill="var(--m-text, #e6edf3)" font-size="5">3/1</text>
+      <!-- cost annotation -->
+      <text x="155" y="18" fill="var(--m-text-muted, #8b949e)" font-size="7" opacity="0.4">low q — cheap</text>
+      <text x="155" y="115" fill="var(--m-text-muted, #8b949e)" font-size="7" opacity="0.4">high q — costly</text>
+    </svg>
+  </div>
+
   <p>
     Mass is not substance. Mass is <strong>how much coupling budget a frequency ratio consumes</strong>. High-denominator rationals are expensive to lock. A proton is not heavy because it contains stuff &mdash; it is heavy because its internal frequency ratios sit at <strong>costly addresses</strong> in the tree.
   </p>
@@ -279,6 +466,41 @@ section.visible {
   <p>
     The standard model&rsquo;s 19 parameters, decomposed. Each is $K$ at an address, filtered through the four primitives.
   </p>
+
+  <!-- Diagram: K branching into four primitives -->
+  <div class="diagram-center">
+    <svg width="280" height="100" viewBox="0 0 280 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- central K node -->
+      <circle cx="140" cy="16" r="8" stroke="var(--purple)" stroke-width="1" opacity="0.5" fill="none"/>
+      <text x="140" y="19.5" text-anchor="middle" fill="var(--purple)" font-size="10" font-weight="600" opacity="0.8">K</text>
+      <!-- branches -->
+      <line x1="128" y1="22" x2="50" y2="60" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+      <line x1="135" y1="24" x2="110" y2="60" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+      <line x1="145" y1="24" x2="170" y2="60" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+      <line x1="152" y1="22" x2="230" y2="60" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+      <!-- parabola icon -->
+      <path d="M 38 72 Q 50 52 62 72" stroke="var(--purple)" stroke-width="1" opacity="0.5" fill="none"/>
+      <text x="50" y="88" text-anchor="middle" fill="var(--m-text-muted, #8b949e)" font-size="7">parabola</text>
+      <!-- fixed point icon -->
+      <circle cx="110" cy="64" r="3" fill="var(--purple)" opacity="0.5"/>
+      <path d="M 100 64 C 103 58, 117 58, 120 64" stroke="var(--purple)" stroke-width="0.7" opacity="0.3" fill="none" stroke-dasharray="2,1.5"/>
+      <text x="110" y="88" text-anchor="middle" fill="var(--m-text-muted, #8b949e)" font-size="7">fixed point</text>
+      <!-- mediant icon -->
+      <line x1="160" y1="68" x2="180" y2="68" stroke="var(--purple)" stroke-width="0.8" opacity="0.4"/>
+      <circle cx="160" cy="68" r="2" fill="var(--purple)" opacity="0.4"/>
+      <circle cx="180" cy="68" r="2" fill="var(--purple)" opacity="0.4"/>
+      <circle cx="170" cy="60" r="2.5" fill="var(--purple)" opacity="0.6"/>
+      <line x1="160" y1="68" x2="170" y2="60" stroke="var(--purple)" stroke-width="0.5" opacity="0.3"/>
+      <line x1="180" y1="68" x2="170" y2="60" stroke="var(--purple)" stroke-width="0.5" opacity="0.3"/>
+      <text x="170" y="88" text-anchor="middle" fill="var(--m-text-muted, #8b949e)" font-size="7">mediant</text>
+      <!-- integers icon -->
+      <line x1="218" y1="60" x2="242" y2="60" stroke="var(--purple)" stroke-width="0.7" opacity="0.3"/>
+      <circle cx="222" cy="60" r="1.5" fill="var(--purple)" opacity="0.5"/>
+      <circle cx="230" cy="60" r="1.5" fill="var(--purple)" opacity="0.5"/>
+      <circle cx="238" cy="60" r="1.5" fill="var(--purple)" opacity="0.5"/>
+      <text x="230" y="88" text-anchor="middle" fill="var(--m-text-muted, #8b949e)" font-size="7">integers</text>
+    </svg>
+  </div>
 
   <table class="decomp-table">
     <thead>
