@@ -648,3 +648,196 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 <div class="phi-spacer"></div>
 
 </main>
+
+<script>
+// ── MSPU Canvas Renderers ──────────────────────────────────────────────
+(function() {
+  var PHI = (1 + Math.sqrt(5)) / 2;
+  var ROSE = '#DE3373';
+  var GREEN = '#08A953';
+  var GOLD = '#FCCA28';
+  var BLUE = '#1E76B8';
+  var PURPLE = '#7C2E87';
+  var MUTED = '#8b949e';
+  var BG = '#000000';
+  var PALETTE = [ROSE, GOLD, GREEN, '#F5712A', '#F59EAF', '#EE1B3E',
+                 BLUE, PURPLE, '#7A0434', '#F98F81', '#37BA9B', '#C0C2C2'];
+
+  function dpr() { return window.devicePixelRatio || 1; }
+
+  function setupCanvas(id) {
+    var c = document.getElementById(id);
+    if (!c) return null;
+    var r = dpr();
+    var w = c.width, h = c.height;
+    c.width = w * r; c.height = h * r;
+    c.style.width = w + 'px';
+    c.style.maxWidth = '100%';
+    var ctx = c.getContext('2d');
+    ctx.scale(r, r);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+  // ── 1. Fixed Point cobweb (the Rule) ──
+  var fixedPtFrame = 0;
+  function drawFixedPoint() {
+    var s = setupCanvas('mspu-fixedpt');
+    if (!s) return;
+    drawFixedPointInner(s.ctx, s.w, s.h, 40, s.w - 80, s.h - 80);
+  }
+
+  function drawFixedPointInner(ctx, W, H, pad, plotW, plotH) {
+    var phiInv = 1 / PHI;
+    function fg(x) { return 1 / (1 + x); }
+
+    ctx.strokeStyle = MUTED; ctx.globalAlpha = 0.3; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + plotH);
+    ctx.lineTo(pad + plotW, pad + plotH);
+    ctx.stroke(); ctx.globalAlpha = 1;
+
+    // y = x
+    ctx.beginPath();
+    ctx.moveTo(pad, pad + plotH); ctx.lineTo(pad + plotW, pad);
+    ctx.strokeStyle = MUTED; ctx.globalAlpha = 0.25; ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+
+    // f(x) = 1/(1+x)
+    ctx.beginPath();
+    for (var i = 1; i <= 200; i++) {
+      var x = i / 200, y = fg(x);
+      var px = pad + x * plotW, py = pad + plotH - y * plotH;
+      if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = GREEN; ctx.lineWidth = 2; ctx.stroke();
+
+    // Cobweb
+    var nSteps = 12;
+    var animStep = Math.min(nSteps, Math.floor(fixedPtFrame / 8));
+    var xn = 0.1;
+    ctx.beginPath(); ctx.strokeStyle = GOLD; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.8;
+    for (var i = 0; i < animStep; i++) {
+      var yn = fg(xn);
+      var px1 = pad + xn * plotW;
+      var py1 = pad + plotH - xn * plotH;
+      var py2 = pad + plotH - yn * plotH;
+      if (i === 0) ctx.moveTo(px1, py1);
+      ctx.lineTo(px1, py2);
+      ctx.lineTo(pad + yn * plotW, py2);
+      xn = yn;
+    }
+    ctx.stroke(); ctx.globalAlpha = 1;
+
+    // Fixed point dot
+    var fpx = pad + phiInv * plotW, fpy = pad + plotH - phiInv * plotH;
+    ctx.beginPath(); ctx.arc(fpx, fpy, 6, 0, Math.PI * 2); ctx.fillStyle = GOLD; ctx.fill();
+    ctx.beginPath(); ctx.arc(fpx, fpy, 3, 0, Math.PI * 2); ctx.fillStyle = BG; ctx.fill();
+
+    ctx.font = '600 12px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillStyle = GREEN; ctx.fillText('f(x) = 1/(1+x)', pad + plotW * 0.55, pad + 20);
+    ctx.fillStyle = MUTED; ctx.globalAlpha = 0.4;
+    ctx.fillText('y = x', pad + plotW - 40, pad + 20); ctx.globalAlpha = 1;
+    ctx.fillStyle = GOLD; ctx.fillText('1/\u03C6', fpx + 10, fpy - 8);
+    ctx.font = '10px sans-serif'; ctx.fillStyle = MUTED; ctx.textAlign = 'center';
+    ctx.fillText('x = f(x)', W / 2, H - 8);
+
+    if (fixedPtFrame < nSteps * 8 + 60) {
+      fixedPtFrame++;
+      requestAnimationFrame(function() {
+        ctx.clearRect(0, 0, W, H);
+        drawFixedPointInner(ctx, W, H, pad, plotW, plotH);
+      });
+    }
+  }
+
+  // ── 2. Figure-8 (lemniscate) ──
+  function drawFigure8() {
+    var s = setupCanvas('mspu-figure8');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var cx = W / 2, cy = H / 2, a = W * 0.22;
+    var steps = 200;
+
+    // Left loop
+    ctx.beginPath();
+    for (var i = 0; i <= steps; i++) {
+      var t = Math.PI / 2 + (i / steps) * Math.PI;
+      var s2 = Math.sin(t) * Math.sin(t), denom = 1 + s2;
+      var x = cx + a * Math.cos(t) / denom, y = cy + a * Math.sin(t) * Math.cos(t) / denom;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = BLUE; ctx.lineWidth = 3; ctx.stroke();
+
+    // Right loop
+    ctx.beginPath();
+    for (var i = 0; i <= steps; i++) {
+      var t = -Math.PI / 2 + (i / steps) * Math.PI;
+      var s2 = Math.sin(t) * Math.sin(t), denom = 1 + s2;
+      var x = cx + a * Math.cos(t) / denom, y = cy + a * Math.sin(t) * Math.cos(t) / denom;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = ROSE; ctx.lineWidth = 3; ctx.stroke();
+
+    // Crossing
+    ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fillStyle = GOLD; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fillStyle = BG; ctx.fill();
+
+    ctx.font = '600 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = BLUE; ctx.fillText('left loop', cx - a * 0.45, cy + a * 0.55);
+    ctx.fillStyle = ROSE; ctx.fillText('right loop', cx + a * 0.45, cy + a * 0.55);
+    ctx.fillStyle = GOLD; ctx.fillText('crossing', cx, cy - 14);
+    ctx.font = '10px sans-serif'; ctx.fillStyle = MUTED;
+    ctx.fillText('sin\u00B2\u03B8_W = 8/35', cx, cy + a * 0.75);
+  }
+
+  // ── 3. Arnold Tongues ──
+  function drawTongues() {
+    var s = setupCanvas('mspu-tongues');
+    if (!s) return;
+    var ctx = s.ctx, W = s.w, H = s.h;
+    var barY = 30, barH = 50;
+
+    ctx.fillStyle = '#161b22'; ctx.fillRect(0, barY, W, barH);
+
+    var tongues = [];
+    for (var q = 1; q <= 8; q++) {
+      for (var p = 0; p <= q; p++) {
+        if (gcd(p, q) !== 1 && !(p === 0 && q === 1) && !(p === q)) continue;
+        tongues.push({ p: p, q: q, val: p / q, width: Math.max(3, (1 / (q * q)) * W * 0.7) });
+      }
+    }
+
+    for (var i = 0; i < tongues.length; i++) {
+      var t = tongues[i], x = t.val * W;
+      ctx.fillStyle = PALETTE[(t.q - 1) % PALETTE.length];
+      ctx.globalAlpha = 0.7 - t.q * 0.05;
+      ctx.fillRect(x - t.width / 2, barY, t.width, barH);
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.font = '10px sans-serif'; ctx.fillStyle = MUTED;
+    ctx.textAlign = 'left'; ctx.fillText('0', 4, barY + barH + 16);
+    ctx.textAlign = 'right'; ctx.fillText('1', W - 4, barY + barH + 16);
+    ctx.textAlign = 'center'; ctx.fillText('frequency axis', W / 2, barY - 8);
+
+    var phiInv = 1 / PHI;
+    ctx.beginPath(); ctx.moveTo(phiInv * W, barY - 4); ctx.lineTo(phiInv * W, barY + barH + 4);
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '600 10px sans-serif'; ctx.fillStyle = GOLD;
+    ctx.fillText('1/\u03C6', phiInv * W, barY + barH + 16);
+
+    ctx.font = '10px sans-serif'; ctx.fillStyle = MUTED; ctx.globalAlpha = 0.5;
+    ctx.fillText('18.7% dark gaps', W / 2, 16); ctx.globalAlpha = 1;
+  }
+
+  function initMSPU() { drawFixedPoint(); drawFigure8(); drawTongues(); }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMSPU);
+  } else {
+    setTimeout(initMSPU, 50);
+  }
+})();
+</script>
