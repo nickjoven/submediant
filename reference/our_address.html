@@ -841,3 +841,180 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
   }
 })();
 </script>
+
+<script>
+// ── Multi-Handed Clock ─────────────────────────────────────────────────
+const clockCanvas = document.getElementById('clock');
+const cCtx = clockCanvas.getContext('2d');
+const CW = clockCanvas.width;
+const CH = clockCanvas.height;
+const ccx = CW / 2;
+const ccy = CH / 2;
+const cRadius = CW * 0.42;
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+// Stern-Brocot fractions for tick marks (rational frequency markings)
+function sternBrocotLevel(maxDepth) {
+  const fractions = [];
+  function recurse(left, right, depth) {
+    if (depth > maxDepth) return;
+    const m = [left[0] + right[0], left[1] + right[1]];
+    recurse(left, m, depth + 1);
+    fractions.push({ n: m[0], d: m[1], depth: depth });
+    recurse(m, right, depth + 1);
+  }
+  recurse([0, 1], [1, 1], 1);
+  fractions.push({ n: 1, d: 1, depth: 0 });
+  return fractions.sort((a, b) => (a.n / a.d) - (b.n / b.d));
+}
+
+const sbFractions = sternBrocotLevel(4);
+
+function fracToAngle(n, d) { return (n / d) * Math.PI * 2 - Math.PI / 2; }
+
+function getCSSVar(name, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+// Golden ratio spiral points for subtle decoration
+function goldenSpiralPoints(cx, cy, maxR, numPoints) {
+  const points = [];
+  const goldenAngle = Math.PI * 2 * (1 - 1 / PHI);
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / numPoints;
+    const r = maxR * Math.sqrt(t);
+    const theta = i * goldenAngle;
+    points.push({ x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta) });
+  }
+  return points;
+}
+
+let clockTime = 0;
+
+function drawClock() {
+  cCtx.clearRect(0, 0, CW, CH);
+
+  const bg = getCSSVar('--m-bg', '#000000');
+  const text = getCSSVar('--m-text', '#e6edf3');
+  const muted = getCSSVar('--m-text-muted', '#8b949e');
+  const accent = getCSSVar('--m-accent', '#DE3373');
+  const accent2 = getCSSVar('--m-accent2', '#FCCA28');
+  const border = getCSSVar('--m-border', '#30363d');
+  const GREEN = '#08A953';
+  const BLUE = '#1E76B8';
+
+  // Golden spiral decoration
+  const spiralPts = goldenSpiralPoints(ccx, ccy, cRadius * 0.85, 200);
+  cCtx.beginPath();
+  for (let i = 1; i < spiralPts.length; i++) {
+    if (i === 1) cCtx.moveTo(spiralPts[0].x, spiralPts[0].y);
+    cCtx.lineTo(spiralPts[i].x, spiralPts[i].y);
+  }
+  cCtx.strokeStyle = border; cCtx.globalAlpha = 0.15; cCtx.lineWidth = 0.8;
+  cCtx.stroke(); cCtx.globalAlpha = 1;
+
+  // Clock face
+  cCtx.beginPath(); cCtx.arc(ccx, ccy, cRadius, 0, Math.PI * 2);
+  cCtx.strokeStyle = border; cCtx.lineWidth = 1.5; cCtx.stroke();
+  cCtx.beginPath(); cCtx.arc(ccx, ccy, cRadius * 0.92, 0, Math.PI * 2);
+  cCtx.strokeStyle = border; cCtx.lineWidth = 0.5; cCtx.globalAlpha = 0.3;
+  cCtx.stroke(); cCtx.globalAlpha = 1;
+
+  // Rational frequency tick marks
+  for (const frac of sbFractions) {
+    const angle = fracToAngle(frac.n, frac.d);
+    const tickOuter = cRadius * 0.96;
+    const tickInner = cRadius * (0.96 - (0.12 / (frac.depth + 1)));
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+
+    cCtx.beginPath();
+    cCtx.moveTo(ccx + tickInner * cos, ccy + tickInner * sin);
+    cCtx.lineTo(ccx + tickOuter * cos, ccy + tickOuter * sin);
+    cCtx.strokeStyle = muted;
+    cCtx.globalAlpha = frac.depth <= 1 ? 0.8 : frac.depth <= 2 ? 0.4 : 0.2;
+    cCtx.lineWidth = frac.depth <= 1 ? 2 : 1;
+    cCtx.stroke(); cCtx.globalAlpha = 1;
+
+    if (frac.depth <= 2 && frac.d <= 5) {
+      const labelR = cRadius * 1.06;
+      cCtx.font = frac.depth <= 1
+        ? '600 16px -apple-system, BlinkMacSystemFont, sans-serif'
+        : '13px -apple-system, BlinkMacSystemFont, sans-serif';
+      cCtx.fillStyle = frac.depth <= 1 ? text : muted;
+      cCtx.globalAlpha = frac.depth <= 1 ? 0.9 : 0.5;
+      cCtx.textAlign = 'center'; cCtx.textBaseline = 'middle';
+      cCtx.fillText(frac.n + '/' + frac.d, ccx + labelR * cos, ccy + labelR * sin);
+      cCtx.globalAlpha = 1;
+    }
+  }
+
+  // ── HAND 1: Gap twin (dashed gold, 0.5 revolutions) ──
+  var ghostAngle = 0.5 * Math.PI * 2 - Math.PI / 2;
+  var ghostLen = cRadius * 0.55;
+  var ghostPulse = 0.35 + 0.1 * Math.sin(clockTime * 0.02);
+  cCtx.beginPath(); cCtx.moveTo(ccx, ccy);
+  cCtx.lineTo(ccx + ghostLen * Math.cos(ghostAngle), ccy + ghostLen * Math.sin(ghostAngle));
+  cCtx.strokeStyle = accent2; cCtx.globalAlpha = ghostPulse; cCtx.lineWidth = 2;
+  cCtx.setLineDash([6, 4]); cCtx.stroke(); cCtx.setLineDash([]); cCtx.globalAlpha = 1;
+
+  // ── HAND 2: Depth (green, level 21/145.8 = 0.144 of one revolution) ──
+  var depthProgress = 21 / 145.8;
+  var depthAngle = depthProgress * Math.PI * 2 - Math.PI / 2;
+  var depthLen = cRadius * 0.62;
+  cCtx.beginPath(); cCtx.moveTo(ccx, ccy);
+  cCtx.lineTo(ccx + depthLen * Math.cos(depthAngle), ccy + depthLen * Math.sin(depthAngle));
+  cCtx.strokeStyle = GREEN; cCtx.lineWidth = 2.5; cCtx.lineCap = 'round'; cCtx.stroke();
+  // tip
+  var dtx = ccx + depthLen * Math.cos(depthAngle), dty = ccy + depthLen * Math.sin(depthAngle);
+  cCtx.beginPath(); cCtx.arc(dtx, dty, 3, 0, Math.PI * 2); cCtx.fillStyle = GREEN; cCtx.fill();
+
+  // ── HAND 3: Expansion (blue, 0.813 of one revolution) ──
+  var expProgress = 0.813;
+  var expAngle = expProgress * Math.PI * 2 - Math.PI / 2;
+  var expLen = cRadius * 0.70;
+  cCtx.beginPath(); cCtx.moveTo(ccx, ccy);
+  cCtx.lineTo(ccx + expLen * Math.cos(expAngle), ccy + expLen * Math.sin(expAngle));
+  cCtx.strokeStyle = BLUE; cCtx.lineWidth = 2.5; cCtx.lineCap = 'round'; cCtx.stroke();
+  var etx = ccx + expLen * Math.cos(expAngle), ety = ccy + expLen * Math.sin(expAngle);
+  cCtx.beginPath(); cCtx.arc(etx, ety, 3, 0, Math.PI * 2); cCtx.fillStyle = BLUE; cCtx.fill();
+
+  // ── HAND 4: Clocks (rose, 0.95 revolutions — the main hand) ──
+  var baseProgress = 0.95;
+  var tick = 0.0005 * Math.sin(clockTime * 0.005);
+  var mainAngle = (baseProgress + tick) * Math.PI * 2 - Math.PI / 2;
+  var handLen = cRadius * 0.78;
+
+  // shadow
+  cCtx.beginPath(); cCtx.moveTo(ccx + 1, ccy + 1);
+  cCtx.lineTo(ccx + 1 + handLen * Math.cos(mainAngle), ccy + 1 + handLen * Math.sin(mainAngle));
+  cCtx.strokeStyle = 'rgba(0,0,0,0.3)'; cCtx.lineWidth = 4; cCtx.stroke();
+  // hand
+  cCtx.beginPath(); cCtx.moveTo(ccx, ccy);
+  cCtx.lineTo(ccx + handLen * Math.cos(mainAngle), ccy + handLen * Math.sin(mainAngle));
+  cCtx.strokeStyle = accent; cCtx.lineWidth = 3; cCtx.lineCap = 'round'; cCtx.stroke();
+  // tip
+  var tipX = ccx + handLen * Math.cos(mainAngle), tipY = ccy + handLen * Math.sin(mainAngle);
+  cCtx.beginPath(); cCtx.arc(tipX, tipY, 4, 0, Math.PI * 2); cCtx.fillStyle = accent; cCtx.fill();
+
+  // Progress arc (0 to 0.95)
+  cCtx.beginPath();
+  cCtx.arc(ccx, ccy, cRadius * 0.85, -Math.PI / 2, baseProgress * Math.PI * 2 - Math.PI / 2);
+  cCtx.strokeStyle = accent; cCtx.globalAlpha = 0.12; cCtx.lineWidth = 8;
+  cCtx.stroke(); cCtx.globalAlpha = 1;
+
+  // Center cap
+  cCtx.beginPath(); cCtx.arc(ccx, ccy, 6, 0, Math.PI * 2); cCtx.fillStyle = accent; cCtx.fill();
+  cCtx.beginPath(); cCtx.arc(ccx, ccy, 3, 0, Math.PI * 2); cCtx.fillStyle = bg; cCtx.fill();
+
+  // Progress label
+  var labelAngle = mainAngle + 0.08;
+  cCtx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
+  cCtx.fillStyle = accent; cCtx.textAlign = 'center';
+  cCtx.fillText('0.95', ccx + (handLen * 0.55) * Math.cos(labelAngle), ccy + (handLen * 0.55) * Math.sin(labelAngle));
+
+  clockTime++;
+  requestAnimationFrame(drawClock);
+}
+
+requestAnimationFrame(drawClock);
+</script>
