@@ -1018,3 +1018,205 @@ function drawClock() {
 
 requestAnimationFrame(drawClock);
 </script>
+
+<script>
+// ── Golden Spiral with Universe Landmarks ──────────────────────────────
+(function() {
+  var PHI = (1 + Math.sqrt(5)) / 2;
+  var c = document.getElementById('spiral');
+  if (!c) return;
+  var r = window.devicePixelRatio || 1;
+  var W = c.width, H = c.height;
+  c.width = W * r; c.height = H * r;
+  c.style.width = W + 'px'; c.style.maxWidth = '100%';
+  var ctx = c.getContext('2d');
+  ctx.scale(r, r);
+
+  var cx = W / 2, cy = H / 2;
+  var maxR = W * 0.44;
+
+  // Logarithmic spiral: r = a * e^(b*theta)
+  // b = ln(PHI) / (PI/2) so each quarter turn scales by PHI
+  var b = Math.log(PHI) / (Math.PI / 2);
+  var a = 3; // starting radius
+
+  // Draw spiral
+  ctx.beginPath();
+  var totalTurns = 6;
+  var steps = 800;
+  for (var i = 0; i <= steps; i++) {
+    var theta = (i / steps) * totalTurns * Math.PI * 2;
+    var sr = a * Math.exp(b * theta);
+    if (sr > maxR) break;
+    var x = cx + sr * Math.cos(theta);
+    var y = cy + sr * Math.sin(theta);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#FCCA28';
+  ctx.globalAlpha = 0.35;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Landmarks along the spiral at specific depth fractions
+  // depth fraction = level / 145.8
+  var landmarks = [
+    { frac: 0.00, label: 'Planck', color: '#7C2E87', size: 3 },
+    { frac: 0.03, label: 'quarks', color: '#EE1B3E', size: 3 },
+    { frac: 0.05, label: 'nucleons', color: '#F5712A', size: 4 },
+    { frac: 0.10, label: 'nuclei', color: '#F98F81', size: 4 },
+    { frac: 0.14, label: 'CMB (lv 21)', color: '#FCCA28', size: 6 },
+    { frac: 0.25, label: 'atoms', color: '#08A953', size: 5 },
+    { frac: 0.40, label: 'stars', color: '#37BA9B', size: 5 },
+    { frac: 0.55, label: 'galaxies', color: '#1E76B8', size: 6 },
+    { frac: 0.75, label: 'clusters', color: '#DE3373', size: 5 },
+    { frac: 1.00, label: 'Hubble', color: '#8b949e', size: 4 },
+  ];
+
+  for (var i = 0; i < landmarks.length; i++) {
+    var lm = landmarks[i];
+    // Map depth fraction to spiral angle
+    var theta = lm.frac * totalTurns * Math.PI * 2 * 0.85; // scale to fit
+    var sr = a * Math.exp(b * theta);
+    if (sr > maxR * 1.05) sr = maxR * 1.05;
+    var lx = cx + sr * Math.cos(theta);
+    var ly = cy + sr * Math.sin(theta);
+
+    // dot
+    ctx.beginPath();
+    ctx.arc(lx, ly, lm.size, 0, Math.PI * 2);
+    ctx.fillStyle = lm.color;
+    ctx.globalAlpha = 0.8;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // glow
+    ctx.beginPath();
+    ctx.arc(lx, ly, lm.size * 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = lm.color;
+    ctx.globalAlpha = 0.08;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // label
+    ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = lm.color;
+    ctx.globalAlpha = 0.7;
+    ctx.textAlign = 'left';
+    ctx.fillText(lm.label, lx + lm.size + 4, ly + 3);
+    ctx.globalAlpha = 1;
+  }
+
+  // Center label
+  ctx.font = '600 11px -apple-system, sans-serif';
+  ctx.fillStyle = '#8b949e';
+  ctx.globalAlpha = 0.5;
+  ctx.textAlign = 'center';
+  ctx.fillText('10\u2074\u00B3 Hz', cx, cy + maxR + 20);
+  ctx.fillText('Planck \u2192 Hubble', cx, cy + maxR + 34);
+  ctx.globalAlpha = 1;
+})();
+</script>
+
+<script>
+// ── CMB Ring ───────────────────────────────────────────────────────────
+(function() {
+  var c = document.getElementById('cmb-ring');
+  if (!c) return;
+  var r = window.devicePixelRatio || 1;
+  var W = c.width, H = c.height;
+  c.width = W * r; c.height = H * r;
+  c.style.width = W + 'px'; c.style.maxWidth = '100%';
+  var ctx = c.getContext('2d');
+  ctx.scale(r, r);
+
+  var cx = W / 2, cy = H / 2;
+  var outerR = W * 0.42;
+  var innerR = outerR * 0.82;
+  var midR = (outerR + innerR) / 2;
+  var bandW = (outerR - innerR) / 2;
+
+  // Generate CMB-like fluctuations using summed sinusoids
+  // Pink-ish noise: amplitude ~ 1/sqrt(l) for multipole l
+  var seed = 42;
+  function pseudoRandom() {
+    seed = (seed * 16807 + 0) % 2147483647;
+    return seed / 2147483647;
+  }
+
+  // Pre-generate random phases for multipoles
+  var maxL = 30;
+  var phases = [];
+  var amps = [];
+  for (var l = 1; l <= maxL; l++) {
+    phases.push(pseudoRandom() * Math.PI * 2);
+    amps.push(1 / Math.sqrt(l) * (0.5 + pseudoRandom() * 0.5));
+  }
+
+  // Draw the ring
+  var steps = 360;
+  for (var i = 0; i < steps; i++) {
+    var theta = (i / steps) * Math.PI * 2;
+    var theta2 = ((i + 1) / steps) * Math.PI * 2;
+
+    // Compute temperature fluctuation at this angle
+    var dT = 0;
+    for (var l = 0; l < maxL; l++) {
+      dT += amps[l] * Math.cos((l + 1) * theta + phases[l]);
+    }
+    // Normalize to [-1, 1]
+    dT = dT / 3.5;
+    dT = Math.max(-1, Math.min(1, dT));
+
+    // Map to color: blue (cold) through black to red (hot)
+    var rr, gg, bb;
+    if (dT < 0) {
+      // Cold: blue
+      var t = -dT;
+      rr = Math.round(30 * (1 - t));
+      gg = Math.round(50 * (1 - t) + 80 * t);
+      bb = Math.round(80 + 140 * t);
+    } else {
+      // Hot: red/orange
+      var t = dT;
+      rr = Math.round(80 + 142 * t);
+      gg = Math.round(50 * (1 - t) + 30 * t);
+      bb = Math.round(80 * (1 - t));
+    }
+
+    // Draw arc segment
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, theta - 0.02, theta2 + 0.02);
+    ctx.arc(cx, cy, innerR, theta2 + 0.02, theta - 0.02, true);
+    ctx.closePath();
+    ctx.fillStyle = 'rgb(' + rr + ',' + gg + ',' + bb + ')';
+    ctx.globalAlpha = 0.7;
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Inner label
+  ctx.font = '600 14px -apple-system, sans-serif';
+  ctx.fillStyle = '#FCCA28';
+  ctx.textAlign = 'center';
+  ctx.fillText('\u221A5 = 2.236', cx, cy - 8);
+  ctx.font = '11px -apple-system, sans-serif';
+  ctx.fillStyle = '#8b949e';
+  ctx.fillText('levels wide', cx, cy + 10);
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillStyle = '#8b949e';
+  ctx.globalAlpha = 0.5;
+  ctx.fillText('level 21', cx, cy + 28);
+  ctx.globalAlpha = 1;
+
+  // Mark the observation window with a subtle highlight
+  var windowAngle = Math.PI * 0.15; // arbitrary angular width for visual
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR + 3, -windowAngle, windowAngle);
+  ctx.strokeStyle = '#FCCA28';
+  ctx.globalAlpha = 0.4;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+})();
+</script>
