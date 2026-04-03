@@ -214,17 +214,16 @@ a:hover { text-decoration: underline; }
 }
 
 /* tap-to-enlarge overlay */
-.diagram-row svg,
-.diagram-center svg { cursor: zoom-in; }
 .diagram-overlay {
   position: fixed; inset: 0; z-index: 200;
   background: rgba(0, 0, 0, 0.88);
   display: flex; align-items: center; justify-content: center;
   cursor: zoom-out;
   opacity: 0; transition: opacity 0.25s ease;
+  pointer-events: none;
   padding: 24px;
 }
-.diagram-overlay.open { opacity: 1; }
+.diagram-overlay.open { opacity: 1; pointer-events: auto; }
 .diagram-overlay svg {
   max-width: 92vw; max-height: 85vh;
   width: auto; height: auto;
