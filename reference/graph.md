@@ -122,17 +122,17 @@ Interactive force-directed visualization of the framework's derivation chain and
 const derivations = [
   // Foundation (gold)
   { id: "D29", label: "D29", title: "Mediant Derivation", claim: "The mediant operation (a+c)/(b+d) is the unique binary operation preserving Farey adjacency.", color: "#ffd75c", group: "foundation", r: 12 },
-  { id: "D10", label: "D10", title: "Minimum Alphabet", claim: "Three coupled oscillators and the mediant generate the minimum structure for physics.", color: "#ffd75c", group: "foundation", r: 12 },
+  { id: "D10", label: "D10", title: "Minimum Alphabet", claim: "Three coupled oscillators and the mediant generate the minimum structure for physics.", color: "#ffd75c", group: "foundation", r: 12, url: "first-principles.html" },
   { id: "D0",  label: "D0",  title: "Recurrence Survival", claim: "Only recurrent configurations survive indefinite iteration.", color: "#ffd75c", group: "foundation", r: 12 },
 
   // Field Equation (blue)
-  { id: "D11", label: "D11", title: "Rational Field Equation", claim: "Synchronization cost C(p/q) = 1/(q²·sin²(πp/q)) governs all coupling.", color: "#58a6ff", group: "field_eq", r: 11 },
-  { id: "D14", label: "D14", title: "Three Dimensions", claim: "Three spatial dimensions emerge as the minimum for non-degenerate mediant geometry.", color: "#58a6ff", group: "field_eq", r: 11 },
+  { id: "D11", label: "D11", title: "Rational Field Equation", claim: "Synchronization cost C(p/q) = 1/(q²·sin²(πp/q)) governs all coupling.", color: "#58a6ff", group: "field_eq", r: 11, url: "oscillations.html" },
+  { id: "D14", label: "D14", title: "Three Dimensions", claim: "Three spatial dimensions emerge as the minimum for non-degenerate mediant geometry.", color: "#58a6ff", group: "field_eq", r: 11, url: "three-body.html" },
   { id: "D15", label: "D15", title: "Lie Group Characterization", claim: "The symmetry group of the rational field equation is SL(2,Z).", color: "#58a6ff", group: "field_eq", r: 11 },
 
   // Spacetime K=1 (green)
   { id: "D12", label: "D12", title: "Two Continuum Limits", claim: "The field equation has two limits: K→1 (gravity) and K<1 (quantum).", color: "#7ee787", group: "spacetime", r: 11 },
-  { id: "D13", label: "D13", title: "Einstein from Kuramoto", claim: "The Einstein field equations emerge from Kuramoto synchronization at K=1.", color: "#7ee787", group: "spacetime", r: 11 },
+  { id: "D13", label: "D13", title: "Einstein from Kuramoto", claim: "The Einstein field equations emerge from Kuramoto synchronization at K=1.", color: "#7ee787", group: "spacetime", r: 11, url: "first-principles.html" },
   { id: "D16", label: "D16", title: "Variable Denominator", claim: "Variable denominator q(x) encodes local curvature as rational approximation depth.", color: "#7ee787", group: "spacetime", r: 10 },
   { id: "D17", label: "D17", title: "Rank-1 Temporal Causation", claim: "Time emerges as rank-1 causal ordering of synchronization updates.", color: "#7ee787", group: "spacetime", r: 10 },
 
@@ -151,16 +151,16 @@ const derivations = [
   { id: "D28", label: "D28", title: "Farey Proof", claim: "Closed-form proof that the Farey partition yields Ω_Λ = 13/19.", color: "#ffa657", group: "cosmology", r: 10 },
 
   // Predictions (cyan)
-  { id: "D1", label: "D1",  title: "Born Rule", claim: "Born's probability rule |ψ|² emerges as basin measure of synchronization.", color: "#79c0ff", group: "predictions", r: 11 },
-  { id: "D4", label: "D4",  title: "Spectral Tilt", claim: "CMB spectral tilt nₛ from mode-locking statistics on the Stern-Brocot tree.", color: "#79c0ff", group: "predictions", r: 10 },
+  { id: "D1", label: "D1",  title: "Born Rule", claim: "Born's probability rule |ψ|² emerges as basin measure of synchronization.", color: "#79c0ff", group: "predictions", r: 11, url: "constants.html" },
+  { id: "D4", label: "D4",  title: "Spectral Tilt", claim: "CMB spectral tilt nₛ from mode-locking statistics on the Stern-Brocot tree.", color: "#79c0ff", group: "predictions", r: 10, url: "constants.html" },
   { id: "D5", label: "D5",  title: "Two Forces", claim: "Only two long-range forces (gravity + EM) survive the synchronization filter.", color: "#79c0ff", group: "predictions", r: 10 },
   { id: "D6", label: "D6",  title: "Planck Scale", claim: "Planck length as the self-sustaining synchronization threshold.", color: "#79c0ff", group: "predictions", r: 10 },
   { id: "D7", label: "D7",  title: "Measurement Collapse", claim: "Wavefunction collapse as tongue traversal in the Arnold tongue diagram.", color: "#79c0ff", group: "predictions", r: 10 },
-  { id: "D8", label: "D8",  title: "High-z MOND", claim: "MOND acceleration a₀ varies with redshift: a₀(z) = a₀(0)·(1+z)^β.", color: "#79c0ff", group: "predictions", r: 10 },
+  { id: "D8", label: "D8",  title: "High-z MOND", claim: "MOND acceleration a₀ varies with redshift: a₀(z) = a₀(0)·(1+z)^β.", color: "#79c0ff", group: "predictions", r: 10, url: "our_address.html" },
   { id: "D9", label: "D9",  title: "Fidelity Bound", claim: "Self-referential bound: the framework must predict its own derivability.", color: "#79c0ff", group: "predictions", r: 11 },
 
   // Prior Work (dim white)
-  { id: "D3",  label: "D3",  title: "a₀ Threshold", claim: "MOND acceleration a₀ derived from the synchronization cost threshold.", color: "#8b949e", group: "prior", r: 10 },
+  { id: "D3",  label: "D3",  title: "a₀ Threshold", claim: "MOND acceleration a₀ derived from the synchronization cost threshold.", color: "#8b949e", group: "prior", r: 10, url: "our_address.html" },
   { id: "D22", label: "D22", title: "Engineering Targets", claim: "Experimental targets and engineering implications of the framework.", color: "#8b949e", group: "prior", r: 10 },
 
   // Repositories (larger, white border)
