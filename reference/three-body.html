@@ -73,6 +73,32 @@ main {
   line-height: 1.2;
 }
 
+/* hero title card illumination */
+.hero-title {
+  font-size: var(--fs-xl);
+  font-weight: 100;
+  letter-spacing: 0.15em;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  text-transform: lowercase;
+}
+
+.hero-subtitle {
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--m-text, #e6edf3);
+  max-width: 560px;
+  margin: 0 auto;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+
+#hero-text {
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+}
+
 .section-num {
   font-size: var(--fs-sm);
   font-weight: 600;
@@ -140,7 +166,7 @@ mjx-container[display="true"], .MathJax[display="true"] {
   .equation-block {
     padding: 0.5em 0;
   }
-  .section-title {
+  .section-title, .hero-title {
     font-size: var(--fs-lg) !important;
     word-break: break-word;
   }
@@ -219,9 +245,9 @@ section.visible {
 
 <!-- HERO -->
 <div class="phi-spacer-hero">
-  <div style="text-align:center;">
-    <div class="section-title" style="font-weight:100; letter-spacing:0.15em;">Three Bodies</div>
-    <p style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); max-width:500px; margin:0 auto;">
+  <div id="hero-text" style="text-align:center;">
+    <div class="hero-title">three bodies</div>
+    <p class="hero-subtitle">
       The minimum system that produces all the framework's structure.
     </p>
   </div>
@@ -649,6 +675,36 @@ function draw(timestamp) {
   }
 
   ctx.globalAlpha = 1;
+
+  // ── Hero text illumination: reveal text near orbiting bodies ──
+  var heroEl = document.getElementById('hero-text');
+  if (heroEl) {
+    var hRect = heroEl.getBoundingClientRect();
+    if (hRect.width > 0 && hRect.bottom > 0 && hRect.top < H) {
+      var mParts = [];
+      var glowR = 160;
+      for (var bi = 0; bi < 3; bi++) {
+        var bxPos = cx + state[bi * 2] * scale;
+        var byPos = cy + state[bi * 2 + 1] * scale;
+        var lx = bxPos - hRect.left;
+        var ly = byPos - hRect.top;
+        mParts.push('radial-gradient(circle ' + glowR + 'px at ' + lx + 'px ' + ly + 'px,#fff 0%,transparent 100%)');
+      }
+      // Trail mid-points for softer fill
+      for (var bi = 0; bi < 3; bi++) {
+        var trail = trails[bi];
+        if (trail.length > 20) {
+          var ti = Math.floor(trail.length * 0.4);
+          var tx = cx + trail[ti][0] * scale;
+          var ty = cy + trail[ti][1] * scale;
+          mParts.push('radial-gradient(circle ' + (glowR * 0.7) + 'px at ' + (tx - hRect.left) + 'px ' + (ty - hRect.top) + 'px,rgba(255,255,255,0.4) 0%,transparent 100%)');
+        }
+      }
+      heroEl.style.webkitMaskImage = mParts.join(',');
+      heroEl.style.maskImage = mParts.join(',');
+    }
+  }
+
   requestAnimationFrame(draw);
 }
 
