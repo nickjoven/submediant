@@ -94,8 +94,7 @@ main {
   padding: 1em 0;
   text-align: center;
   font-size: var(--fs-lg);
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
 }
 
 /* prose */
@@ -118,8 +117,8 @@ section ul li strong { color: var(--m-text, #e6edf3); }
 a { color: var(--magenta); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* MathJax display math: allow natural width for scale-to-fit */
-mjx-container[display="true"], .MathJax[display="true"] { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
+/* MathJax display math: scale-to-fit instead of scroll */
+mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
 
 /* visualization containers */
 .viz-container {
