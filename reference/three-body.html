@@ -464,6 +464,19 @@ resize();
 
 var G = 1.0;
 
+// ── Central black hole ──────────────────────────────────────────────────
+// Fixed at origin. Schwarzschild radius r_s = 2GM/c²; we work in units
+// where c = 1, so r_s = 2·G·M_BH.  The three orbiting bodies (m = 1)
+// feel Newtonian gravity from this mass.  M_BH is kept small enough that
+// the figure-8 choreography survives for many orbits before secular
+// precession disrupts it — "just enough" to curve the background.
+//
+//   a_BH(r) = G · M_BH / r²      (toward origin)
+//   r_s      = 2 · G · M_BH      (Schwarzschild radius, display only)
+//
+var M_BH = 0.25;
+var R_S  = 2 * G * M_BH;   // Schwarzschild radius in simulation units
+
 // Known initial conditions for the figure-8 (Moore 1993 / Chenciner-Montgomery 2000)
 // Period T ~ 6.3259
 var x1_0  =  0.97000436;
@@ -502,6 +515,7 @@ function derivatives(s) {
   ds[10] = 0; ds[11] = 0;
 
   for (var i = 0; i < 3; i++) {
+    // Body–body interactions (m = 1)
     for (var j = 0; j < 3; j++) {
       if (i === j) continue;
       var dx = s[j * 2] - s[i * 2];
@@ -512,6 +526,14 @@ function derivatives(s) {
       ds[6 + i * 2]     += G * dx / r3;
       ds[6 + i * 2 + 1] += G * dy / r3;
     }
+    // Central black hole at origin: a = -G·M_BH·r̂/r²
+    var bx = -s[i * 2];
+    var by = -s[i * 2 + 1];
+    var br2 = bx * bx + by * by;
+    var br3 = Math.pow(br2, 1.5);
+    if (br3 < 1e-10) br3 = 1e-10;
+    ds[6 + i * 2]     += G * M_BH * bx / br3;
+    ds[6 + i * 2 + 1] += G * M_BH * by / br3;
   }
   return ds;
 }
