@@ -2271,6 +2271,11 @@ function rk4(state, derivs, dt) {
     t += 0.003;
     ctx.clearRect(0, 0, W, H);
 
+    // Fill with theme background
+    var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#000000';
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
     // Subtle Lissajous curves
     ctx.globalAlpha = 0.06;
     for (var k = 0; k < 3; k++) {
