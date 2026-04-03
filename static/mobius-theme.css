@@ -184,9 +184,23 @@ html { scroll-behavior: smooth; scroll-padding-top: 1.5em; }
 
 /* ── Responsive: mobile / vertical readers ── */
 @media (max-width: 768px) {
-  /* Nav bar: tighter spacing, smaller text */
-  #page-nav { gap: 0.8rem !important; padding: 8px 10px !important; font-size: 0.7rem !important; }
-  #page-nav a { white-space: nowrap; }
+  /* Nav bar: horizontal scroll when content outgrows viewport */
+  #page-nav {
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    font-size: 0.7rem !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE/Edge */
+  }
+  #page-nav::-webkit-scrollbar { display: none; }
+  #page-nav a {
+    white-space: nowrap;
+    padding: 10px 12px;
+    flex-shrink: 0;
+  }
   #mobius-moon-toggle { width: 28px !important; height: 28px !important; }
   #mobius-moon-toggle svg { width: 18px !important; height: 18px !important; }
 
@@ -203,7 +217,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 1.5em; }
 }
 
 @media (max-width: 480px) {
-  #page-nav { gap: 0.5rem !important; font-size: 0.65rem !important; }
+  #page-nav { font-size: 0.65rem !important; }
+  #page-nav a { padding: 8px 10px; }
 }
 
 /* ── Format accordion: expand / collapse ── */

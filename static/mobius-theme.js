@@ -523,6 +523,13 @@ function init() {
   initCurvedSpace();
   initMathScaleToFit();
   initCopyOverflow();
+
+  // Scroll active nav link into view on mobile
+  const nav = document.getElementById("page-nav");
+  if (nav) {
+    const active = nav.querySelector('a[style*="border-bottom"]');
+    if (active) active.scrollIntoView({ inline: "center", block: "nearest" });
+  }
 }
 
 if (document.readyState === "loading") {
