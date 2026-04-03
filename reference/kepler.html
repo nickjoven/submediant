@@ -456,18 +456,34 @@ panX = W / 2;
 panY = H / 2;
 
 // ========================================================================
-// INTERACTION — pan, zoom, click
+// INTERACTION — pan, zoom, click, orbit
+// Left-drag: pan.  Right-drag or Shift+drag: rotate camera orbit.
+// Touch: 1-finger pan, 2-finger pinch zoom + twist to rotate.
 // ========================================================================
+let orbiting = false, orbitStartX = 0, camThetaStart = 0;
+
 canvas.addEventListener("mousedown", e => {
-  dragging = true;
-  userDragged = true;
-  dragStartX = e.clientX;
-  dragStartY = e.clientY;
-  panStartX = panX;
-  panStartY = panY;
+  if (e.button === 2 || e.shiftKey) {
+    // Right-click or shift: orbit camera
+    orbiting = true;
+    orbitStartX = e.clientX;
+    camThetaStart = camTheta;
+    userDragged = true;
+    e.preventDefault();
+  } else {
+    dragging = true;
+    userDragged = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    panStartX = panX;
+    panStartY = panY;
+  }
 });
 canvas.addEventListener("mousemove", e => {
-  if (dragging) {
+  if (orbiting) {
+    // Horizontal drag rotates camera on its elliptical orbit
+    camTheta = camThetaStart + (e.clientX - orbitStartX) * 0.005;
+  } else if (dragging) {
     panX = panStartX + (e.clientX - dragStartX);
     panY = panStartY + (e.clientY - dragStartY);
   }
@@ -487,7 +503,9 @@ canvas.addEventListener("mousemove", e => {
   }
 });
 canvas.addEventListener("mouseup", e => {
-  if (dragging && Math.abs(e.clientX - dragStartX) < 4 && Math.abs(e.clientY - dragStartY) < 4) {
+  if (orbiting) {
+    orbiting = false;
+  } else if (dragging && Math.abs(e.clientX - dragStartX) < 4 && Math.abs(e.clientY - dragStartY) < 4) {
     // Click — find node (projected coordinates)
     const mx = (e.clientX - panX) / zoomScale;
     const my = (e.clientY - panY) / zoomScale;
@@ -504,6 +522,7 @@ canvas.addEventListener("mouseup", e => {
   }
   dragging = false;
 });
+canvas.addEventListener("contextmenu", e => e.preventDefault());
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
   const factor = e.deltaY > 0 ? 0.92 : 1.08;
@@ -512,6 +531,8 @@ canvas.addEventListener("wheel", e => {
 
 // Touch support
 let lastTouchDist = 0;
+let lastTouchAngle = 0;
+let touchRotating = false;
 canvas.addEventListener("touchstart", e => {
   if (e.touches.length === 1) {
     dragging = true;
@@ -524,6 +545,12 @@ canvas.addEventListener("touchstart", e => {
       e.touches[0].clientX - e.touches[1].clientX,
       e.touches[0].clientY - e.touches[1].clientY
     );
+    lastTouchAngle = Math.atan2(
+      e.touches[1].clientY - e.touches[0].clientY,
+      e.touches[1].clientX - e.touches[0].clientX
+    );
+    touchRotating = true;
+    userDragged = true;
   }
 }, { passive: true });
 canvas.addEventListener("touchmove", e => {
@@ -539,9 +566,18 @@ canvas.addEventListener("touchmove", e => {
       zoomScale = Math.max(0.2, Math.min(4, zoomScale * (dist / lastTouchDist)));
     }
     lastTouchDist = dist;
+    // Two-finger twist rotates camera
+    const angle = Math.atan2(
+      e.touches[1].clientY - e.touches[0].clientY,
+      e.touches[1].clientX - e.touches[0].clientX
+    );
+    if (touchRotating) {
+      camTheta += (angle - lastTouchAngle) * 2;
+    }
+    lastTouchAngle = angle;
   }
 }, { passive: true });
-canvas.addEventListener("touchend", () => { dragging = false; lastTouchDist = 0; });
+canvas.addEventListener("touchend", () => { dragging = false; lastTouchDist = 0; touchRotating = false; });
 
 // Controls
 document.getElementById("speed-slider").addEventListener("input", e => {
