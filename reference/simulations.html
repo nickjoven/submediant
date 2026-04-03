@@ -366,6 +366,7 @@ section.visible {
   }
   .flip-card-front {
     position: relative;
+    z-index: 1;
   }
   .flip-card-back {
     position: absolute;
@@ -387,6 +388,12 @@ section.visible {
     padding: 0.5em 0;
     background: none;
     border: none;
+    font-size: var(--fs-base);
+    overflow-x: visible;
+  }
+  .flip-card-back .equation-block mjx-container[display="true"],
+  .flip-card-back .equation-block .MathJax[display="true"] {
+    font-size: 100% !important;
   }
   .flip-card-back p {
     font-size: max(13px, var(--fs-xs));
@@ -398,6 +405,7 @@ section.visible {
     color: var(--m-text, #e6edf3);
   }
   .flip-hint {
+    display: block;
     position: absolute;
     top: 8px; right: 8px;
     font-size: 10px;
@@ -407,8 +415,9 @@ section.visible {
     opacity: 0.5;
     pointer-events: none;
     z-index: 2;
+    transition: opacity 0.3s;
   }
-  .flipped .flip-hint { display: none; }
+  .flipped .flip-hint { opacity: 0; }
 
   /* Hide the original equation blocks + trailing prose on mobile
      when their content lives on card backs */
@@ -446,7 +455,7 @@ section.visible {
     equation. This is the <strong>trivially solvable</strong> case.
   </p>
   <div class="equation-block card-back-source">
-    $$\ddot{\theta}_i = -\frac{g}{\ell}\sin\theta_i + \kappa\,(\theta_j - \theta_i)$$
+    $$\ddot{\theta}_i = -\frac{g}{\ell}\sin\theta_i + \kappa\,(\theta_j - \theta_i), \qquad T = 2\pi\sqrt{\frac{\ell}{g}}$$
   </div>
 
   <div class="flip-card">
@@ -460,10 +469,10 @@ section.visible {
       </div>
       <div class="flip-card-back">
         <div class="equation-block">
-          $$\ddot{\theta}_i = -\frac{g}{\ell}\sin\theta_i + \kappa\,(\theta_j - \theta_i)$$
+          $$T = 2\pi\sqrt{\frac{\ell}{g}}, \quad \Delta\theta \to \pi$$
         </div>
         <p>
-          Two oscillators, one relative phase &mdash; always solvable.
+          Period set by $2\pi$, phase locks to $\pi$.
           Increase <strong>coupling &kappa;</strong> to watch them lock faster.
           To get non-trivial dynamics, you need <a href="three-body.html">three</a>.
         </p>
@@ -522,10 +531,10 @@ section.visible {
     incoherence, $r = 1$ is perfect synchrony.
   </p>
   <div class="equation-block card-back-source">
-    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i)$$
+    $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i), \qquad K_c = \frac{2\Delta\omega}{\pi}$$
   </div>
   <div class="equation-block card-back-source">
-    $$r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
+    $$r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}, \qquad \theta_j \in [0,\,2\pi)$$
   </div>
 
   <div class="viz-side-by-side">
@@ -540,11 +549,12 @@ section.visible {
         </div>
         <div class="flip-card-back">
           <div class="equation-block">
-            $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_{j=1}^{N}\sin(\theta_j - \theta_i)$$
+            $$\dot{\theta}_i = \omega_i + \frac{K}{N}\sum_j\sin(\theta_j - \theta_i), \quad K_c = \frac{2\Delta\omega}{\pi}$$
           </div>
           <p>
-            Each dot is an oscillator. <strong>Coupling K</strong> pulls them
-            toward each other; past $K_c = 2\Delta\omega/\pi$ they lock.
+            Each dot is an oscillator on $[0, 2\pi)$.
+            <strong>Coupling K</strong> pulls them together;
+            past $K_c$ they lock.
           </p>
         </div>
       </div>
@@ -560,11 +570,11 @@ section.visible {
         </div>
         <div class="flip-card-back">
           <div class="equation-block">
-            $$r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}$$
+            $$r\,e^{i\psi} = \frac{1}{N}\sum_j e^{i\theta_j}, \quad \theta_j \in [0,\,2\pi)$$
           </div>
           <p>
-            $r = 0$: incoherence. $r = 1$: perfect synchrony. At critical
-            coupling in the continuum limit, you get
+            $r = 0$: incoherence. $r = 1$: synchrony at $e^{i\pi}+1=0$.
+            At critical coupling, you get
             <a href="first-principles.html">Einstein</a>.
           </p>
         </div>
@@ -659,11 +669,13 @@ section.visible {
           <span class="flip-hint">tap to flip</span>
         </div>
         <div class="flip-card-back">
+          <div class="equation-block">
+            $$W = \lim_{n\to\infty}\frac{\theta_n}{2\pi\,n}$$
+          </div>
           <p>
-            Flat at every rational, with a Cantor set of irrationals between.
+            Flat at every rational, Cantor set between.
             $\Omega = 1/\varphi$ is the <strong>last to lock</strong> &mdash;
-            the most irrational point in the staircase. Drag
-            <strong>&Omega;</strong> to trace it.
+            the most irrational point in the staircase.
           </p>
         </div>
       </div>
@@ -715,7 +727,7 @@ section.visible {
     the Arnold tongue structure made audible.
   </p>
   <div class="equation-block card-back-source">
-    $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu(v_b - \dot{x}), \qquad \mu(v) = \frac{\mu_s}{1 + |v|/v_0}\,\text{sgn}(v)$$
+    $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu(v_b - \dot{x}), \qquad f_0 = \frac{1}{2\pi}\sqrt{\frac{k}{m}}$$
   </div>
 
   <div class="viz-side-by-side">
@@ -730,11 +742,11 @@ section.visible {
         </div>
         <div class="flip-card-back">
           <div class="equation-block">
-            $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu(v_b - \dot{x})$$
+            $$m\ddot{x} + \gamma\dot{x} + kx = F_N\,\mu, \quad f_0 = \frac{1}{2\pi}\sqrt{\frac{k}{m}}$$
           </div>
           <p>
             The contact point grips, loads, snaps free, and grips again.
-            Increase <strong>bow pressure</strong> to deepen the stick phase.
+            Resonance at $2\pi f_0$. Increase <strong>bow pressure</strong> to deepen the stick phase.
           </p>
         </div>
       </div>
@@ -749,9 +761,11 @@ section.visible {
           <span class="flip-hint">tap to flip</span>
         </div>
         <div class="flip-card-back">
+          <div class="equation-block">
+            $$x(t) \sim \sum_n a_n \sin(2\pi n f_0\,t)$$
+          </div>
           <p>
-            With low damping, the limit cycle is wide and sawtooth-like &mdash;
-            the classic <strong>Helmholtz motion</strong> of a bowed string.
+            Sawtooth harmonics at integer multiples of $2\pi f_0$.
             This connects to the
             <a href="our_address.html">stick-slip framework</a> for dark matter.
           </p>
@@ -810,7 +824,7 @@ section.visible {
     Each left/right decision in the tree is a mediant operation.
   </p>
   <div class="equation-block card-back-source">
-    $$\text{mediant}\!\left(\frac{a}{b},\,\frac{c}{d}\right) = \frac{a+c}{b+d}$$
+    $$\text{mediant}\!\left(\frac{a}{b},\,\frac{c}{d}\right) = \frac{a+c}{b+d}, \qquad \phi = 2\pi\,\frac{p}{q}$$
   </div>
 
   <div class="viz-side-by-side">
@@ -825,12 +839,12 @@ section.visible {
         </div>
         <div class="flip-card-back">
           <div class="equation-block">
-            $$\text{mediant}\!\left(\frac{a}{b},\,\frac{c}{d}\right) = \frac{a+c}{b+d}$$
+            $$\frac{\phi_1}{\phi_2} = \frac{p}{q}, \quad \phi = 2\pi\,\frac{p}{q}$$
           </div>
           <p>
-            Two meshing gears turn at a <strong>rational</strong> ratio $p/q$.
-            The Stern-Brocot tree finds the simplest fraction &mdash;
-            the same algorithm clockmakers used for centuries.
+            One full turn is $2\pi$. Two meshing gears lock at rational
+            fractions of it. The mediant $\frac{a+c}{b+d}$ finds the
+            simplest such fraction.
           </p>
         </div>
       </div>
@@ -845,10 +859,13 @@ section.visible {
           <span class="flip-hint">tap to flip</span>
         </div>
         <div class="flip-card-back">
+          <div class="equation-block">
+            $$e^{2\pi i/\varphi} \;\text{— never locks}$$
+          </div>
           <p>
-            Each L/R decision is a mediant operation. At $1/\varphi$, the
-            path alternates L-R-L-R forever: $[0; 1, 1, 1, \ldots]$, the
-            <strong>slowest convergence</strong> from the
+            Each L/R decision is a mediant. At $1/\varphi$, the
+            path alternates L-R-L-R forever: $[0; 1, 1, 1, \ldots]$,
+            the <strong>slowest convergence</strong> from the
             <a href="oscillations.html">oscillations page</a>.
           </p>
         </div>
@@ -2258,17 +2275,13 @@ function rk4(state, derivs, dt) {
 <!-- Mobius theme: moon toggle -->
 <script src="_static/mobius-theme.js"></script>
 
-<nav id="page-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:100;
-  background:var(--m-surface, rgba(30,35,44,0.97)); backdrop-filter:blur(10px);
-  border-top:1px solid rgba(200,200,200,0.25);
-  display:flex; justify-content:center; align-items:center; gap:2rem; padding:10px 16px;
-  font-size:0.8rem; font-family:sans-serif;">
-  <a href="first-principles.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">First Principles</a>
-  <a href="three-body.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Three Bodies</a>
-  <a href="oscillations.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Oscillations</a>
-  <a href="our_address.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Our Address</a>
-  <a href="constants.html" style="color:var(--m-text-muted,#8b949e); text-decoration:none;">Constants</a>
-  <a href="simulations.html" style="color:var(--m-accent,#DE3373); border-bottom:2px solid var(--m-accent,#DE3373); padding-bottom:2px; text-decoration:none;">Simulations</a>
+<nav id="page-nav">
+  <a href="first-principles.html">First Principles</a>
+  <a href="three-body.html">Three Bodies</a>
+  <a href="oscillations.html">Oscillations</a>
+  <a href="our_address.html">Our Address</a>
+  <a href="constants.html">Constants</a>
+  <a href="simulations.html" class="active">Simulations</a>
 </nav>
 </body>
 </html>

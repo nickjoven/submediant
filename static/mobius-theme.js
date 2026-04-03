@@ -50,11 +50,6 @@ function moonSVG(phase, color) {
     <line x1="${(10 - 5*p).toFixed(1)}" y1="${(y1 - 3)}" x2="${(10 - 6*p).toFixed(1)}" y2="${(y1 - 5)}" stroke="${d}" stroke-width="0.3" opacity="${subVeinOpacity}"/>
     <line x1="${(10 + 5*p).toFixed(1)}" y1="${(y1 - 3)}" x2="${(10 + 6*p).toFixed(1)}" y2="${(y1 - 5)}" stroke="${d}" stroke-width="0.3" opacity="${subVeinOpacity}"/>` : "";
 
-  // Ginkgo leaf outline: two arcs meeting at the stem top, with a notch (the negative space cleft)
-  const notchD = frac < 0.2 ? 3 : frac < 0.8 ? 2 : 0.5; // cleft closes as moon fills
-  const leafPath = `M10,${18-16*p - 1} C${10-r},${cy-r} ${10-r},${cy+r*0.5} 10,18
-                    M10,${18-16*p - 1} C${10+r},${cy-r} ${10+r},${cy+r*0.5} 10,18`;
-
   if (phase === 0) {
     // New moon: pure negative space — only the ginkgo cleft visible
     return `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -523,6 +518,13 @@ function init() {
   initCurvedSpace();
   initMathScaleToFit();
   initCopyOverflow();
+
+  // Scroll active nav link into view on mobile
+  const nav = document.getElementById("page-nav");
+  if (nav) {
+    const active = nav.querySelector("a.active");
+    if (active) active.scrollIntoView({ inline: "center", block: "nearest" });
+  }
 }
 
 if (document.readyState === "loading") {

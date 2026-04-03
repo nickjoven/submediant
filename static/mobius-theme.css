@@ -157,36 +157,61 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 .copy-overflow-btn:hover { color: var(--m-text, #e6edf3); border-color: var(--m-text-muted, #8b949e); }
 .copy-overflow-btn.copied { color: var(--m-accent3, #08A953); border-color: var(--m-accent3, #08A953); }
 
-/* ── Copy-on-hover for overflowing content ── */
-.copy-overflow-wrap { position: relative; }
-.copy-overflow-wrap > .copy-overflow-btn {
-  display: none;
-  position: absolute;
-  top: 2px; right: 2px;
-  background: var(--m-surface, #161b22);
-  border: 1px solid var(--m-border, #30363d);
-  color: var(--m-text-muted, #8b949e);
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 11px;
-  cursor: pointer;
-  z-index: 5;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-.copy-overflow-wrap:hover > .copy-overflow-btn { display: block; }
-.copy-overflow-btn:hover { color: var(--m-text, #e6edf3); border-color: var(--m-text-muted, #8b949e); }
-.copy-overflow-btn.copied { color: var(--m-accent3, #08A953); border-color: var(--m-accent3, #08A953); }
-
 /* ── Smooth scroll & anchor offset ── */
 html { scroll-behavior: smooth; scroll-padding-top: 1.5em; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
+/* ── Page nav bar (shared across reference pages) ── */
+#page-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--m-surface, rgba(30,35,44,0.97));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(200,200,200,0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-family: sans-serif;
+}
+#page-nav a {
+  color: var(--m-text-muted, #8b949e);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+#page-nav a:hover {
+  color: var(--m-text, #e6edf3);
+  text-decoration: none;
+}
+#page-nav a.active {
+  color: var(--m-accent, #DE3373);
+  border-bottom: 2px solid var(--m-accent, #DE3373);
+  padding-bottom: 2px;
+}
+
 /* ── Responsive: mobile / vertical readers ── */
 @media (max-width: 768px) {
-  /* Nav bar: tighter spacing, smaller text */
-  #page-nav { gap: 0.8rem !important; padding: 8px 10px !important; font-size: 0.7rem !important; }
-  #page-nav a { white-space: nowrap; }
+  /* Nav bar: horizontal scroll when content outgrows viewport */
+  #page-nav {
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0;
+    font-size: 0.7rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #page-nav::-webkit-scrollbar { display: none; }
+  #page-nav a {
+    white-space: nowrap;
+    padding: 10px 12px;
+    flex-shrink: 0;
+  }
   #mobius-moon-toggle { width: 28px !important; height: 28px !important; }
   #mobius-moon-toggle svg { width: 18px !important; height: 18px !important; }
 
@@ -203,7 +228,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 1.5em; }
 }
 
 @media (max-width: 480px) {
-  #page-nav { gap: 0.5rem !important; font-size: 0.65rem !important; }
+  #page-nav { font-size: 0.65rem; }
+  #page-nav a { padding: 8px 10px; }
 }
 
 /* ── Format accordion: expand / collapse ── */
