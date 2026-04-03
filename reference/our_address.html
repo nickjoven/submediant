@@ -48,6 +48,31 @@ main {
   padding: 0 40px 160px;
 }
 
+/* hero title card */
+.phi-spacer-hero { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+.hero-title {
+  font-size: var(--fs-xl);
+  font-weight: 100;
+  letter-spacing: 0.15em;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.hero-subtitle {
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--m-text, #e6edf3);
+  max-width: 560px;
+  margin: 0 auto;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+#hero-text {
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+}
+
 .phi-spacer-1 { min-height: 61.8vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0 3rem; }
 .phi-spacer    { height: calc(61.8px * 1.618); }
 .phi-spacer-sm { height: 61.8px; }
@@ -155,7 +180,13 @@ canvas#cmb-ring {
 }
 
 /* ── Data sections ── */
-section { margin-bottom: 0; }
+section {
+  margin-bottom: 0;
+  backdrop-filter: blur(0.5px) brightness(1.05);
+  -webkit-backdrop-filter: blur(0.5px) brightness(1.05);
+  border-radius: 4px;
+  padding: 1rem 0;
+}
 .section-label {
   font-size: var(--fs-sm); letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--m-text-muted, #8b949e);
@@ -246,7 +277,14 @@ main > div p, section p, .closing p {
 
 <main>
 
-<h1 style="font-size:var(--fs-lg); font-weight:300; color:var(--m-text); margin-bottom:1rem;">OUR ADDRESS</h1>
+<div class="phi-spacer-hero">
+  <div id="hero-text" style="text-align:center;">
+    <div class="hero-title">Our Address</div>
+    <p class="hero-subtitle">
+      One rule, three coordinates, nine settled digits.
+    </p>
+  </div>
+</div>
 
 <!-- The Rule -->
 <div style="max-width:700px; margin:0 auto calc(var(--sp) * 0.5); font-size:var(--fs-base); line-height:1.9; color:var(--m-text);">

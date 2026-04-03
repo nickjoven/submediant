@@ -370,6 +370,11 @@ let panX = 0, panY = 0, zoomScale = 1;
 let dragging = false, dragStartX, dragStartY, panStartX, panStartY;
 let time = 0;
 let speed = 1;
+let frameCount = 0;
+// Linear deceleration: orbits slow from initial speed to near 0
+// over ~3000 frames (~50 seconds at 60fps). The universe cools.
+const DECEL_FRAMES = 3000;
+const MIN_SPEED_FACTOR = 0.02; // near-zero residual drift
 let showEdges = true;
 const visibleGroups = new Set(Object.keys(groups));
 
@@ -484,6 +489,7 @@ canvas.addEventListener("touchend", () => { dragging = false; lastTouchDist = 0;
 // Controls
 document.getElementById("speed-slider").addEventListener("input", e => {
   speed = parseFloat(e.target.value);
+  frameCount = 0; // reset deceleration when user adjusts speed
   document.getElementById("speed-label").textContent = speed.toFixed(1) + "x";
 });
 document.getElementById("toggle-edges").addEventListener("change", e => {
@@ -727,8 +733,11 @@ function draw() {
 
   ctx.restore();
 
-  // Advance time
-  time += speed * 0.16;
+  // Advance time — linear deceleration toward stillness
+  frameCount++;
+  const decelFactor = Math.max(MIN_SPEED_FACTOR,
+    1 - (1 - MIN_SPEED_FACTOR) * Math.min(frameCount / DECEL_FRAMES, 1));
+  time += speed * decelFactor * 0.16;
   requestAnimationFrame(draw);
 }
 
