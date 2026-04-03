@@ -256,20 +256,85 @@ section.visible {
   transform: translateY(0);
 }
 
-/* responsive */
+/* responsive — card-based mobile layout: each unit of information
+   respects its own boundaries (knowledge quantization) */
 @media (max-width: 600px) {
   :root {
     --fs-sm: max(15px, calc(var(--fs-base) / var(--phi)));
     --fs-xs: max(13px, calc(var(--fs-sm) / var(--phi)));
   }
   main { padding: 0 12px 120px !important; }
-  .equation-block { padding: 0.5em 0; }
+
   .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
   .phi-spacer-lg { height: calc(61.8px * var(--phi)) !important; }
-  .viz-side-by-side { flex-direction: column; }
   section ul { padding-left: 1em; }
-  .sim-controls { gap: 0.6em; padding: 0.8em; }
-  .sim-control { min-width: 120px; }
+
+  /* ── Cards: each viz/equation/control block is a bounded card ── */
+  .viz-side-by-side {
+    flex-direction: column;
+    gap: 0.8em;
+  }
+  .viz-container {
+    height: auto !important;
+    border: 1px solid rgba(200,200,200,0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .viz-container canvas {
+    height: 280px;
+    flex-shrink: 0;
+  }
+  .viz-label {
+    position: relative;
+    bottom: auto; left: auto; right: auto;
+    padding: 0.6em 0.8em;
+    background: rgba(0,0,0,0.4);
+    border-top: 1px solid rgba(200,200,200,0.06);
+    font-size: max(11px, var(--fs-xs));
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  /* ── Equation cards: scale to fit, no clip ── */
+  .equation-block {
+    padding: 0.8em 0.5em;
+    margin: 1em 0;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(200,200,200,0.08);
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .equation-block mjx-container[display="true"],
+  .equation-block .MathJax[display="true"] {
+    font-size: 85% !important;
+  }
+
+  /* ── Controls card: stack vertically, no clipping ── */
+  .sim-controls {
+    flex-direction: column;
+    gap: 0.8em;
+    padding: 0.8em;
+    border-radius: 8px;
+  }
+  .sim-control {
+    min-width: 0;
+    width: 100%;
+  }
+  .sim-control label {
+    font-size: max(11px, var(--fs-xs));
+    white-space: normal;
+    word-break: break-word;
+  }
+  .sim-control .val {
+    font-size: max(12px, var(--fs-xs));
+    min-width: 4em;
+  }
+  .sim-control .row {
+    gap: 0.8em;
+  }
 }
 </style>
 </head>
@@ -694,8 +759,8 @@ function rk4(state, derivs, dt) {
   }
 
   function resize() {
-    W = container.clientWidth;
-    H = container.clientHeight;
+    W = canvas.clientWidth || container.clientWidth;
+    H = canvas.clientHeight || container.clientHeight;
     ctx = setupCanvas(canvas, W, H);
   }
 
@@ -925,13 +990,13 @@ function rk4(state, derivs, dt) {
   }
 
   function resizeCircle() {
-    cW = circleContainer.clientWidth;
-    cH = circleContainer.clientHeight;
+    cW = circleCanvas.clientWidth || circleContainer.clientWidth;
+    cH = circleCanvas.clientHeight || circleContainer.clientHeight;
     cctx = setupCanvas(circleCanvas, cW, cH);
   }
   function resizeR() {
-    rW = rContainer.clientWidth;
-    rH = rContainer.clientHeight;
+    rW = rCanvas.clientWidth || rContainer.clientWidth;
+    rH = rCanvas.clientHeight || rContainer.clientHeight;
     rctx = setupCanvas(rCanvas, rW, rH);
   }
 
@@ -1164,13 +1229,13 @@ function rk4(state, derivs, dt) {
   }
 
   function resizeArnold() {
-    aW = arnoldContainer.clientWidth;
-    aH = arnoldContainer.clientHeight;
+    aW = arnoldCanvas.clientWidth || arnoldContainer.clientWidth;
+    aH = arnoldCanvas.clientHeight || arnoldContainer.clientHeight;
     actx = setupCanvas(arnoldCanvas, aW, aH);
   }
   function resizeStair() {
-    sW = stairContainer.clientWidth;
-    sH = stairContainer.clientHeight;
+    sW = stairCanvas.clientWidth || stairContainer.clientWidth;
+    sH = stairCanvas.clientHeight || stairContainer.clientHeight;
     sctx = setupCanvas(stairCanvas, sW, sH);
   }
 
@@ -1427,13 +1492,13 @@ function rk4(state, derivs, dt) {
   }
 
   function resizeMotion() {
-    mW = motionContainer.clientWidth;
-    mH = motionContainer.clientHeight;
+    mW = motionCanvas.clientWidth || motionContainer.clientWidth;
+    mH = motionCanvas.clientHeight || motionContainer.clientHeight;
     mctx = setupCanvas(motionCanvas, mW, mH);
   }
   function resizePhase() {
-    pW = phaseContainer.clientWidth;
-    pH = phaseContainer.clientHeight;
+    pW = phaseCanvas.clientWidth || phaseContainer.clientWidth;
+    pH = phaseCanvas.clientHeight || phaseContainer.clientHeight;
     pctx = setupCanvas(phaseCanvas, pW, pH);
   }
 
@@ -1653,13 +1718,13 @@ function rk4(state, derivs, dt) {
   }
 
   function resizeGear() {
-    gW = gearContainer.clientWidth;
-    gH = gearContainer.clientHeight;
+    gW = gearCanvas.clientWidth || gearContainer.clientWidth;
+    gH = gearCanvas.clientHeight || gearContainer.clientHeight;
     gctx = setupCanvas(gearCanvas, gW, gH);
   }
   function resizeTree() {
-    tW = treeContainer.clientWidth;
-    tH = treeContainer.clientHeight;
+    tW = treeCanvas.clientWidth || treeContainer.clientWidth;
+    tH = treeCanvas.clientHeight || treeContainer.clientHeight;
     tctx = setupCanvas(treeCanvas, tW, tH);
   }
 
@@ -1706,27 +1771,35 @@ function rk4(state, derivs, dt) {
   function drawGears() {
     gctx.clearRect(0, 0, gW, gH);
     var p = currentP, q = currentQ;
+    var isMobile = gW < 340;
 
     // Size gears proportional to tooth count
     var maxTeeth = Math.max(p, q);
     var scaleFactor = Math.min(gW, gH) * 0.3 / Math.max(maxTeeth, 4);
-    var r1 = Math.max(30, q * scaleFactor);
-    var r2 = Math.max(30, p * scaleFactor);
-    // Cap radii
-    var maxR = Math.min(gW, gH) * 0.35;
+    var r1 = Math.max(isMobile ? 24 : 30, q * scaleFactor);
+    var r2 = Math.max(isMobile ? 24 : 30, p * scaleFactor);
+    // Cap radii — tighter on mobile to prevent overflow
+    var maxR = Math.min(gW, gH) * (isMobile ? 0.28 : 0.35);
     if (r1 > maxR) { r2 *= maxR / r1; r1 = maxR; }
     if (r2 > maxR) { r1 *= maxR / r2; r2 = maxR; }
 
     var toothH1 = r1 * 0.12;
     var gap = 2; // mesh gap
-    var cx1 = gW / 2 - (r1 + toothH1 + gap) * 0.5;
-    var cy1 = gH / 2;
+    // Center the gear pair in the canvas
+    var totalSpan = r1 + r2 + toothH1 * 2 + gap;
+    var cx1 = gW / 2 - totalSpan / 2 + r1;
+    var cy1 = gH / 2 + (isMobile ? 8 : 0); // nudge down on mobile for ratio label
     var cx2 = cx1 + r1 + r2 + toothH1 * 2 + gap;
-    var cy2 = gH / 2;
+    var cy2 = cy1;
 
-    // Clamp positions to canvas
-    if (cx2 + r2 + 20 > gW) {
-      var shift = (cx2 + r2 + 20 - gW) / 2;
+    // Clamp positions to canvas edges
+    var margin = isMobile ? 12 : 20;
+    if (cx1 - r1 - toothH1 < margin) {
+      var shift = margin - (cx1 - r1 - toothH1);
+      cx1 += shift; cx2 += shift;
+    }
+    if (cx2 + r2 + toothH1 + margin > gW) {
+      var shift = (cx2 + r2 + toothH1 + margin - gW);
       cx1 -= shift; cx2 -= shift;
     }
 
@@ -1736,17 +1809,19 @@ function rk4(state, derivs, dt) {
     var angle2 = -gearAngle * q / p + Math.PI / Math.max(p, 3); // offset for mesh
     drawGearWheel(gctx, cx2, cy2, r2, Math.max(p, 3), angle2, "#DE3373");
 
-    // Labels
+    // Labels — position below each gear, clamped within canvas
+    var labelFont = isMobile ? "10px 'SF Mono', monospace" : "12px 'SF Mono', monospace";
     gctx.fillStyle = "rgba(200,200,200,0.6)";
-    gctx.font = "12px 'SF Mono', monospace";
+    gctx.font = labelFont;
     gctx.textAlign = "center";
-    gctx.fillText(q + " teeth", cx1, cy1 + r1 + 30);
-    gctx.fillText(p + " teeth", cx2, cy2 + r2 + 30);
+    var labelY = Math.min(cy1 + r1 + (isMobile ? 20 : 30), gH - 8);
+    gctx.fillText(q + " teeth", Math.max(r1, Math.min(cx1, gW - r1)), labelY);
+    gctx.fillText(p + " teeth", Math.max(r2, Math.min(cx2, gW - r2)), labelY);
 
-    // Ratio label
+    // Ratio label at top
     gctx.fillStyle = "rgba(252,202,40,0.8)";
-    gctx.font = "bold 14px 'SF Mono', monospace";
-    gctx.fillText(p + "/" + q, gW / 2, 28);
+    gctx.font = "bold " + (isMobile ? "12px" : "14px") + " 'SF Mono', monospace";
+    gctx.fillText(p + "/" + q, gW / 2, isMobile ? 20 : 28);
   }
 
   function drawTree() {
