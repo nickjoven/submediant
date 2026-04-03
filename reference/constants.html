@@ -18,7 +18,7 @@ html { overflow-x: clip; }
   --phi: 1.618;
   --fs-base: clamp(20px, 1.2vw + 8px, 22px);
   --fs-sm: calc(var(--fs-base) / var(--phi));
-  --fs-xs: calc(var(--fs-sm) / var(--phi));
+  --fs-xs: max(12px, calc(var(--fs-sm) / var(--phi)));
   --fs-lg: calc(var(--fs-base) * var(--phi));
   --fs-xl: calc(var(--fs-lg) * var(--phi));
   --sp: calc(var(--fs-base) * var(--phi));
@@ -87,12 +87,11 @@ main {
   padding: 1em 0;
   text-align: center;
   font-size: var(--fs-lg);
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
 }
 
-/* MathJax display math: allow natural width, scroll if needed */
-mjx-container[display="true"], .MathJax[display="true"] { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
+/* MathJax display math: scale-to-fit instead of scroll */
+mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
 
 /* prose */
 section p {
