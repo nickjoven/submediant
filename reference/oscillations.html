@@ -77,6 +77,32 @@ main {
   margin-bottom: 1.618em;
 }
 
+/* hero title card illumination */
+.hero-title {
+  font-size: var(--fs-xl);
+  font-weight: 100;
+  letter-spacing: 0.15em;
+  color: var(--m-text, #e6edf3);
+  margin-bottom: 0.3em;
+  line-height: 1.2;
+  text-transform: lowercase;
+}
+
+.hero-subtitle {
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--m-text, #e6edf3);
+  max-width: 560px;
+  margin: 0 auto;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+
+#hero-text {
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+}
+
 /* convergence plot */
 canvas.plot {
   width: 100%;
@@ -193,7 +219,7 @@ a:hover { text-decoration: underline; }
     --fs-xs: max(13px, calc(var(--fs-sm) / var(--phi)));
   }
   .equation-block { padding: 0.5em 0; }
-  .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
+  .section-title, .hero-title { font-size: var(--fs-lg) !important; word-break: break-word; }
   .phi-spacer-lg { height: calc(61.8px * 1.618) !important; }
   canvas.plot { height: 240px; }
 }
@@ -209,9 +235,9 @@ a:hover { text-decoration: underline; }
 <!-- HERO                                                               -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <div class="phi-spacer-hero">
-  <div style="text-align:center;">
-    <div class="section-title" style="margin-bottom:0.3em;">47 Oscillations</div>
-    <div class="section-subtitle">The slowest convergence in mathematics</div>
+  <div id="hero-text" style="text-align:center;">
+    <div class="hero-title">47 oscillations</div>
+    <div class="hero-subtitle">the slowest convergence in mathematics</div>
     <div style="color:var(--m-text-muted,#8b949e); font-size:var(--fs-sm); letter-spacing:0.1em;">
       $x_{n+1} = \dfrac{1}{1+x_n} \longrightarrow \dfrac{1}{\varphi}$
     </div>
@@ -973,6 +999,32 @@ function initBackground() {
 
     ctx.globalAlpha = 1;
     ctx.shadowBlur = 0;
+
+    // ── Hero text illumination: reveal along cobweb pipe path ──
+    var heroEl = document.getElementById('hero-text');
+    if (heroEl) {
+      var hRect = heroEl.getBoundingClientRect();
+      if (hRect.width > 0 && hRect.bottom > 0 && hRect.top < H) {
+        var mParts = [];
+        // Glow from convergence point
+        var cpScreen = cobwebToScreen(PHI_INV, PHI_INV);
+        var convergenceFrac = Math.min(1, segmentCount / pipeSegments.length);
+        var cpR = 120 + convergenceFrac * 80;
+        mParts.push('radial-gradient(circle ' + cpR + 'px at ' + (cpScreen[0] - hRect.left) + 'px ' + (cpScreen[1] - hRect.top) + 'px,#fff 0%,transparent 100%)');
+        // Glow from newest pipe tip
+        if (segmentCount > 0) {
+          var tipSeg = pipeSegments[segmentCount - 1];
+          var tipScreen = cobwebToScreen(tipSeg.x2, tipSeg.y2);
+          mParts.push('radial-gradient(circle 140px at ' + (tipScreen[0] - hRect.left) + 'px ' + (tipScreen[1] - hRect.top) + 'px,#fff 0%,transparent 100%)');
+        }
+        // Wandering glow from starfield drift
+        var driftX = ((W * 0.5 - t * 3) % W + W) % W;
+        var driftY = ((H * 0.5 - t * 3 * PHI_INV) % H + H) % H;
+        mParts.push('radial-gradient(circle 180px at ' + (driftX - hRect.left) + 'px ' + (driftY - hRect.top) + 'px,rgba(255,255,255,0.5) 0%,transparent 100%)');
+        heroEl.style.webkitMaskImage = mParts.join(',');
+        heroEl.style.maskImage = mParts.join(',');
+      }
+    }
 
     requestAnimationFrame(animate);
   }
