@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
-<title>Predictions Map</title>
+<title>Kepler</title>
 <link rel="stylesheet" href="_static/mobius-theme.css">
 <script src="_static/diagram-controls.js"></script>
 <script>
@@ -55,11 +55,11 @@ body {
   left: 32px;
   z-index: 10;
   background: rgba(0, 0, 0, 0.85);
-  border: 1px solid #30363d;
+  border: 1px solid var(--m-border, #30363d);
   border-radius: 8px;
   padding: 14px 18px;
-  font-size: 12px;
-  color: #c9d1d9;
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
   backdrop-filter: blur(8px);
   max-width: 240px;
 }
@@ -69,15 +69,17 @@ body {
   gap: 6px;
   margin-bottom: 4px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 #controls input[type="checkbox"] {
   accent-color: var(--gold);
 }
 #controls .section-label {
-  font-weight: 600;
-  color: #e6edf3;
-  font-size: 12px;
+  font-weight: 400;
+  color: var(--m-text, #e6edf3);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   margin-top: 8px;
   margin-bottom: 4px;
 }
@@ -89,8 +91,8 @@ body {
   margin: 4px 0 2px;
 }
 #speed-label {
-  font-size: 10px;
-  color: #8b949e;
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
   text-align: right;
   display: block;
 }
@@ -102,52 +104,53 @@ body {
   right: 32px;
   z-index: 10;
   background: rgba(0, 0, 0, 0.95);
-  border: 1px solid #30363d;
+  border: 1px solid var(--m-border, #30363d);
   border-radius: 8px;
   padding: 18px 22px;
-  font-size: 13px;
-  color: #c9d1d9;
+  font-size: var(--fs-sm);
+  color: var(--m-text-muted, #8b949e);
   backdrop-filter: blur(8px);
   max-width: 320px;
   display: none;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 #info-panel .info-title {
-  font-weight: 600;
-  color: #e6edf3;
-  font-size: 15px;
+  font-weight: 400;
+  color: var(--m-text, #e6edf3);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
   margin-bottom: 6px;
 }
 #info-panel .info-claim {
-  font-size: 12px;
-  color: #8b949e;
+  font-size: var(--fs-xs);
+  color: var(--m-text-muted, #8b949e);
   line-height: 1.5;
   margin-bottom: 8px;
 }
 #info-panel .info-link {
   color: var(--magenta);
   text-decoration: none;
-  font-size: 12px;
+  font-size: var(--fs-xs);
 }
 #info-panel .info-link:hover { text-decoration: underline; }
 
 /* Prediction card inside info panel */
 .pred-card {
   margin-top: 10px;
-  border-top: 1px solid #30363d;
+  border-top: 1px solid var(--m-border, #30363d);
   padding-top: 10px;
 }
 .pred-card table {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   width: 100%;
   border-collapse: collapse;
 }
 .pred-card td {
   padding: 2px 6px;
-  color: #c9d1d9;
+  color: var(--m-text-muted, #8b949e);
 }
 .pred-card td:first-child {
-  color: #8b949e;
+  color: var(--m-text-muted, #8b949e);
   font-weight: 500;
   width: 80px;
 }
@@ -155,8 +158,8 @@ body {
   display: inline-block;
   padding: 1px 8px;
   border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: 400;
   letter-spacing: 0.04em;
 }
 .pred-status.confirmed { background: rgba(8,169,83,0.2); color: #7ee787; }
@@ -174,14 +177,17 @@ body {
   pointer-events: none;
 }
 #title-overlay h1 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #e6edf3;
-  letter-spacing: 0.04em;
+  font-size: var(--fs-xl);
+  font-weight: 100;
+  color: var(--m-text, #e6edf3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 #title-overlay .subtitle {
-  font-size: 12px;
-  color: #8b949e;
+  font-size: var(--fs-sm);
+  font-weight: 300;
+  color: var(--m-text-muted, #8b949e);
+  letter-spacing: 0.03em;
   margin-top: 2px;
 }
 
@@ -190,25 +196,26 @@ body {
   float: right;
   background: none;
   border: none;
-  color: #8b949e;
+  color: var(--m-text-muted, #8b949e);
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--fs-sm);
   line-height: 1;
   padding: 0 0 0 8px;
 }
-.info-close:hover { color: #e6edf3; }
+.info-close:hover { color: var(--m-text, #e6edf3); }
 
 @media (max-width: 768px) {
   #controls { top: auto; bottom: 80px; left: 12px; right: 12px; max-width: none; }
   #info-panel { top: auto; bottom: 80px; left: 12px; right: 12px; max-width: none; }
   #title-overlay { top: 12px; }
+  #title-overlay h1 { font-size: var(--fs-lg); }
 }
 </style>
 </head>
 <body>
 
 <div id="title-overlay">
-  <h1>PREDICTIONS MAP</h1>
+  <h1>Kepler</h1>
   <div class="subtitle">Bodies on geodesics &mdash; the derivation universe</div>
 </div>
 
@@ -378,6 +385,53 @@ const MIN_SPEED_FACTOR = 0.02; // near-zero residual drift
 let showEdges = true;
 const visibleGroups = new Set(Object.keys(groups));
 
+// ── Elliptical orbit camera ──────────────────────────────────────────────
+// The viewer orbits the scene on an ellipse in a conceptual XZ plane.
+// Groups are assigned Z depths; as the camera angle advances, positions
+// rotate and scale with perspective, giving the feel of circling the system.
+//
+// Camera ellipse semi-axes (in screen-space units):
+const CAM_A = 800;                    // semi-major (X extent)
+const CAM_B = CAM_A / PHI;            // semi-minor (Z extent) — golden ratio
+const CAM_DIST = 1200;                // distance from focal plane to camera
+const CAM_SPEED = 0.003;              // radians per frame at full speed
+let camTheta = 0;                     // current camera angle on the ellipse
+let userDragged = false;              // true once user has manually panned
+
+// Assign each group a Z depth (spread them ±200 around 0)
+const groupKeys = Object.keys(groups);
+groupKeys.forEach((gk, i) => {
+  groups[gk].cz = (i / (groupKeys.length - 1) - 0.5) * 400;
+});
+
+// Project a 3D world point through the orbiting camera
+function camProject(wx, wy, wz) {
+  // Camera position on ellipse in XZ plane
+  const camX = CAM_A * Math.cos(camTheta);
+  const camZ = CAM_B * Math.sin(camTheta);
+
+  // Translate world relative to camera
+  var rx = wx - camX;
+  var rz = wz - camZ;
+
+  // Rotate into camera-local frame (camera looks toward origin)
+  var ca = Math.cos(-camTheta), sa = Math.sin(-camTheta);
+  var lx = rx * ca - rz * sa;
+  var lz = rx * sa + rz * ca;
+
+  // Perspective: objects at lz behind camera get depth scaling
+  var depth = CAM_DIST + lz;
+  if (depth < 100) depth = 100; // clamp to avoid inversion
+  var perspScale = CAM_DIST / depth;
+
+  return {
+    x: lx * perspScale,
+    y: wy * perspScale,
+    scale: perspScale,
+    depth: depth
+  };
+}
+
 // Stars background
 const stars = [];
 for (let i = 0; i < 300; i++) {
@@ -406,6 +460,7 @@ panY = H / 2;
 // ========================================================================
 canvas.addEventListener("mousedown", e => {
   dragging = true;
+  userDragged = true;
   dragStartX = e.clientX;
   dragStartY = e.clientY;
   panStartX = panX;
@@ -416,7 +471,7 @@ canvas.addEventListener("mousemove", e => {
     panX = panStartX + (e.clientX - dragStartX);
     panY = panStartY + (e.clientY - dragStartY);
   }
-  // Hover detection
+  // Hover detection (projected coordinates)
   const mx = (e.clientX - panX) / zoomScale;
   const my = (e.clientY - panY) / zoomScale;
   canvas.title = "";
@@ -424,7 +479,8 @@ canvas.addEventListener("mousemove", e => {
     if (!n.visible) continue;
     const dx = mx - n.wx;
     const dy = my - n.wy;
-    if (dx * dx + dy * dy < (n.r + 4) * (n.r + 4)) {
+    const hr = (n.r * (n.pscale || 1)) + 4;
+    if (dx * dx + dy * dy < hr * hr) {
       canvas.title = n.title;
       break;
     }
@@ -432,14 +488,15 @@ canvas.addEventListener("mousemove", e => {
 });
 canvas.addEventListener("mouseup", e => {
   if (dragging && Math.abs(e.clientX - dragStartX) < 4 && Math.abs(e.clientY - dragStartY) < 4) {
-    // Click — find node
+    // Click — find node (projected coordinates)
     const mx = (e.clientX - panX) / zoomScale;
     const my = (e.clientY - panY) / zoomScale;
     for (const n of nodes) {
       if (!n.visible) continue;
       const dx = mx - n.wx;
       const dy = my - n.wy;
-      if (dx * dx + dy * dy < (n.r + 6) * (n.r + 6)) {
+      const hr = (n.r * (n.pscale || 1)) + 6;
+      if (dx * dx + dy * dy < hr * hr) {
         showInfoPanel(n);
         break;
       }
@@ -533,6 +590,9 @@ function showInfoPanel(n) {
 // ========================================================================
 // KEPLERIAN POSITION — faster near periapsis
 // ========================================================================
+// Font stack matching the other reference pages
+const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
 function keplerPosition(node, t) {
   const M = (t / node.period) * Math.PI * 2;  // mean anomaly
   // Approximate eccentric anomaly via Newton iteration (e ~ 0.3)
@@ -556,7 +616,8 @@ function keplerPosition(node, t) {
   const st = Math.sin(node.orbitalTilt * 0.3);
   return {
     x: node.groupCx + x * ct - y * st,
-    y: node.groupCy + x * st + y * ct
+    y: node.groupCy + x * st + y * ct,
+    z: groups[node.group].cz
   };
 }
 
@@ -570,10 +631,17 @@ function draw() {
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, W, H);
 
-  // Stars (parallax with zoom)
+  // Advance camera orbit (elliptical, continues regardless of pause)
+  if (!userDragged) {
+    camTheta += CAM_SPEED;
+  }
+
+  // Stars (parallax with camera + zoom)
   ctx.save();
   const starParallax = 0.3;
-  ctx.translate(panX * starParallax, panY * starParallax);
+  const starCamX = CAM_A * Math.cos(camTheta) * 0.05;
+  const starCamY = CAM_B * Math.sin(camTheta) * 0.03;
+  ctx.translate(panX * starParallax - starCamX, panY * starParallax - starCamY);
   stars.forEach(s => {
     const twinkle = 0.5 + 0.5 * Math.sin(time * s.twinkleSpeed);
     ctx.globalAlpha = s.a * twinkle;
@@ -589,14 +657,29 @@ function draw() {
   ctx.translate(panX, panY);
   ctx.scale(zoomScale, zoomScale);
 
-  // Update positions
+  // Update world positions (flat Keplerian XY + group Z)
   nodes.forEach(n => {
     const pos = keplerPosition(n, time);
-    n.wx = pos.x;
-    n.wy = pos.y;
+    n.wx3d = pos.x;
+    n.wy3d = pos.y;
+    n.wz3d = pos.z;
+    // Project through orbiting camera
+    const proj = camProject(pos.x, pos.y, pos.z);
+    n.wx = proj.x;
+    n.wy = proj.y;
+    n.pscale = proj.scale;
+    n.depth = proj.depth;
   });
 
-  // Draw group orbit ghosts (faint ellipses)
+  // Project group centers for labels
+  Object.entries(groups).forEach(([gk, g]) => {
+    const proj = camProject(g.cx, g.cy, g.cz);
+    g.px = proj.x;
+    g.py = proj.y;
+    g.pscale = proj.scale;
+  });
+
+  // Draw group orbit ghosts (faint ellipses, projected)
   ctx.globalAlpha = 0.08;
   ctx.lineWidth = 0.5;
   Object.entries(groups).forEach(([gk, g]) => {
@@ -613,16 +696,17 @@ function draw() {
         const oy = n.semiMajor * Math.sin(angle + n.orbitalAngle) * aspect;
         const ct = Math.cos(n.orbitalTilt * 0.3);
         const st = Math.sin(n.orbitalTilt * 0.3);
-        const px = g.cx + ox * ct - oy * st;
-        const py = g.cy + ox * st + oy * ct;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
+        const wx = g.cx + ox * ct - oy * st;
+        const wy = g.cy + ox * st + oy * ct;
+        const proj = camProject(wx, wy, g.cz);
+        if (i === 0) ctx.moveTo(proj.x, proj.y);
+        else ctx.lineTo(proj.x, proj.y);
       }
       ctx.stroke();
     });
   });
 
-  // Draw DAG edges
+  // Draw DAG edges (sorted by average depth for painter's order)
   if (showEdges) {
     ctx.globalAlpha = 0.15;
     ctx.lineWidth = 0.8;
@@ -662,72 +746,81 @@ function draw() {
     });
   }
 
-  // Draw group center labels
+  // Draw group center labels (projected)
   ctx.globalAlpha = 0.25;
-  ctx.font = "600 10px -apple-system, sans-serif";
   ctx.textAlign = "center";
   Object.entries(groups).forEach(([gk, g]) => {
     if (!visibleGroups.has(gk)) return;
+    const fs = Math.round(10 * g.pscale);
+    ctx.font = "300 " + fs + "px " + FONT;
     ctx.fillStyle = g.color;
-    ctx.fillText(g.label.toUpperCase(), g.cx, g.cy - 8);
+    ctx.fillText(g.label.toUpperCase(), g.px, g.py - 8 * g.pscale);
     // Small dot at center
     ctx.beginPath();
-    ctx.arc(g.cx, g.cy, 2, 0, Math.PI * 2);
+    ctx.arc(g.px, g.py, 2 * g.pscale, 0, Math.PI * 2);
     ctx.fill();
   });
 
+  // Sort nodes by depth (far to near) for painter's algorithm
+  const sortedNodes = nodes.filter(n => n.visible).slice().sort((a, b) => b.depth - a.depth);
+
   // Draw nodes
   ctx.globalAlpha = 1;
-  nodes.forEach(n => {
-    if (!n.visible) return;
-
+  sortedNodes.forEach(n => {
     const x = n.wx;
     const y = n.wy;
+    const ps = n.pscale;
+    const r = n.r * ps;
+
+    // Depth-based dimming: far objects slightly dimmer
+    const depthAlpha = 0.5 + 0.5 * Math.min(ps / 1.0, 1);
 
     // Glow
-    const glowR = n.isPrediction ? n.r * 3 : n.r * 2;
+    const glowR = n.isPrediction ? r * 3 : r * 2;
     const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
     glow.addColorStop(0, n.color + "40");
     glow.addColorStop(1, n.color + "00");
     ctx.fillStyle = glow;
+    ctx.globalAlpha = depthAlpha;
     ctx.beginPath();
     ctx.arc(x, y, glowR, 0, Math.PI * 2);
     ctx.fill();
 
     // Body
-    ctx.globalAlpha = n.isPrediction ? 1 : 0.85;
+    ctx.globalAlpha = (n.isPrediction ? 1 : 0.85) * depthAlpha;
     ctx.fillStyle = n.color;
     ctx.beginPath();
-    ctx.arc(x, y, n.r, 0, Math.PI * 2);
+    ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
 
     // Prediction status ring
     if (n.isPrediction && n.predData) {
       const p = n.predData;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2 * ps;
       if (p.status === "confirmed") {
         ctx.strokeStyle = "#7ee787";
         ctx.setLineDash([]);
       } else if (p.status === "pending") {
         ctx.strokeStyle = "#FCCA28";
-        ctx.setLineDash([4, 3]);
+        ctx.setLineDash([4 * ps, 3 * ps]);
       } else {
         ctx.strokeStyle = "#58a6ff";
-        ctx.setLineDash([2, 2]);
+        ctx.setLineDash([2 * ps, 2 * ps]);
       }
-      ctx.globalAlpha = 0.7 + 0.3 * Math.sin(time * 0.05);
+      ctx.globalAlpha = (0.7 + 0.3 * Math.sin(time * 0.05)) * depthAlpha;
       ctx.beginPath();
-      ctx.arc(x, y, n.r + 4, 0, Math.PI * 2);
+      ctx.arc(x, y, r + 4 * ps, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
     }
 
     // Label
-    ctx.globalAlpha = 0.7;
+    const labelFs = Math.max(7, Math.round(9 * ps));
+    ctx.globalAlpha = 0.7 * depthAlpha;
     ctx.fillStyle = n.color;
-    ctx.font = "400 9px -apple-system, sans-serif";
+    ctx.font = "300 " + labelFs + "px " + FONT;
     ctx.textAlign = "center";
-    ctx.fillText(n.id, x, y + n.r + 12);
+    ctx.fillText(n.id, x, y + r + 12 * ps);
     ctx.globalAlpha = 1;
   });
 
@@ -755,7 +848,7 @@ draw();
   <a href="oscillations.html">Oscillations</a>
   <a href="our_address.html">Our Address</a>
   <a href="constants.html">Constants</a>
-  <a href="predictions.html" class="active">Predictions</a>
+  <a href="kepler.html" class="active">Kepler</a>
   <a href="simulations.html">Simulations</a>
 </nav>
 </body>
