@@ -9,8 +9,8 @@
   --m-ref-h: 340; --m-ref-s: 72%; --m-ref-l: 54%;
 
   /* Dark mode defaults */
-  --m-bg: #0d1117;
-  --m-surface: #161b22;
+  --m-bg: #000000;
+  --m-surface: #000000;
   --m-border: #30363d;
   --m-text: #e6edf3;
   --m-text-muted: #8b949e;
@@ -142,7 +142,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
   display: none;
   position: absolute;
   top: 2px; right: 2px;
-  background: var(--m-surface, #161b22);
+  background: var(--m-surface, #000000);
   border: 1px solid var(--m-border, #30363d);
   color: var(--m-text-muted, #8b949e);
   border-radius: 4px;
