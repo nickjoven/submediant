@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle cx=%2210%22 cy=%2210%22 r=%224%22 fill=%22%23FCCA28%22/%3E%3C/svg%3E">
+<title>Predictions Map</title>
+<link rel="stylesheet" href="_static/mobius-theme.css">
+<script src="_static/diagram-controls.js"></script>
+<script>
+MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; }
+
+:root {
+  --phi: 1.618;
+  --fs-base: clamp(20px, 1.2vw + 8px, 22px);
+  --fs-sm: calc(var(--fs-base) / var(--phi));
+  --fs-xs: max(12px, calc(var(--fs-sm) / var(--phi)));
+  --fs-lg: calc(var(--fs-base) * var(--phi));
+  --fs-xl: calc(var(--fs-lg) * var(--phi));
+  --sp: calc(var(--fs-base) * var(--phi));
+  --gold: #FCCA28;
+  --green: #08A953;
+  --magenta: #DE3373;
+  --teal: #37BA9B;
+  --blue: #1E76B8;
+}
+
+body {
+  background: #0d1117;
+  color: var(--m-text, #e6edf3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  overflow-x: clip;
+  color-scheme: dark;
+}
+
+#universe {
+  width: 100%;
+  height: 100vh;
+  display: block;
+  cursor: grab;
+}
+#universe:active { cursor: grabbing; }
+
+/* Controls overlay */
+#controls {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  z-index: 10;
+  background: rgba(13, 17, 23, 0.85);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 12px;
+  color: #c9d1d9;
+  backdrop-filter: blur(8px);
+  max-width: 240px;
+}
+#controls label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  font-size: 11px;
+}
+#controls input[type="checkbox"] {
+  accent-color: var(--gold);
+}
+#controls .section-label {
+  font-weight: 600;
+  color: #e6edf3;
+  font-size: 12px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+#controls .section-label:first-child { margin-top: 0; }
+
+#speed-slider {
+  width: 100%;
+  accent-color: var(--gold);
+  margin: 4px 0 2px;
+}
+#speed-label {
+  font-size: 10px;
+  color: #8b949e;
+  text-align: right;
+  display: block;
+}
+
+/* Info panel */
+#info-panel {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  z-index: 10;
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 18px 22px;
+  font-size: 13px;
+  color: #c9d1d9;
+  backdrop-filter: blur(8px);
+  max-width: 320px;
+  display: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+#info-panel .info-title {
+  font-weight: 600;
+  color: #e6edf3;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+#info-panel .info-claim {
+  font-size: 12px;
+  color: #8b949e;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+#info-panel .info-link {
+  color: var(--magenta);
+  text-decoration: none;
+  font-size: 12px;
+}
+#info-panel .info-link:hover { text-decoration: underline; }
+
+/* Prediction card inside info panel */
+.pred-card {
+  margin-top: 10px;
+  border-top: 1px solid #30363d;
+  padding-top: 10px;
+}
+.pred-card table {
+  font-size: 11px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.pred-card td {
+  padding: 2px 6px;
+  color: #c9d1d9;
+}
+.pred-card td:first-child {
+  color: #8b949e;
+  font-weight: 500;
+  width: 80px;
+}
+.pred-status {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.pred-status.confirmed { background: rgba(8,169,83,0.2); color: #7ee787; }
+.pred-status.pending { background: rgba(252,202,40,0.2); color: #FCCA28; }
+.pred-status.reinterpretation { background: rgba(88,166,255,0.2); color: #58a6ff; }
+
+/* Title overlay */
+#title-overlay {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+}
+#title-overlay h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.04em;
+}
+#title-overlay .subtitle {
+  font-size: 12px;
+  color: #8b949e;
+  margin-top: 2px;
+}
+
+/* Close button */
+.info-close {
+  float: right;
+  background: none;
+  border: none;
+  color: #8b949e;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 0 0 8px;
+}
+.info-close:hover { color: #e6edf3; }
+
+@media (max-width: 768px) {
+  #controls { top: auto; bottom: 80px; left: 12px; right: 12px; max-width: none; }
+  #info-panel { top: auto; bottom: 80px; left: 12px; right: 12px; max-width: none; }
+  #title-overlay { top: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div id="title-overlay">
+  <h1>PREDICTIONS MAP</h1>
+  <div class="subtitle">Bodies on geodesics &mdash; the derivation universe</div>
+</div>
+
+<div id="controls">
+  <div class="section-label">Speed</div>
+  <input type="range" id="speed-slider" min="0" max="3" step="0.1" value="1">
+  <span id="speed-label">1.0x</span>
+
+  <div class="section-label">Edges</div>
+  <label><input type="checkbox" id="toggle-edges" checked> Show DAG edges</label>
+
+  <div class="section-label">Categories</div>
+  <label><input type="checkbox" data-group="foundation" checked> <span style="color:#ffd75c">Foundation</span></label>
+  <label><input type="checkbox" data-group="field_eq" checked> <span style="color:#58a6ff">Field Equation</span></label>
+  <label><input type="checkbox" data-group="spacetime" checked> <span style="color:#7ee787">Spacetime (K=1)</span></label>
+  <label><input type="checkbox" data-group="topology" checked> <span style="color:#d2a8ff">Topology</span></label>
+  <label><input type="checkbox" data-group="cosmology" checked> <span style="color:#ffa657">Cosmology</span></label>
+  <label><input type="checkbox" data-group="predictions" checked> <span style="color:#79c0ff">Predictions</span></label>
+</div>
+
+<div id="info-panel">
+  <button class="info-close" onclick="document.getElementById('info-panel').style.display='none'">&times;</button>
+  <div class="info-title" id="info-title"></div>
+  <div class="info-claim" id="info-claim"></div>
+  <div id="info-extra"></div>
+</div>
+
+<canvas id="universe"></canvas>
+
+<script>
+(function() {
+"use strict";
+
+// ========================================================================
+// DATA — extend by adding entries here
+// ========================================================================
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+const groups = {
+  foundation:  { cx: -280, cy: -120, color: "#ffd75c", label: "Foundation" },
+  field_eq:    { cx:  -80, cy: -220, color: "#58a6ff", label: "Field Equation" },
+  spacetime:   { cx:  160, cy: -140, color: "#7ee787", label: "Spacetime" },
+  topology:    { cx:  300, cy:   60, color: "#d2a8ff", label: "Topology" },
+  cosmology:   { cx:  120, cy:  220, color: "#ffa657", label: "Cosmology" },
+  predictions: { cx: -180, cy:  180, color: "#79c0ff", label: "Predictions" }
+};
+
+const nodes = [
+  // Foundation
+  { id:"D29", title:"Mediant Derivation", claim:"The mediant (a+c)/(b+d) is the unique operation preserving Farey adjacency.", group:"foundation", r:10 },
+  { id:"D10", title:"Minimum Alphabet", claim:"Three coupled oscillators and the mediant generate the minimum structure for physics.", group:"foundation", r:10, url:"first-principles.html" },
+  { id:"D0",  title:"Recurrence Survival", claim:"Only recurrent configurations survive indefinite iteration.", group:"foundation", r:10 },
+
+  // Field Equation
+  { id:"D11", title:"Rational Field Equation", claim:"Synchronization cost C(p/q) = 1/(q^2 sin^2(pi p/q)) governs all coupling.", group:"field_eq", r:9, url:"oscillations.html" },
+  { id:"D14", title:"Three Dimensions", claim:"Three spatial dimensions emerge as the minimum for non-degenerate mediant geometry.", group:"field_eq", r:9, url:"three-body.html" },
+  { id:"D15", title:"Lie Group Characterization", claim:"The symmetry group of the rational field equation is SL(2,Z).", group:"field_eq", r:9 },
+
+  // Spacetime K=1
+  { id:"D12", title:"Two Continuum Limits", claim:"The field equation has two limits: K->1 (gravity) and K<1 (quantum).", group:"spacetime", r:9 },
+  { id:"D13", title:"Einstein from Kuramoto", claim:"The Einstein field equations emerge from Kuramoto synchronization at K=1.", group:"spacetime", r:9, url:"first-principles.html" },
+  { id:"D16", title:"Variable Denominator", claim:"Variable denominator q(x) encodes local curvature as rational approximation depth.", group:"spacetime", r:8 },
+  { id:"D17", title:"Rank-1 Temporal Causation", claim:"Time emerges as rank-1 causal ordering of synchronization updates.", group:"spacetime", r:8 },
+
+  // Topology
+  { id:"D18", title:"Mobius Container", claim:"The mediant's half-twist identifies p/q with (q-p)/q on a Mobius strip.", group:"topology", r:8 },
+  { id:"D19", title:"Klein Bottle", claim:"Doubling the Mobius container produces the Klein bottle as the natural topology.", group:"topology", r:9 },
+  { id:"D20", title:"XOR Continuum Limit", claim:"The discrete XOR gate has a continuum limit that reproduces quantum interference.", group:"topology", r:8 },
+  { id:"D21", title:"Discrete Gauge", claim:"Gauge symmetry arises from the discrete ambiguity in Farey labeling.", group:"topology", r:8 },
+  { id:"D23", title:"Three Zeros", claim:"The field equation has exactly three zeros, corresponding to three generations.", group:"topology", r:8 },
+
+  // Cosmology
+  { id:"D24", title:"Vacuum Energy", claim:"Vacuum energy equals the synchronization cost of the trivial configuration.", group:"cosmology", r:8 },
+  { id:"D25", title:"Farey Partition", claim:"Dark energy fraction Omega_Lambda = 13/19 ~ 0.6842 from Farey partition.", group:"cosmology", r:9 },
+  { id:"D26", title:"Hierarchy", claim:"The hierarchy between gravity and electromagnetism is a Farey depth ratio.", group:"cosmology", r:8 },
+  { id:"D27", title:"Exponent", claim:"The critical exponent of synchronization determines the spectral index.", group:"cosmology", r:8 },
+  { id:"D28", title:"Farey Proof", claim:"Closed-form proof that the Farey partition yields Omega_Lambda = 13/19.", group:"cosmology", r:8 },
+
+  // Predictions
+  { id:"D1",  title:"Born Rule", claim:"Born's probability rule |psi|^2 emerges as basin measure of synchronization.", group:"predictions", r:9, url:"constants.html" },
+  { id:"D4",  title:"Spectral Tilt", claim:"CMB spectral tilt n_s from mode-locking statistics on the Stern-Brocot tree.", group:"predictions", r:8, url:"constants.html" },
+  { id:"D5",  title:"Two Forces", claim:"Only two long-range forces (gravity + EM) survive the synchronization filter.", group:"predictions", r:8 },
+  { id:"D6",  title:"Planck Scale", claim:"Planck length as the self-sustaining synchronization threshold.", group:"predictions", r:8 },
+  { id:"D7",  title:"Measurement Collapse", claim:"Wavefunction collapse as tongue traversal in the Arnold tongue diagram.", group:"predictions", r:8 },
+  { id:"D8",  title:"High-z MOND", claim:"MOND acceleration a_0 varies with redshift: a_0(z) = a_0(0) (1+z)^beta.", group:"predictions", r:8, url:"our_address.html" },
+  { id:"D9",  title:"Fidelity Bound", claim:"Self-referential bound: the framework must predict its own derivability.", group:"predictions", r:9 },
+  { id:"D3",  title:"a_0 Threshold", claim:"MOND acceleration a_0 derived from the synchronization cost threshold.", group:"predictions", r:8, url:"our_address.html" }
+];
+
+// Observational predictions — these get special rendering
+const predictions = [
+  { nodeId:"D4",  observable:"n_s (spectral index)", predicted:"0.965", observed:"0.9649 +/- 0.0042", residual:"0.2%", status:"confirmed" },
+  { nodeId:"D1",  observable:"Born rule", predicted:"|psi|^2", observed:"|psi|^2", residual:"exact", status:"confirmed" },
+  { nodeId:"D3",  observable:"a_0 (MOND scale)", predicted:"1.25e-10", observed:"1.2e-10", residual:"4%", status:"confirmed" },
+  { nodeId:"D14", observable:"d (dimensions)", predicted:"3", observed:"3", residual:"exact", status:"confirmed" },
+  { nodeId:"D25", observable:"Omega_Lambda", predicted:"13/19 = 0.6842", observed:"0.6847 +/- 0.0073", residual:"0.07 sigma", status:"confirmed" },
+  { nodeId:"D27", observable:"N_efolds", predicted:"61.3", observed:"TBD", residual:"CMB-S4 ~2028", status:"pending" },
+  { nodeId:"D8",  observable:"High-z MOND", predicted:"a_0(z) = a_0(0)(1+z)^beta", observed:"TBD", residual:"—", status:"pending" },
+  { nodeId:null,  observable:"Alpha Centauri distance", predicted:"SB path length", observed:"4.37 ly", residual:"—", status:"reinterpretation" }
+];
+
+// DAG edges [source, target]
+const edges = [
+  ["D0","D29"],["D1","D10"],["D3","D9"],["D3","D11"],["D4","D10"],["D5","D10"],
+  ["D6","D10"],["D6","D14"],["D7","D1"],["D7","D10"],["D8","D3"],["D8","D9"],
+  ["D9","D0"],["D9","D1"],["D9","D7"],["D9","D10"],["D9","D11"],["D10","D29"],
+  ["D11","D10"],["D12","D11"],["D12","D14"],["D13","D11"],["D13","D12"],
+  ["D14","D10"],["D14","D11"],["D15","D14"],["D16","D11"],["D17","D16"],
+  ["D18","D14"],["D19","D18"],["D20","D19"],["D21","D20"],["D23","D19"],
+  ["D24","D19"],["D25","D19"],["D25","D28"],["D26","D25"],["D26","D27"],
+  ["D27","D14"],["D27","D19"],["D28","D19"],["D28","D11"]
+];
+
+// Build lookup
+const nodeMap = {};
+nodes.forEach(n => { nodeMap[n.id] = n; });
+const predMap = {};
+predictions.forEach(p => { if (p.nodeId) predMap[p.nodeId] = p; });
+
+// ========================================================================
+// ORBITAL SETUP — assign each node an elliptical orbit around its group center
+// ========================================================================
+const groupNodes = {};
+Object.keys(groups).forEach(g => { groupNodes[g] = []; });
+nodes.forEach(n => { groupNodes[n.group].push(n); });
+
+nodes.forEach(n => {
+  const g = groups[n.group];
+  const siblings = groupNodes[n.group];
+  const idx = siblings.indexOf(n);
+  const count = siblings.length;
+
+  // Orbit parameters — semi-major axis grows with index, eccentricity varies
+  n.semiMajor = 60 + idx * 35;
+  n.semiMinor = n.semiMajor * (0.5 + 0.3 * Math.sin(idx * PHI));
+  n.orbitalAngle = (idx / count) * Math.PI * 2;  // initial true anomaly
+  n.orbitalTilt = (idx * 0.3) - 0.15 * count;    // slight tilt per orbit
+  // Period relates to golden ratio: T = base * phi^(idx/count)
+  n.period = (8 + idx * 3) * Math.pow(PHI, idx / count);
+  n.groupCx = g.cx;
+  n.groupCy = g.cy;
+  n.color = g.color;
+  n.visible = true;
+
+  // Is this a prediction node?
+  n.isPrediction = !!predMap[n.id];
+  n.predData = predMap[n.id] || null;
+  // Prediction nodes are larger and brighter
+  if (n.isPrediction) { n.r = Math.max(n.r, 12); }
+});
+
+// ========================================================================
+// CANVAS + ZOOM STATE
+// ========================================================================
+const canvas = document.getElementById("universe");
+const ctx = canvas.getContext("2d");
+let W, H;
+let panX = 0, panY = 0, zoomScale = 1;
+let dragging = false, dragStartX, dragStartY, panStartX, panStartY;
+let time = 0;
+let speed = 1;
+let showEdges = true;
+const visibleGroups = new Set(Object.keys(groups));
+
+// Stars background
+const stars = [];
+for (let i = 0; i < 300; i++) {
+  stars.push({
+    x: Math.random() * 4000 - 2000,
+    y: Math.random() * 4000 - 2000,
+    r: Math.random() * 1.2 + 0.3,
+    a: Math.random() * 0.6 + 0.2,
+    twinkleSpeed: Math.random() * 0.02 + 0.005
+  });
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+// Center the view
+panX = W / 2;
+panY = H / 2;
+
+// ========================================================================
+// INTERACTION — pan, zoom, click
+// ========================================================================
+canvas.addEventListener("mousedown", e => {
+  dragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  panStartX = panX;
+  panStartY = panY;
+});
+canvas.addEventListener("mousemove", e => {
+  if (dragging) {
+    panX = panStartX + (e.clientX - dragStartX);
+    panY = panStartY + (e.clientY - dragStartY);
+  }
+  // Hover detection
+  const mx = (e.clientX - panX) / zoomScale;
+  const my = (e.clientY - panY) / zoomScale;
+  canvas.title = "";
+  for (const n of nodes) {
+    if (!n.visible) continue;
+    const dx = mx - n.wx;
+    const dy = my - n.wy;
+    if (dx * dx + dy * dy < (n.r + 4) * (n.r + 4)) {
+      canvas.title = n.title;
+      break;
+    }
+  }
+});
+canvas.addEventListener("mouseup", e => {
+  if (dragging && Math.abs(e.clientX - dragStartX) < 4 && Math.abs(e.clientY - dragStartY) < 4) {
+    // Click — find node
+    const mx = (e.clientX - panX) / zoomScale;
+    const my = (e.clientY - panY) / zoomScale;
+    for (const n of nodes) {
+      if (!n.visible) continue;
+      const dx = mx - n.wx;
+      const dy = my - n.wy;
+      if (dx * dx + dy * dy < (n.r + 6) * (n.r + 6)) {
+        showInfoPanel(n);
+        break;
+      }
+    }
+  }
+  dragging = false;
+});
+canvas.addEventListener("wheel", e => {
+  e.preventDefault();
+  const factor = e.deltaY > 0 ? 0.92 : 1.08;
+  zoomScale = Math.max(0.2, Math.min(4, zoomScale * factor));
+}, { passive: false });
+
+// Touch support
+let lastTouchDist = 0;
+canvas.addEventListener("touchstart", e => {
+  if (e.touches.length === 1) {
+    dragging = true;
+    dragStartX = e.touches[0].clientX;
+    dragStartY = e.touches[0].clientY;
+    panStartX = panX;
+    panStartY = panY;
+  } else if (e.touches.length === 2) {
+    lastTouchDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+}, { passive: true });
+canvas.addEventListener("touchmove", e => {
+  if (e.touches.length === 1 && dragging) {
+    panX = panStartX + (e.touches[0].clientX - dragStartX);
+    panY = panStartY + (e.touches[0].clientY - dragStartY);
+  } else if (e.touches.length === 2) {
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    if (lastTouchDist > 0) {
+      zoomScale = Math.max(0.2, Math.min(4, zoomScale * (dist / lastTouchDist)));
+    }
+    lastTouchDist = dist;
+  }
+}, { passive: true });
+canvas.addEventListener("touchend", () => { dragging = false; lastTouchDist = 0; });
+
+// Controls
+document.getElementById("speed-slider").addEventListener("input", e => {
+  speed = parseFloat(e.target.value);
+  document.getElementById("speed-label").textContent = speed.toFixed(1) + "x";
+});
+document.getElementById("toggle-edges").addEventListener("change", e => {
+  showEdges = e.target.checked;
+});
+document.querySelectorAll("[data-group]").forEach(cb => {
+  cb.addEventListener("change", e => {
+    const g = e.target.dataset.group;
+    if (e.target.checked) visibleGroups.add(g);
+    else visibleGroups.delete(g);
+    nodes.forEach(n => { n.visible = visibleGroups.has(n.group); });
+  });
+});
+
+// ========================================================================
+// INFO PANEL
+// ========================================================================
+function showInfoPanel(n) {
+  const panel = document.getElementById("info-panel");
+  document.getElementById("info-title").textContent = n.id + ": " + n.title;
+  document.getElementById("info-claim").textContent = n.claim;
+
+  let extra = "";
+  if (n.predData) {
+    const p = n.predData;
+    extra = '<div class="pred-card"><table>' +
+      '<tr><td>Observable</td><td>' + p.observable + '</td></tr>' +
+      '<tr><td>Predicted</td><td>' + p.predicted + '</td></tr>' +
+      '<tr><td>Observed</td><td>' + p.observed + '</td></tr>' +
+      '<tr><td>Residual</td><td>' + p.residual + '</td></tr>' +
+      '<tr><td>Status</td><td><span class="pred-status ' + p.status + '">' + p.status + '</span></td></tr>' +
+      '</table></div>';
+  }
+  if (n.url) {
+    extra += '<a class="info-link" href="' + n.url + '">&rarr; ' + n.url.replace('.html','') + '</a>';
+  }
+  document.getElementById("info-extra").innerHTML = extra;
+  panel.style.display = "block";
+}
+
+// ========================================================================
+// KEPLERIAN POSITION — faster near periapsis
+// ========================================================================
+function keplerPosition(node, t) {
+  const M = (t / node.period) * Math.PI * 2;  // mean anomaly
+  // Approximate eccentric anomaly via Newton iteration (e ~ 0.3)
+  const e = 0.3 + 0.15 * Math.sin(node.orbitalTilt);
+  let E = M;
+  for (let i = 0; i < 5; i++) {
+    E = E - (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+  }
+  // True anomaly
+  const cosV = (Math.cos(E) - e) / (1 - e * Math.cos(E));
+  const sinV = (Math.sqrt(1 - e * e) * Math.sin(E)) / (1 - e * Math.cos(E));
+  const v = Math.atan2(sinV, cosV);
+  // Radius
+  const r = node.semiMajor * (1 - e * e) / (1 + e * Math.cos(v));
+  // Position in orbital plane, with tilt
+  const aspect = node.semiMinor / node.semiMajor;
+  const x = r * Math.cos(v + node.orbitalAngle);
+  const y = r * Math.sin(v + node.orbitalAngle) * aspect;
+  // Rotate by group tilt
+  const ct = Math.cos(node.orbitalTilt * 0.3);
+  const st = Math.sin(node.orbitalTilt * 0.3);
+  return {
+    x: node.groupCx + x * ct - y * st,
+    y: node.groupCy + x * st + y * ct
+  };
+}
+
+// ========================================================================
+// RENDER LOOP
+// ========================================================================
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars (parallax with zoom)
+  ctx.save();
+  const starParallax = 0.3;
+  ctx.translate(panX * starParallax, panY * starParallax);
+  stars.forEach(s => {
+    const twinkle = 0.5 + 0.5 * Math.sin(time * s.twinkleSpeed);
+    ctx.globalAlpha = s.a * twinkle;
+    ctx.fillStyle = "#e6edf3";
+    ctx.beginPath();
+    ctx.arc(s.x + W / 2, s.y + H / 2, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.restore();
+
+  // Apply pan + zoom
+  ctx.save();
+  ctx.translate(panX, panY);
+  ctx.scale(zoomScale, zoomScale);
+
+  // Update positions
+  nodes.forEach(n => {
+    const pos = keplerPosition(n, time);
+    n.wx = pos.x;
+    n.wy = pos.y;
+  });
+
+  // Draw group orbit ghosts (faint ellipses)
+  ctx.globalAlpha = 0.08;
+  ctx.lineWidth = 0.5;
+  Object.entries(groups).forEach(([gk, g]) => {
+    if (!visibleGroups.has(gk)) return;
+    ctx.strokeStyle = g.color;
+    const gn = groupNodes[gk];
+    gn.forEach(n => {
+      ctx.beginPath();
+      const aspect = n.semiMinor / n.semiMajor;
+      const steps = 60;
+      for (let i = 0; i <= steps; i++) {
+        const angle = (i / steps) * Math.PI * 2;
+        const ox = n.semiMajor * Math.cos(angle + n.orbitalAngle);
+        const oy = n.semiMajor * Math.sin(angle + n.orbitalAngle) * aspect;
+        const ct = Math.cos(n.orbitalTilt * 0.3);
+        const st = Math.sin(n.orbitalTilt * 0.3);
+        const px = g.cx + ox * ct - oy * st;
+        const py = g.cy + ox * st + oy * ct;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    });
+  });
+
+  // Draw DAG edges
+  if (showEdges) {
+    ctx.globalAlpha = 0.15;
+    ctx.lineWidth = 0.8;
+    edges.forEach(([sId, tId]) => {
+      const s = nodeMap[sId];
+      const t = nodeMap[tId];
+      if (!s || !t || !s.visible || !t.visible) return;
+
+      // Quadratic bezier with midpoint offset
+      const mx = (s.wx + t.wx) / 2;
+      const my = (s.wy + t.wy) / 2;
+      const dx = t.wx - s.wx;
+      const dy = t.wy - s.wy;
+      const cpx = mx - dy * 0.15;
+      const cpy = my + dx * 0.15;
+
+      // Gradient along edge
+      const grad = ctx.createLinearGradient(s.wx, s.wy, t.wx, t.wy);
+      grad.addColorStop(0, s.color);
+      grad.addColorStop(1, t.color);
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(s.wx, s.wy);
+      ctx.quadraticCurveTo(cpx, cpy, t.wx, t.wy);
+      ctx.stroke();
+
+      // Pulse dot traveling along edge
+      const pulseT = (time * 0.03) % 1;
+      const px = (1-pulseT)*(1-pulseT)*s.wx + 2*(1-pulseT)*pulseT*cpx + pulseT*pulseT*t.wx;
+      const py = (1-pulseT)*(1-pulseT)*s.wy + 2*(1-pulseT)*pulseT*cpy + pulseT*pulseT*t.wy;
+      ctx.globalAlpha = 0.25 * (1 - Math.abs(pulseT - 0.5) * 2);
+      ctx.fillStyle = t.color;
+      ctx.beginPath();
+      ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 0.15;
+    });
+  }
+
+  // Draw group center labels
+  ctx.globalAlpha = 0.25;
+  ctx.font = "600 10px -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  Object.entries(groups).forEach(([gk, g]) => {
+    if (!visibleGroups.has(gk)) return;
+    ctx.fillStyle = g.color;
+    ctx.fillText(g.label.toUpperCase(), g.cx, g.cy - 8);
+    // Small dot at center
+    ctx.beginPath();
+    ctx.arc(g.cx, g.cy, 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Draw nodes
+  ctx.globalAlpha = 1;
+  nodes.forEach(n => {
+    if (!n.visible) return;
+
+    const x = n.wx;
+    const y = n.wy;
+
+    // Glow
+    const glowR = n.isPrediction ? n.r * 3 : n.r * 2;
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+    glow.addColorStop(0, n.color + "40");
+    glow.addColorStop(1, n.color + "00");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, glowR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body
+    ctx.globalAlpha = n.isPrediction ? 1 : 0.85;
+    ctx.fillStyle = n.color;
+    ctx.beginPath();
+    ctx.arc(x, y, n.r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Prediction status ring
+    if (n.isPrediction && n.predData) {
+      const p = n.predData;
+      ctx.lineWidth = 2;
+      if (p.status === "confirmed") {
+        ctx.strokeStyle = "#7ee787";
+        ctx.setLineDash([]);
+      } else if (p.status === "pending") {
+        ctx.strokeStyle = "#FCCA28";
+        ctx.setLineDash([4, 3]);
+      } else {
+        ctx.strokeStyle = "#58a6ff";
+        ctx.setLineDash([2, 2]);
+      }
+      ctx.globalAlpha = 0.7 + 0.3 * Math.sin(time * 0.05);
+      ctx.beginPath();
+      ctx.arc(x, y, n.r + 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Label
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = n.color;
+    ctx.font = "400 9px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(n.id, x, y + n.r + 12);
+    ctx.globalAlpha = 1;
+  });
+
+  ctx.restore();
+
+  // Advance time
+  time += speed * 0.16;
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+})();
+</script>
+
+<!-- Mobius theme: moon toggle -->
+<script src="_static/mobius-theme.js"></script>
+
+<nav id="page-nav">
+  <a href="first-principles.html">First Principles</a>
+  <a href="three-body.html">Three Bodies</a>
+  <a href="oscillations.html">Oscillations</a>
+  <a href="our_address.html">Our Address</a>
+  <a href="constants.html">Constants</a>
+  <a href="predictions.html" class="active">Predictions</a>
+  <a href="simulations.html">Simulations</a>
+</nav>
+</body>
+</html>
