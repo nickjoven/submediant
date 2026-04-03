@@ -16,7 +16,7 @@ html { overflow-x: clip; }
 
 :root {
   --phi: 1.618;
-  --fs-base: clamp(18px, 1.2vw + 8px, 22px);
+  --fs-base: clamp(20px, 1.2vw + 8px, 22px);
   --fs-sm: calc(var(--fs-base) / var(--phi));
   --fs-xs: calc(var(--fs-sm) / var(--phi));
   --fs-lg: calc(var(--fs-base) * var(--phi));
@@ -186,6 +186,10 @@ a:hover { text-decoration: underline; }
 
 /* responsive: mobile */
 @media (max-width: 600px) {
+  :root {
+    --fs-sm: max(15px, calc(var(--fs-base) / var(--phi)));
+    --fs-xs: max(13px, calc(var(--fs-sm) / var(--phi)));
+  }
   .equation-block { padding: 0.5em 0; }
   .section-title { font-size: var(--fs-lg) !important; word-break: break-word; }
   .phi-spacer-lg { height: calc(61.8px * 1.618) !important; }
