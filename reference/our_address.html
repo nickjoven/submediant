@@ -184,7 +184,7 @@ hr.divider {
 }
 
 /* ── Predictions grid ── */
-mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
+mjx-container[display="true"], .MathJax[display="true"] { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
 .pred-grid {
   display: grid; grid-template-columns: auto auto 1fr;
   gap: 4px 12px; font-size: var(--fs-base);
@@ -198,10 +198,15 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
 .pred-grid .settled { color: var(--m-accent3, #08A953); }
 .pred-grid .unsettled { color: var(--m-text-muted, #8b949e); opacity: 0.4; }
 
+/* ── Prose paragraphs ── */
+main > div p, section p, .closing p {
+  font-size: calc(var(--fs-base) - 1.5px);
+}
+
 /* ── Closing ── */
 .closing {
   text-align: center; color: var(--m-text-muted, #8b949e);
-  font-size: var(--fs-base); line-height: 2;
+  font-size: calc(var(--fs-base) - 1.5px); line-height: 2;
 }
 .closing .highlight { color: var(--m-text, #e6edf3); font-weight: 500; }
 
@@ -229,7 +234,7 @@ mjx-container[display="true"], .MathJax[display="true"] { max-width: none !impor
   main { padding: 0 16px 100px; }
   canvas#clock { width: 85vw; height: 85vw; }
   .coord-cards { grid-template-columns: 1fr; }
-  .phi-spacer-1 { height: 50vh; height: 50dvh; min-height: 260px; }
+  .phi-spacer-1 { height: auto; min-height: 50dvh; }
   .pred-grid { font-size: var(--fs-sm); gap: 4px 8px; }
 }
 </style>

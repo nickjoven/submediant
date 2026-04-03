@@ -94,13 +94,15 @@ main {
   padding: 1em 0;
   text-align: center;
   font-size: var(--fs-lg);
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* prose */
 section p {
   color: var(--m-text-muted, #8b949e);
   margin-bottom: 1em;
+  font-size: calc(var(--fs-base) - 1.5px);
 }
 section p strong {
   color: var(--m-text, #e6edf3);
@@ -117,7 +119,7 @@ a { color: var(--magenta); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* MathJax display math: allow natural width for scale-to-fit */
-mjx-container[display="true"], .MathJax[display="true"] { max-width: none !important; overflow: visible !important; }
+mjx-container[display="true"], .MathJax[display="true"] { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
 
 /* visualization containers */
 .viz-container {
@@ -1941,6 +1943,9 @@ function rk4(state, derivs, dt) {
 
 })();
 </script>
+
+<!-- Mobius theme: moon toggle -->
+<script src="_static/mobius-theme.js"></script>
 
 <nav id="page-nav" style="position:fixed; bottom:0; left:0; right:0; z-index:100;
   background:var(--m-surface, rgba(30,35,44,0.97)); backdrop-filter:blur(10px);
