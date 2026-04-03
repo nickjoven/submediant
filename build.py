@@ -859,7 +859,7 @@ sphinx:
 }
 """)
     # Copy canonical Mobius theme files from repo root
-    for fname in ["mobius-theme.css", "mobius-theme.js"]:
+    for fname in ["mobius-theme.css", "mobius-theme.js", "diagram-controls.js"]:
         src = SITE_DIR / "static" / fname
         if src.exists():
             shutil.copy2(src, static_dir / fname)
