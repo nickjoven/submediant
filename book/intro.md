@@ -52,7 +52,7 @@ numerically and produces all predictions from a single run.
   four primitives that generate all the structure
 - **Curious about the physics?** Start with [Constants](reference/constants.html) —
   what the framework says and how it compares to measurement
-- **Want the punchline?** [K = 1: Einstein](reference/first-principles.html) —
+- **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
   how one equation produces general relativity, uniquely
 - **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
   `python -m rfe --observables`
