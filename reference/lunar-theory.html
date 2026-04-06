@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lunar Theory: Five Residuals</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+:root {
+  --bg: #000000;
+  --surface: #000000;
+  --border: #30363d;
+  --text: #e6edf3;
+  --dim: #8b949e;
+  --accent: #DE3373;
+  --accent2: #FCCA28;
+  --accent3: #08A953;
+  --accent4: #F5712A;
+  --blue: #1E76B8;
+  --purple: #7C2E87;
+  --teal: #37BA9B;
+  --salmon: #F98F81;
+  --red: #EE1B3E;
+  --phi: 1.618;
+  --fs-base: clamp(20px, 1.2vw + 8px, 22px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1.5em; overflow-x: clip; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.618;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: calc(var(--fs-base) * 1.618) 1.5rem;
+  font-size: var(--fs-base);
+}
+h1 {
+  font-size: calc(var(--fs-base) * 1.618);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+h2 {
+  font-size: calc(var(--fs-base) * 1.2);
+  color: var(--accent);
+  margin: calc(var(--fs-base) * 2.618) 0 calc(var(--fs-base) * 0.618);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  letter-spacing: 0.08em;
+}
+h3 {
+  font-size: calc(var(--fs-base) * 1.05);
+  color: var(--accent2);
+  margin: calc(var(--fs-base) * 1.2) 0 0.4rem;
+}
+p, li { color: var(--dim); margin-bottom: 0.6rem; font-size: 0.92em; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 0.85em;
+  background: rgba(222,51,115,0.08);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+.subtitle { color: var(--dim); font-size: 0.92em; margin-bottom: calc(var(--fs-base) * 1.618); }
+
+/* Panel grid */
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.2rem;
+  position: relative;
+}
+.panel-full { grid-column: 1 / -1; }
+.panel h4 {
+  font-size: 0.85em;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.06em;
+}
+.panel canvas {
+  width: 100%;
+  height: 280px;
+  display: block;
+}
+.panel-label {
+  font-size: 0.75em;
+  color: var(--dim);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+/* Residual summary badges */
+.residual-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1.2rem 0;
+}
+.residual-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+}
+.residual-badge .label {
+  font-size: 0.72em;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.3rem;
+}
+.residual-badge .value {
+  font-size: 1.4em;
+  font-weight: 600;
+}
+.residual-badge .detail {
+  font-size: 0.72em;
+  color: var(--dim);
+  margin-top: 0.2rem;
+}
+.v-good { color: var(--accent3); border-color: rgba(8,169,83,0.3); }
+.v-ok { color: var(--accent2); border-color: rgba(252,202,40,0.3); }
+.v-warn { color: var(--accent4); border-color: rgba(245,113,42,0.3); }
+
+/* Equation block */
+.eq-block {
+  background: rgba(222,51,115,0.04);
+  border-left: 3px solid var(--accent);
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.92em;
+}
+
+/* Data table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82em;
+  margin: 1rem 0;
+}
+.data-table th, .data-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+.data-table th {
+  color: var(--text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+}
+.data-table td { color: var(--dim); }
+.data-table td:first-child, .data-table th:first-child { text-align: left; }
+.data-table .ok { color: var(--accent3); }
+.data-table .warn { color: var(--accent4); }
+.data-table .bad { color: var(--red); }
+
+footer {
+  margin-top: calc(var(--fs-base) * 2.618);
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75em;
+  color: var(--dim);
+}
+
+@media (max-width: 768px) {
+  .panel-grid { grid-template-columns: 1fr; }
+  .residual-row { flex-direction: column; }
+  body { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<h1>Lunar Theory</h1>
+<p class="subtitle">
+  Five residuals, five plots. Computational results from
+  <a href="https://github.com/nickjoven/lunar-theory">lunar-theory</a>
+  applied to the tongue-boundary fission framework.
+  <br>N. Joven &mdash; 2026
+</p>
+
+<!-- Summary badges -->
+<div class="residual-row">
+  <div class="residual-badge v-ok">
+    <div class="label">Mass Ratio</div>
+    <div class="value">12.5%</div>
+    <div class="detail">g(1/2) = 0.664, PREM continuous</div>
+  </div>
+  <div class="residual-badge v-ok">
+    <div class="label">Volatile Depletion</div>
+    <div class="value">&chi;&sup2;/N = 1.28</div>
+    <div class="detail">3 channels, 13 elements, 2 params</div>
+  </div>
+  <div class="residual-badge v-good">
+    <div class="label">Inclination</div>
+    <div class="value">5.2%</div>
+    <div class="detail">4.88&deg; predicted vs 5.145&deg;</div>
+  </div>
+  <div class="residual-badge v-warn">
+    <div class="label">Recession</div>
+    <div class="value">8.42 Gyr</div>
+    <div class="detail">upper bound overshoots; f(a) needed</div>
+  </div>
+  <div class="residual-badge v-ok">
+    <div class="label">Obliquity</div>
+    <div class="value">gap/w = 3.0</div>
+    <div class="detail">50.6&Prime;/yr outside s6 tongue</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<h2>1. Mass Ratio</h2>
+
+<div class="eq-block">
+  \( M_{\text{Moon}} / M_{\text{total}} = w(1/2,\, K) \times g(1/2) \)
+  &mdash; tongue width &times; spectral weight at the 1/2 mode.
+</div>
+
+<p>
+  The proto-Earth&rsquo;s radial density profile determines which mass fraction
+  participates in the 1/2 Arnold tongue. Dense core material oscillates at
+  high effective frequency (q<sub>eff</sub> &gt; 2.5) and couples to higher-order
+  tongues. Only mantle material with q<sub>eff</sub> &asymp; 2 feeds the fission mode.
+</p>
+
+<div class="panel-grid">
+  <div class="panel">
+    <h4>Density Profile &amp; Spectral Weight</h4>
+    <canvas id="c-density"></canvas>
+    <p class="panel-label">
+      PREM-based proto-Earth profile (4000 K). Shaded region:
+      material with q<sub>eff</sub> &isin; [1.5, 2.5] that participates in the 1/2 tongue.
+      g(1/2) = 0.664 &mdash; the mantle captures 66.4% of the body&rsquo;s mass.
+    </p>
+  </div>
+  <div class="panel">
+    <h4>Differentiation Sensitivity</h4>
+    <canvas id="c-diffn"></canvas>
+    <p class="panel-label">
+      Mass ratio residual vs core density contrast. Uniform body: 31.8% residual.
+      Strong core: 5.2%. PREM continuous: 12.5%. The observed mass ratio constrains
+      proto-Earth differentiation at fission.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Volatile Depletion</h2>
+
+<div class="eq-block">
+  \( \text{E/M} = R_{\text{siderophile}} \times R_{\text{thermal}} \times R_{\text{condensation}} \)
+  &mdash; three independent Stribeck filters in sequence.
+</div>
+
+<p>
+  Each element passes through three tongue-boundary crossings at fission:
+  density sorting (core vs mantle), thermal escape (Jeans criterion), and
+  condensation retention (refractory capture). The combined depletion is
+  the product. Two free parameters total (v<sub>thr</sub> = 988 m/s,
+  T<sub>surface</sub> = 1150 K).
+</p>
+
+<div class="panel-grid">
+  <div class="panel panel-full">
+    <h4>Three-Channel Model vs Observations</h4>
+    <canvas id="c-volatile" style="height: 320px"></canvas>
+    <p class="panel-label">
+      Log-scale comparison: predicted (bars) vs observed (markers) Earth/Moon ratios
+      for 13 elements. Siderophiles (Fe, Ni) dominated by density channel.
+      Volatiles (Na, K, S) by thermal channel. Refractories (Ca, Al, Ti) by
+      condensation channel. &chi;&sup2;/N = 1.28 across all elements.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Orbital Inclination</h2>
+
+<div class="eq-block">
+  \( \tan(i_L) = \frac{r \sin \varepsilon}{r \cos \varepsilon + 1} \)
+  &mdash; Laplace plane inclination, where \( r = g_{J_2} / g_{\odot} \).
+</div>
+
+<p>
+  The Moon&rsquo;s 5.145&deg; orbital inclination arises from the Cassini-state
+  bifurcation at 15.3 R<sub>E</sub>, where the Laplace plane transitions from
+  equatorial to ecliptic. The inclination is the Laplace plane angle at the
+  bifurcation, damped over 4.5 Gyr. Predicted: 4.88&deg; (5.2% residual).
+</p>
+
+<div class="panel-grid">
+  <div class="panel">
+    <h4>Laplace Plane Transition</h4>
+    <canvas id="c-laplace"></canvas>
+    <p class="panel-label">
+      Laplace plane inclination vs orbital distance. The transition at
+      a<sub>crit</sub> = 15.3 R<sub>E</sub> is steepest where J<sub>2</sub> and
+      solar precession rates cross. Earth obliquity at transition: 14.0&deg;.
+    </p>
+  </div>
+  <div class="panel">
+    <h4>Precession Rate Crossover</h4>
+    <canvas id="c-precession"></canvas>
+    <p class="panel-label">
+      J<sub>2</sub> precession (falls as a<sup>&minus;7/2</sup>) vs solar precession
+      (rises as a<sup>3/2</sup>). They cross at a<sub>crit</sub> = 15.3 R<sub>E</sub>,
+      the saddle-node bifurcation point.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Self-Consistent Recession</h2>
+
+<div class="eq-block">
+  \( T = T_{\text{CQ}} \times \overline{\left( \frac{Q(a)}{Q_0} \cdot \frac{1}{1 - f_{\text{locked}}(K(a))} \right)} \)
+  &mdash; weighted average extension over the full recession.
+</div>
+
+<p>
+  The Stribeck Q-fit (Q<sub>scale</sub>=40, &mu;<sub>s</sub>/&mu;<sub>k</sub>=5,
+  v<sub>thr</sub>=10<sup>&minus;7</sup> m/s) determines Q(a) at every distance.
+  Q(a) &rarr; K(a) &rarr; staircase locked fraction &rarr; recession extension.
+  Upper bound: 8.42 Gyr. The overshoot is expected: the simplified scan uses uniform
+  f<sub>locked</sub>, whereas the physical locked fraction decreases as a<sup>&minus;3</sup>.
+</p>
+
+<div class="panel-grid">
+  <div class="panel">
+    <h4>Q(a) and Extension Factor</h4>
+    <canvas id="c-recession-q"></canvas>
+    <p class="panel-label">
+      Tidal Q (Stribeck) is ~200 at large distance (stick regime) and ~40 at close
+      distance (slip regime). Combined with the staircase locked fraction, the local
+      recession rate varies by up to 5&times;.
+    </p>
+  </div>
+  <div class="panel">
+    <h4>LOD: Staircase vs Constant-Q</h4>
+    <canvas id="c-lod"></canvas>
+    <p class="panel-label">
+      Rhythmite data at 2.45 Ga (19.0 hr) and 620 Ma (21.5 hr) favor the staircase.
+      Constant-Q overshoots by 9&ndash;11%.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>5. Obliquity Stability</h2>
+
+<div class="eq-block">
+  \( \dot\psi_{\text{with Moon}} = 50.6''/\text{yr} \quad \text{vs} \quad
+     s_6 = 26.3''/\text{yr} \quad \Rightarrow \quad \text{gap}/w = 3.0 \)
+</div>
+
+<p>
+  The Moon&rsquo;s torque holds Earth&rsquo;s precession rate 3&times; outside the
+  s<sub>6</sub> secular-resonance tongue (Saturn&rsquo;s nodal frequency). Without
+  the Moon, the rate drops to 15.9&Prime;/yr &mdash; gap/w = 1.3, inside the tongue,
+  and obliquity wanders chaotically between 0&deg; and 85&deg;.
+</p>
+
+<div class="panel-grid">
+  <div class="panel panel-full">
+    <h4>Precession Rate vs Secular Resonances</h4>
+    <canvas id="c-obliquity" style="height: 200px"></canvas>
+    <p class="panel-label">
+      Frequency axis showing Earth&rsquo;s precession rate with Moon (50.6&Prime;/yr)
+      and without (15.9&Prime;/yr) relative to the s<sub>6</sub> tongue at
+      26.3 &plusmn; 8&Prime;/yr. The Moon is the margin.
+    </p>
+  </div>
+</div>
+
+
+<footer>
+  Computed from <a href="https://github.com/nickjoven/lunar-theory">lunar-theory</a>
+  &nbsp;|&nbsp;
+  Framework: <a href="https://github.com/nickjoven/harmonics">harmonics</a>
+  &nbsp;|&nbsp; CC0 1.0
+</footer>
+
+<!-- ============================================================ -->
+<script>
+// Palette aligned with mobius-theme.css
+const C = {
+  accent: '#DE3373', accent2: '#FCCA28', accent3: '#08A953',
+  accent4: '#F5712A', blue: '#1E76B8', purple: '#7C2E87',
+  teal: '#37BA9B', salmon: '#F98F81', red: '#EE1B3E',
+  text: '#e6edf3', dim: '#8b949e', border: '#30363d',
+  bg: '#000000', surface: '#0d1117',
+};
+
+function setup(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = c.getBoundingClientRect();
+  c.width = rect.width * dpr;
+  c.height = rect.height * dpr;
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+function axes(ctx, w, h, pad, opts) {
+  ctx.strokeStyle = C.border;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t);
+  ctx.lineTo(pad.l, h - pad.b);
+  ctx.lineTo(w - pad.r, h - pad.b);
+  ctx.stroke();
+  if (opts && opts.xLabel) {
+    ctx.fillStyle = C.dim;
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(opts.xLabel, (pad.l + w - pad.r) / 2, h - 4);
+  }
+  if (opts && opts.yLabel) {
+    ctx.save();
+    ctx.translate(10, (pad.t + h - pad.b) / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = C.dim;
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(opts.yLabel, 0, 0);
+    ctx.restore();
+  }
+}
+
+function mapX(val, min, max, pl, pr, w) { return pl + (val - min) / (max - min) * (w - pl - pr); }
+function mapY(val, min, max, pt, pb, h) { return h - pb - (val - min) / (max - min) * (h - pt - pb); }
+
+// ============================================================
+// 1. DENSITY PROFILE
+// ============================================================
+function drawDensity() {
+  const s = setup('c-density');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'r / R', yLabel: 'Density (kg/m3)'});
+
+  // PREM knots
+  const knots = [
+    [0,13050],[.05,13000],[.1,12950],[.15,12850],[.192,12760],
+    [.192,12160],[.25,11800],[.3,11300],[.35,10800],[.4,10200],
+    [.45,9900],[.5,9600],[.546,9400],[.546,5500],[.6,5300],
+    [.65,5050],[.7,4800],[.75,4500],[.8,4200],[.85,3950],
+    [.895,3700],[.895,3550],[.92,3450],[.94,3380],[.94,3350],
+    [.96,3300],[.98,3200],[.995,2900],[1,2700]
+  ];
+
+  const rhoMean = 5109;
+  const xR = (v) => mapX(v, 0, 1, pad.l, pad.r, w);
+  const yR = (v) => mapY(v, 0, 14000, pad.t, pad.b, h);
+
+  // Shade 1/2 tongue region (q_eff in [1.5, 2.5])
+  // q_eff = 2*sqrt(rho/rhoMean), so rho in [rhoMean*1.5^2/4, rhoMean*2.5^2/4]
+  // = [rhoMean*0.5625, rhoMean*1.5625] = [2875, 7983]
+  const rhoLo = rhoMean * (1.5/2)**2;
+  const rhoHi = rhoMean * (2.5/2)**2;
+
+  // Find where profile enters the window
+  ctx.fillStyle = 'rgba(222,51,115,0.12)';
+  ctx.beginPath();
+  let started = false;
+  for (let i = 0; i < knots.length; i++) {
+    const [r, rho] = knots[i];
+    if (rho >= rhoLo && rho <= rhoHi) {
+      if (!started) { ctx.moveTo(xR(r), yR(rhoLo)); started = true; }
+      ctx.lineTo(xR(r), yR(rho));
+    }
+  }
+  if (started) {
+    ctx.lineTo(xR(1), yR(knots[knots.length-1][1]));
+    ctx.lineTo(xR(1), yR(rhoLo));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Draw profile
+  ctx.strokeStyle = C.accent;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  knots.forEach(([r, rho], i) => {
+    const x = xR(r), y = yR(rho);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Mean density line
+  ctx.strokeStyle = C.accent2;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xR(0), yR(rhoMean));
+  ctx.lineTo(xR(1), yR(rhoMean));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle = C.accent2;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('mean = 5109', xR(0.02), yR(rhoMean) - 6);
+
+  ctx.fillStyle = C.accent;
+  ctx.fillText('g(1/2) = 0.664', xR(0.6), yR(4000) - 10);
+
+  // Axis labels
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let r = 0; r <= 1; r += 0.2) {
+    ctx.fillText(r.toFixed(1), xR(r), h - pad.b + 14);
+  }
+  ctx.textAlign = 'right';
+  for (let rho = 0; rho <= 14000; rho += 4000) {
+    ctx.fillText(rho.toString(), pad.l - 5, yR(rho) + 4);
+  }
+}
+
+// ============================================================
+// 1b. DIFFERENTIATION SENSITIVITY
+// ============================================================
+function drawDiffn() {
+  const s = setup('c-diffn');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'Core Density Contrast', yLabel: 'Residual (%)'});
+
+  // Data: (label, core_rho, residual%)
+  const data = [
+    ['Uniform', 5500, 31.8],
+    ['Weak', 8000, 31.8],
+    ['Moderate', 10000, 27.5],
+    ['PREM-like', 11500, 17.3],
+    ['Strong', 13000, 14.4],
+    ['Very strong', 13000, 5.2],
+  ];
+
+  const xR = (v) => mapX(v, 4000, 14000, pad.l, pad.r, w);
+  const yR = (v) => mapY(v, 0, 40, pad.t, pad.b, h);
+
+  // Observed line
+  ctx.strokeStyle = C.accent3;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xR(4000), yR(0));
+  ctx.lineTo(xR(14000), yR(0));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Connect points
+  ctx.strokeStyle = C.accent + '88';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  data.forEach(([_, rho, res], i) => {
+    const x = xR(rho), y = yR(res);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Points
+  data.forEach(([label, rho, res], i) => {
+    const x = xR(rho), y = yR(res);
+    ctx.fillStyle = res < 10 ? C.accent3 : res < 20 ? C.accent2 : C.accent4;
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = C.dim;
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x, y - 10);
+    ctx.fillText(res.toFixed(1) + '%', x, y + 16);
+  });
+
+  // Axis ticks
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let v = 5000; v <= 13000; v += 2000) {
+    ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
+  }
+  ctx.textAlign = 'right';
+  for (let v = 0; v <= 40; v += 10) {
+    ctx.fillText(v.toString(), pad.l - 5, yR(v) + 4);
+  }
+}
+
+// ============================================================
+// 2. VOLATILE DEPLETION
+// ============================================================
+function drawVolatile() {
+  const s = setup('c-volatile');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 25, b: 50};
+
+  axes(ctx, w, h, pad, {xLabel: '', yLabel: 'log10(E/M)'});
+
+  // element, obs, pred, type
+  const elems = [
+    ['Fe', 16.0, 18.16, 'siderophile'],
+    ['Ni', 36.0, 26.27, 'siderophile'],
+    ['Na', 42.0, 43.83, 'volatile'],
+    ['S',  38.0, 66.64, 'volatile'],
+    ['K',  15.0, 6.40, 'volatile'],
+    ['Zn', 40.0, 5.53, 'volatile'],
+    ['Rb', 25.0, 1.46, 'volatile'],
+    ['Ga',  5.0, 4.02, 'moderate'],
+    ['Mn',  3.0, 2.56, 'moderate'],
+    ['Cr',  1.5, 2.89, 'refractory'],
+    ['Ca',  0.45, 1.14, 'refractory'],
+    ['Al',  0.44, 1.77, 'refractory'],
+    ['Ti',  0.50, 0.77, 'refractory'],
+  ];
+
+  const n = elems.length;
+  const barW = (w - pad.l - pad.r) / n * 0.35;
+  const gap = (w - pad.l - pad.r) / n;
+
+  const yMin = -1, yMax = 2.5;
+  const xB = (i) => pad.l + gap * (i + 0.5);
+  const yR = (v) => mapY(v, yMin, yMax, pad.t, pad.b, h);
+
+  // Grid lines
+  ctx.strokeStyle = C.border;
+  ctx.lineWidth = 0.5;
+  for (let v = -1; v <= 2; v += 0.5) {
+    ctx.beginPath();
+    ctx.moveTo(pad.l, yR(v));
+    ctx.lineTo(w - pad.r, yR(v));
+    ctx.stroke();
+  }
+
+  // E/M = 1 line
+  ctx.strokeStyle = C.dim + '66';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.l, yR(0));
+  ctx.lineTo(w - pad.r, yR(0));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const typeColor = {
+    siderophile: C.accent,
+    volatile: C.accent2,
+    moderate: C.teal,
+    refractory: C.accent3,
+  };
+
+  elems.forEach(([name, obs, pred, type], i) => {
+    const x = xB(i);
+    const logObs = Math.log10(Math.max(obs, 0.01));
+    const logPred = Math.log10(Math.max(pred, 0.01));
+    const color = typeColor[type] || C.dim;
+
+    // Predicted bar
+    const y0 = yR(0);
+    const yp = yR(logPred);
+    ctx.fillStyle = color + '55';
+    ctx.fillRect(x - barW, Math.min(y0, yp), barW * 2, Math.abs(yp - y0));
+
+    // Observed marker
+    const yo = yR(logObs);
+    ctx.fillStyle = C.text;
+    ctx.beginPath();
+    ctx.arc(x, yo, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Element label
+    ctx.fillStyle = C.dim;
+    ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.save();
+    ctx.translate(x, h - pad.b + 12);
+    ctx.rotate(-0.5);
+    ctx.fillText(name, 0, 0);
+    ctx.restore();
+  });
+
+  // Y axis labels
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'right';
+  for (let v = -1; v <= 2; v += 1) {
+    ctx.fillText(v.toString(), pad.l - 5, yR(v) + 4);
+  }
+
+  // Legend
+  ctx.font = '10px -apple-system, sans-serif';
+  let lx = pad.l + 5;
+  const ly = pad.t + 5;
+  [['Siderophile', C.accent], ['Volatile', C.accent2], ['Moderate', C.teal], ['Refractory', C.accent3]].forEach(([label, color]) => {
+    ctx.fillStyle = color + '88';
+    ctx.fillRect(lx, ly, 10, 10);
+    ctx.fillStyle = C.dim;
+    ctx.textAlign = 'left';
+    ctx.fillText(label, lx + 14, ly + 9);
+    lx += ctx.measureText(label).width + 24;
+  });
+  ctx.fillStyle = C.text;
+  ctx.beginPath();
+  ctx.arc(lx, ly + 5, 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = C.dim;
+  ctx.fillText('Observed', lx + 8, ly + 9);
+}
+
+
+// ============================================================
+// 3. LAPLACE PLANE TRANSITION
+// ============================================================
+function drawLaplace() {
+  const s = setup('c-laplace');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'a / R_E', yLabel: 'i_Laplace (deg)'});
+
+  // Computed data points (from cassini_inclination.py output)
+  const data = [
+    [3, 11.818], [5, 12.211], [8, 12.499], [10, 12.195],
+    [15, 8.015], [20, 2.977], [25, 0.961], [30, 0.338],
+    [35, 0.132], [40, 0.056], [50, 0.012], [60, 0.003]
+  ];
+
+  const xR = (v) => mapX(v, 0, 65, pad.l, pad.r, w);
+  const yR = (v) => mapY(v, 0, 14, pad.t, pad.b, h);
+
+  // Shade transition region
+  ctx.fillStyle = 'rgba(222,51,115,0.08)';
+  ctx.fillRect(xR(10), pad.t, xR(22) - xR(10), h - pad.t - pad.b);
+
+  // a_crit marker
+  ctx.strokeStyle = C.accent + '66';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xR(15.3), pad.t);
+  ctx.lineTo(xR(15.3), h - pad.b);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = C.accent;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('a_crit = 15.3', xR(15.3), pad.t + 14);
+
+  // Observed inclination line
+  ctx.strokeStyle = C.accent3 + '66';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.l, yR(5.145));
+  ctx.lineTo(w - pad.r, yR(5.145));
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = C.accent3;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('observed = 5.145 deg', xR(35), yR(5.145) - 6);
+
+  // Curve
+  ctx.strokeStyle = C.accent;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  data.forEach(([a, i], idx) => {
+    const x = xR(a), y = yR(i);
+    idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Data points
+  data.forEach(([a, i]) => {
+    ctx.fillStyle = C.accent;
+    ctx.beginPath();
+    ctx.arc(xR(a), yR(i), 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Axis ticks
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let v = 0; v <= 60; v += 10) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
+  ctx.textAlign = 'right';
+  for (let v = 0; v <= 14; v += 2) ctx.fillText(v.toString(), pad.l - 5, yR(v) + 4);
+}
+
+// ============================================================
+// 3b. PRECESSION RATE CROSSOVER
+// ============================================================
+function drawPrecession() {
+  const s = setup('c-precession');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 55, r: 20, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'a / R_E', yLabel: 'log10(rate, deg/yr)'});
+
+  // From cassini_inclination.py: [a_re, g_j2_deg_yr, g_sun_deg_yr]
+  const rates = [
+    [3, 1823.96, 0.224], [5, 266.10, 0.481], [8, 43.16, 0.974],
+    [10, 17.79, 1.361], [15, 3.37, 2.501], [20, 0.98, 3.850],
+    [25, 0.36, 5.381], [30, 0.15, 7.073], [35, 0.07, 8.914],
+    [40, 0.03, 10.890], [50, 0.01, 15.220], [60, 0.004, 20.007]
+  ];
+
+  const xR = (v) => mapX(v, 0, 65, pad.l, pad.r, w);
+  const yR = (v) => mapY(v, -2.5, 3.5, pad.t, pad.b, h);
+
+  // J2 curve
+  ctx.strokeStyle = C.accent2;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  rates.forEach(([a, j2, _], i) => {
+    const x = xR(a), y = yR(Math.log10(Math.max(j2, 0.001)));
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Solar curve
+  ctx.strokeStyle = C.blue;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  rates.forEach(([a, _, sun], i) => {
+    const x = xR(a), y = yR(Math.log10(Math.max(sun, 0.001)));
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Crossover marker
+  ctx.strokeStyle = C.accent + '66';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xR(15.3), pad.t);
+  ctx.lineTo(xR(15.3), h - pad.b);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillStyle = C.accent2;
+  ctx.textAlign = 'left';
+  ctx.fillText('J2 precession', xR(3), yR(3) + 14);
+  ctx.fillStyle = C.blue;
+  ctx.fillText('Solar precession', xR(30), yR(1) - 6);
+  ctx.fillStyle = C.accent;
+  ctx.textAlign = 'center';
+  ctx.fillText('crossover', xR(15.3), h - pad.b - 8);
+
+  // Axis ticks
+  ctx.fillStyle = C.dim;
+  ctx.textAlign = 'center';
+  for (let v = 0; v <= 60; v += 10) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
+  ctx.textAlign = 'right';
+  for (let v = -2; v <= 3; v += 1) ctx.fillText(v.toString(), pad.l - 5, yR(v) + 4);
+}
+
+// ============================================================
+// 4. RECESSION Q AND LOD
+// ============================================================
+function drawRecessionQ() {
+  const s = setup('c-recession-q');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 50, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'a / R_E', yLabel: 'Q (Stribeck)'});
+
+  // Q is ~40 everywhere for lunar-theory tidal velocities (all > v_thr)
+  // The extension factor varies: at K=1 (close), f_locked=50.7%, ext=2.03
+  // At K=0.5 (60 RE), f_locked=17.9%, ext=1.22
+
+  const distances = [3,5,8,10,15,20,25,30,35,40,45,50,55,60];
+  const qValues = distances.map(() => 40); // Q~40 throughout (Stribeck stick regime)
+  const extensions = [2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,1.69,1.35,1.22];
+
+  const xR = (v) => mapX(v, 0, 65, pad.l, pad.r, w);
+  const yQ = (v) => mapY(v, 0, 60, pad.t, pad.b, h);
+  const yE = (v) => mapY(v, 0.8, 2.5, pad.t, pad.b, h);
+
+  // Q line
+  ctx.strokeStyle = C.accent2;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  distances.forEach((a, i) => {
+    const x = xR(a), y = yQ(qValues[i]);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Extension line (right axis)
+  ctx.strokeStyle = C.teal;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  distances.forEach((a, i) => {
+    const x = xR(a), y = yE(extensions[i]);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Extension data points
+  distances.forEach((a, i) => {
+    ctx.fillStyle = C.teal;
+    ctx.beginPath();
+    ctx.arc(xR(a), yE(extensions[i]), 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillStyle = C.accent2;
+  ctx.textAlign = 'left';
+  ctx.fillText('Q = 40 (Stribeck)', xR(20), yQ(40) - 8);
+  ctx.fillStyle = C.teal;
+  ctx.fillText('Extension factor', xR(5), yE(2.03) - 8);
+
+  // Axes
+  ctx.fillStyle = C.dim;
+  ctx.textAlign = 'center';
+  for (let v = 0; v <= 60; v += 10) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
+  ctx.textAlign = 'right';
+  for (let v = 0; v <= 60; v += 20) ctx.fillText(v.toString(), pad.l - 5, yQ(v) + 4);
+  // Right axis
+  ctx.textAlign = 'left';
+  ctx.fillStyle = C.teal;
+  for (let v = 1.0; v <= 2.5; v += 0.5) ctx.fillText(v.toFixed(1) + 'x', w - pad.r + 5, yE(v) + 4);
+}
+
+function drawLOD() {
+  const s = setup('c-lod');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 20, b: 35};
+
+  axes(ctx, w, h, pad, {xLabel: 'Age (Gya)', yLabel: 'LOD (hr)'});
+
+  const xR = (v) => mapX(v, 0, 4.5, pad.l, pad.r, w);
+  const yR = (v) => mapY(v, 14, 25, pad.t, pad.b, h);
+
+  // Observed data
+  const obs = [[0, 24], [0.31, 22.12], [0.62, 21.63], [0.90, 19.91], [2.45, 19.04]];
+
+  // Constant-Q curve
+  ctx.strokeStyle = C.red + '88';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i <= 100; i++) {
+    const gya = i * 4.5 / 100;
+    const t = 4.5 - gya;
+    const lod = t > 0 ? 24 * Math.pow(t / 4.5, 1/6.5) : 5;
+    const x = xR(gya), y = yR(lod);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Staircase curve
+  const stairs = [
+    [4.5,5],[4.0,15],[3.5,17],[3.0,17],[2.7,19],[2.3,19],
+    [1.7,20.5],[1.3,20.5],[0.8,21.5],[0.5,21.5],[0.3,22],[0,24]
+  ];
+  ctx.strokeStyle = C.accent3 + 'cc';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  stairs.forEach(([gya, lod], i) => {
+    const x = xR(gya), y = yR(lod);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Data points
+  obs.forEach(([gya, lod]) => {
+    ctx.fillStyle = C.blue;
+    ctx.beginPath();
+    ctx.arc(xR(gya), yR(lod), 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillStyle = C.red;
+  ctx.textAlign = 'left';
+  ctx.fillText('Constant-Q', xR(3.5), yR(16) + 14);
+  ctx.fillStyle = C.accent3;
+  ctx.fillText('Staircase', xR(3.0), yR(17) - 8);
+  ctx.fillStyle = C.blue;
+  ctx.fillText('Rhythmite data', xR(1.5), yR(19) - 10);
+
+  // Axes
+  ctx.fillStyle = C.dim;
+  ctx.textAlign = 'center';
+  for (let v = 0; v <= 4.5; v += 0.5) ctx.fillText(v.toFixed(1), xR(v), h - pad.b + 14);
+  ctx.textAlign = 'right';
+  for (let v = 14; v <= 24; v += 2) ctx.fillText(v.toString(), pad.l - 5, yR(v) + 4);
+}
+
+// ============================================================
+// 5. OBLIQUITY STABILITY
+// ============================================================
+function drawObliquity() {
+  const s = setup('c-obliquity');
+  if (!s) return;
+  const {ctx, w, h} = s;
+  const pad = {l: 50, r: 20, t: 25, b: 30};
+
+  axes(ctx, w, h, pad, {xLabel: 'Precession rate (arcsec/yr)', yLabel: ''});
+
+  const xR = (v) => mapX(v, 0, 65, pad.l, pad.r, w);
+
+  // s6 tongue
+  const s6 = 26.33;
+  const w_tongue = 8;
+  ctx.fillStyle = 'rgba(238,27,62,0.15)';
+  ctx.fillRect(xR(s6 - w_tongue), pad.t, xR(s6 + w_tongue) - xR(s6 - w_tongue), h - pad.t - pad.b);
+
+  // s6 center
+  ctx.strokeStyle = C.red + '88';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(xR(s6), pad.t);
+  ctx.lineTo(xR(s6), h - pad.b);
+  ctx.stroke();
+
+  // Without Moon marker
+  const noMoon = 15.9;
+  ctx.fillStyle = C.accent4;
+  ctx.beginPath();
+  ctx.arc(xR(noMoon), (pad.t + h - pad.b) / 2, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // With Moon marker
+  const withMoon = 50.6;
+  ctx.fillStyle = C.accent3;
+  ctx.beginPath();
+  ctx.arc(xR(withMoon), (pad.t + h - pad.b) / 2, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Gap arrows
+  const mid = (pad.t + h - pad.b) / 2;
+  ctx.strokeStyle = C.accent2 + '88';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(xR(noMoon), mid + 20);
+  ctx.lineTo(xR(s6), mid + 20);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(xR(withMoon), mid + 20);
+  ctx.lineTo(xR(s6), mid + 20);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '11px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = C.red;
+  ctx.fillText('s6 tongue', xR(s6), pad.t + 14);
+  ctx.fillStyle = C.accent4;
+  ctx.fillText('No Moon', xR(noMoon), mid - 16);
+  ctx.fillText('15.9"/yr', xR(noMoon), mid - 4);
+  ctx.fillStyle = C.accent3;
+  ctx.fillText('With Moon', xR(withMoon), mid - 16);
+  ctx.fillText('50.6"/yr', xR(withMoon), mid - 4);
+
+  ctx.fillStyle = C.accent2;
+  ctx.font = '9px -apple-system, sans-serif';
+  ctx.fillText('gap/w = 1.3', (xR(noMoon) + xR(s6)) / 2, mid + 32);
+  ctx.fillText('gap/w = 3.0', (xR(withMoon) + xR(s6)) / 2, mid + 32);
+
+  // Axis ticks
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  for (let v = 0; v <= 60; v += 10) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
+}
+
+// ============================================================
+// DRAW ALL
+// ============================================================
+function drawAll() {
+  drawDensity();
+  drawDiffn();
+  drawVolatile();
+  drawLaplace();
+  drawPrecession();
+  drawRecessionQ();
+  drawLOD();
+  drawObliquity();
+}
+window.addEventListener('load', drawAll);
+window.addEventListener('resize', drawAll);
+</script>
+
+</body>
+</html>
