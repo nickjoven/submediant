@@ -290,6 +290,29 @@ footer {
   </div>
 </div>
 
+<h3>Channel Decomposition</h3>
+<table class="data-table">
+<tr><th>Element</th><th>R<sub>sid</sub></th><th>R<sub>therm</sub></th><th>R<sub>cond</sub></th><th>Predicted</th><th>Observed</th><th>log err</th></tr>
+<tr><td>Fe</td><td>15.12</td><td>6.23</td><td>0.48</td><td class="ok">18.2</td><td>16.0</td><td class="ok">0.13</td></tr>
+<tr><td>Ni</td><td>24.53</td><td>5.70</td><td>0.48</td><td class="ok">26.3</td><td>36.0</td><td class="ok">0.32</td></tr>
+<tr><td>Na</td><td>1.00</td><td>85.0</td><td>0.71</td><td class="ok">43.8</td><td>42.0</td><td class="ok">0.04</td></tr>
+<tr><td>S</td><td>3.35</td><td>24.2</td><td>0.89</td><td class="warn">66.6</td><td>38.0</td><td class="warn">0.56</td></tr>
+<tr><td>K</td><td>1.00</td><td>13.6</td><td>0.67</td><td class="warn">6.4</td><td>15.0</td><td class="warn">0.85</td></tr>
+<tr><td>Zn</td><td>1.47</td><td>4.77</td><td>0.86</td><td class="bad">5.5</td><td>40.0</td><td class="bad">1.98</td></tr>
+<tr><td>Rb</td><td>1.00</td><td>3.30</td><td>0.62</td><td class="bad">1.5</td><td>25.0</td><td class="bad">2.84</td></tr>
+<tr><td>Ga</td><td>1.71</td><td>4.33</td><td>0.70</td><td class="ok">4.0</td><td>5.0</td><td class="ok">0.22</td></tr>
+<tr><td>Mn</td><td>1.24</td><td>6.42</td><td>0.57</td><td class="ok">2.6</td><td>3.0</td><td class="ok">0.16</td></tr>
+<tr><td>Cr</td><td>1.94</td><td>7.13</td><td>0.50</td><td class="warn">2.9</td><td>1.5</td><td class="warn">0.65</td></tr>
+<tr><td>Ca</td><td>1.00</td><td>12.8</td><td>0.44</td><td class="warn">1.1</td><td>0.45</td><td class="warn">0.93</td></tr>
+<tr><td>Al</td><td>1.00</td><td>44.1</td><td>0.42</td><td class="bad">1.8</td><td>0.44</td><td class="bad">1.39</td></tr>
+<tr><td>Ti</td><td>1.02</td><td>8.45</td><td>0.43</td><td class="ok">0.8</td><td>0.50</td><td class="ok">0.44</td></tr>
+</table>
+<p style="font-size:0.75em; color: var(--dim)">
+  Outliers: Zn and Rb. Both are moderately volatile with low D<sub>met/sil</sub> but
+  anomalously high observed depletion, suggesting a fourth channel (perhaps kinetic
+  fractionation during vapor transport) not yet captured.
+</p>
+
 <!-- ============================================================ -->
 <h2>3. Orbital Inclination</h2>
 
@@ -892,68 +915,53 @@ function drawRecessionQ() {
   const s = setup('c-recession-q');
   if (!s) return;
   const {ctx, w, h} = s;
-  const pad = {l: 50, r: 50, t: 20, b: 35};
+  const pad = {l: 50, r: 20, t: 20, b: 35};
 
-  axes(ctx, w, h, pad, {xLabel: 'a / R_E', yLabel: 'Q (Stribeck)'});
+  axes(ctx, w, h, pad, {xLabel: 'Recession Time (Gyr)', yLabel: ''});
 
-  // Q is ~40 everywhere for lunar-theory tidal velocities (all > v_thr)
-  // The extension factor varies: at K=1 (close), f_locked=50.7%, ext=2.03
-  // At K=0.5 (60 RE), f_locked=17.9%, ext=1.22
+  // Timeline bounds visualization
+  const xR = (v) => mapX(v, 0, 10, pad.l, pad.r, w);
+  const mid = (pad.t + h - pad.b) / 2;
+  const barH = 30;
 
-  const distances = [3,5,8,10,15,20,25,30,35,40,45,50,55,60];
-  const qValues = distances.map(() => 40); // Q~40 throughout (Stribeck stick regime)
-  const extensions = [2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,2.03,1.69,1.35,1.22];
+  // Full range bar: [1.65, 8.42]
+  ctx.fillStyle = 'rgba(222,51,115,0.15)';
+  ctx.fillRect(xR(1.65), mid - barH, xR(8.42) - xR(1.65), barH * 2);
 
-  const xR = (v) => mapX(v, 0, 65, pad.l, pad.r, w);
-  const yQ = (v) => mapY(v, 0, 60, pad.t, pad.b, h);
-  const yE = (v) => mapY(v, 0.8, 2.5, pad.t, pad.b, h);
+  // Lower bound: Q=12 (constant, current anomaly)
+  ctx.fillStyle = C.red + '88';
+  ctx.fillRect(xR(1.65) - 2, mid - barH - 5, 4, barH * 2 + 10);
 
-  // Q line
-  ctx.strokeStyle = C.accent2;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  distances.forEach((a, i) => {
-    const x = xR(a), y = yQ(qValues[i]);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.stroke();
+  // Upper bound: Q=40 (Stribeck baseline)
+  ctx.fillStyle = C.accent4 + '88';
+  ctx.fillRect(xR(8.42) - 2, mid - barH - 5, 4, barH * 2 + 10);
 
-  // Extension line (right axis)
-  ctx.strokeStyle = C.teal;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  distances.forEach((a, i) => {
-    const x = xR(a), y = yE(extensions[i]);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  // Extension data points
-  distances.forEach((a, i) => {
-    ctx.fillStyle = C.teal;
-    ctx.beginPath();
-    ctx.arc(xR(a), yE(extensions[i]), 3, 0, Math.PI * 2);
-    ctx.fill();
-  });
+  // Moon age target
+  ctx.fillStyle = C.accent3;
+  ctx.fillRect(xR(4.5) - 2, mid - barH - 10, 4, barH * 2 + 20);
 
   // Labels
-  ctx.font = '10px -apple-system, sans-serif';
-  ctx.fillStyle = C.accent2;
-  ctx.textAlign = 'left';
-  ctx.fillText('Q = 40 (Stribeck)', xR(20), yQ(40) - 8);
-  ctx.fillStyle = C.teal;
-  ctx.fillText('Extension factor', xR(5), yE(2.03) - 8);
-
-  // Axes
-  ctx.fillStyle = C.dim;
+  ctx.font = '11px -apple-system, sans-serif';
   ctx.textAlign = 'center';
-  for (let v = 0; v <= 60; v += 10) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
-  ctx.textAlign = 'right';
-  for (let v = 0; v <= 60; v += 20) ctx.fillText(v.toString(), pad.l - 5, yQ(v) + 4);
-  // Right axis
-  ctx.textAlign = 'left';
-  ctx.fillStyle = C.teal;
-  for (let v = 1.0; v <= 2.5; v += 0.5) ctx.fillText(v.toFixed(1) + 'x', w - pad.r + 5, yE(v) + 4);
+  ctx.fillStyle = C.red;
+  ctx.fillText('Q=12', xR(1.65), mid - barH - 12);
+  ctx.fillText('1.65 Gyr', xR(1.65), mid + barH + 18);
+  ctx.fillStyle = C.accent4;
+  ctx.fillText('Q=40', xR(8.42), mid - barH - 12);
+  ctx.fillText('8.42 Gyr', xR(8.42), mid + barH + 18);
+  ctx.fillStyle = C.accent3;
+  ctx.fillText('Moon age', xR(4.5), mid - barH - 12);
+  ctx.fillText('4.50 Gyr', xR(4.5), mid + barH + 18);
+
+  // Physical model arrow
+  ctx.fillStyle = C.accent;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.fillText('Physical: Q~40 baseline + Q~12 current ocean resonance', (xR(1.65) + xR(8.42)) / 2, mid + 5);
+
+  // Axis ticks
+  ctx.fillStyle = C.dim;
+  ctx.font = '10px -apple-system, sans-serif';
+  for (let v = 0; v <= 10; v += 1) ctx.fillText(v.toString(), xR(v), h - pad.b + 14);
 }
 
 function drawLOD() {
