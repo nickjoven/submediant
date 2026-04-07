@@ -4,56 +4,95 @@ parts:
   - caption: "The Story"
     chapters:
       - file: 00_narrative/partial_agreement
-        title: "The Mathematics of Partial Agreement"
-  - caption: "The Derivation"
+  - caption: "The Alphabet"
     chapters:
-      - file: 01_alphabet/10_minimum_alphabet
-        title: "The Minimum Alphabet"
+      - file: 01_alphabet/minimum_alphabet
         sections:
+          - file: 01_alphabet/mediant_derivation
+          - file: 01_alphabet/lie_group_characterization
           - file: 01_alphabet/14_three_dimensions
-            title: "Three Dimensions"
-      - file: 02_field_equation/11_rational_field_equation
-        title: "The Rational Field Equation"
-      - file: 03_einstein/13_einstein_from_kuramoto
-        title: "Einstein (K = 1)"
+  - caption: "The Field Equation"
+    chapters:
+      - file: 02_field_equation/rational_field_equation
         sections:
-          - file: 03_einstein/12_continuum_limits
-            title: "Two Continuum Limits"
+          - file: 02_field_equation/variable_denominator
+          - file: 02_field_equation/rank1_temporal_causation
+  - caption: "K = 1: Einstein"
+    chapters:
+      - file: 03_einstein/einstein_from_kuramoto
+        sections:
+          - file: 03_einstein/continuum_limits
+          - file: 03_einstein/adm_dictionary
+  - caption: "K < 1: Schrödinger"
+    chapters:
       - file: 04_schrodinger/04_schrodinger_intro
-        title: "Schrödinger (K < 1)"
+        sections:
+          - file: 04_schrodinger/two_forces
+  - caption: "Topology"
+    chapters:
+      - file: 04a_topology/mobius_container
+        sections:
+          - file: 04a_topology/klein_bottle
+          - file: 04a_topology/xor_continuum_limit
+          - file: 04a_topology/discrete_gauge
+          - file: 04a_topology/half_mobius_boundary
+          - file: 04a_topology/engineering_targets
+          - file: 04a_topology/three_zeros
+  - caption: "Cosmological Parameters"
+    chapters:
+      - file: 04b_cosmology/vacuum_energy
+        sections:
+          - file: 04b_cosmology/farey_partition
+          - file: 04b_cosmology/hierarchy
+          - file: 04b_cosmology/exponent
+          - file: 04b_cosmology/farey_proof
+          - file: 04b_cosmology/baryon_fraction
+  - caption: "Extended Derivations"
+    chapters:
+      - file: 04c_extended/denomination_boundary
+        sections:
+          - file: 04c_extended/speed_of_light
+          - file: 04c_extended/minkowski_signature
+          - file: 04c_extended/duty_cycle_dictionary
+          - file: 04c_extended/generation_mechanism
+          - file: 04c_extended/cosmological_cycle
+          - file: 04c_extended/conservation_computability
+          - file: 04c_extended/figure_eight
+          - file: 04c_extended/boundary_weight
+          - file: 04c_extended/stribeck_vortex
+          - file: 04c_extended/duty_dimension_proof
+          - file: 04c_extended/isotropy_lemma
+          - file: 04c_extended/xor_derivation
+  - caption: "Gauge Sector"
+    chapters:
+      - file: 04d_gauge/discrete_gauge_resolution
+        sections:
+          - file: 04d_gauge/gauge_sector_lovelock
+          - file: 04d_gauge/gell_mann_nishijima
+          - file: 04d_gauge/higgs_from_tongue_boundary
+          - file: 04d_gauge/coupling_scales
   - caption: "Predictions"
     chapters:
-      - file: 05_predictions/01_born_rule
-        title: "Born Rule"
+      - file: 05_predictions/born_rule
         sections:
-          - file: 05_predictions/04_spectral_tilt_reframed
-            title: "Spectral Tilt"
-          - file: 05_predictions/08_high_z_mond
-            title: "High-z MOND Test"
-          - file: 05_predictions/09_fidelity_bound
-            title: "Fidelity Bound"
+          - file: 05_predictions/spectral_tilt
+          - file: 05_predictions/spectral_tilt_reframed
+          - file: 05_predictions/high_z_mond
+          - file: 05_predictions/fidelity_bound
   - caption: "Evidence"
     chapters:
       - file: 06_evidence/RESULTS
-        title: "Results"
         sections:
           - file: 06_evidence/FRAMEWORK
-            title: "Framework"
-          - file: 06_evidence/03_a0_threshold
-            title: "a₀ Threshold"
-          - file: 06_evidence/06_planck_scale
-            title: "Planck Scale"
-          - file: 06_evidence/07_measurement_collapse
-            title: "Measurement Collapse"
+          - file: 06_evidence/a0_threshold
+          - file: 06_evidence/planck_scale
+          - file: 06_evidence/measurement_collapse
   - caption: "Prior Work"
     chapters:
       - file: 07_prior_work/proslambenomenos
-        title: "Proslambenomenos"
         sections:
           - file: 07_prior_work/joven_unifying_framework
-            title: "201: Unifying Framework"
           - file: 07_prior_work/joven_stick_slip_dark_matter
-            title: "Stick-Slip & Dark Matter"
   - caption: "Reference"
     chapters:
       - file: graph

@@ -40,80 +40,94 @@ SECTIONS = {
     "01_alphabet": {
         "title": "The Alphabet",
         "files": [
-            ("harmonics", "sync_cost/derivations/10_minimum_alphabet.md"),
-            ("harmonics", "sync_cost/derivations/29_mediant_derivation.md"),
-            ("harmonics", "sync_cost/derivations/15_lie_group_characterization.md"),
+            ("harmonics", "sync_cost/derivations/minimum_alphabet.md"),
+            ("harmonics", "sync_cost/derivations/mediant_derivation.md"),
+            ("harmonics", "sync_cost/derivations/lie_group_characterization.md"),
         ],
         "local": ["14_three_dimensions.md"],
     },
     "02_field_equation": {
         "title": "The Field Equation",
         "files": [
-            ("harmonics", "sync_cost/derivations/11_rational_field_equation.md"),
-            ("harmonics", "sync_cost/derivations/16_variable_denominator.md"),
-            ("harmonics", "sync_cost/derivations/17_rank1_temporal_causation.md"),
+            ("harmonics", "sync_cost/derivations/rational_field_equation.md"),
+            ("harmonics", "sync_cost/derivations/variable_denominator.md"),
+            ("harmonics", "sync_cost/derivations/rank1_temporal_causation.md"),
         ],
     },
     "03_einstein": {
         "title": "K = 1: Einstein",
         "files": [
-            ("harmonics", "sync_cost/derivations/13_einstein_from_kuramoto.md"),
-            ("harmonics", "sync_cost/derivations/12_continuum_limits.md"),
+            ("harmonics", "sync_cost/derivations/einstein_from_kuramoto.md"),
+            ("harmonics", "sync_cost/derivations/continuum_limits.md"),
+            ("harmonics", "sync_cost/derivations/adm_dictionary.md"),
         ],
     },
     "04_schrodinger": {
         "title": "K < 1: Schrödinger",
         "files": [
-            ("harmonics", "sync_cost/derivations/05_two_forces.md"),
+            ("harmonics", "sync_cost/derivations/two_forces.md"),
         ],
         "generated": ["04_schrodinger_intro.md"],
     },
     "04a_topology": {
         "title": "Topology",
         "files": [
-            ("harmonics", "sync_cost/derivations/18_mobius_container.md"),
-            ("harmonics", "sync_cost/derivations/19_klein_bottle.md"),
-            ("harmonics", "sync_cost/derivations/20_xor_continuum_limit.md"),
-            ("harmonics", "sync_cost/derivations/21_discrete_gauge.md"),
-            ("harmonics", "sync_cost/derivations/22_engineering_targets.md"),
-            ("harmonics", "sync_cost/derivations/23_three_zeros.md"),
+            ("harmonics", "sync_cost/derivations/mobius_container.md"),
+            ("harmonics", "sync_cost/derivations/klein_bottle.md"),
+            ("harmonics", "sync_cost/derivations/xor_continuum_limit.md"),
+            ("harmonics", "sync_cost/derivations/discrete_gauge.md"),
+            ("harmonics", "sync_cost/derivations/half_mobius_boundary.md"),
+            ("harmonics", "sync_cost/derivations/engineering_targets.md"),
+            ("harmonics", "sync_cost/derivations/three_zeros.md"),
         ],
     },
     "04b_cosmology": {
         "title": "Cosmological Parameters",
         "files": [
-            ("harmonics", "sync_cost/derivations/24_vacuum_energy.md"),
-            ("harmonics", "sync_cost/derivations/25_farey_partition.md"),
-            ("harmonics", "sync_cost/derivations/26_hierarchy.md"),
-            ("harmonics", "sync_cost/derivations/27_exponent.md"),
-            ("harmonics", "sync_cost/derivations/28_farey_proof.md"),
+            ("harmonics", "sync_cost/derivations/vacuum_energy.md"),
+            ("harmonics", "sync_cost/derivations/farey_partition.md"),
+            ("harmonics", "sync_cost/derivations/hierarchy.md"),
+            ("harmonics", "sync_cost/derivations/exponent.md"),
+            ("harmonics", "sync_cost/derivations/farey_proof.md"),
+            ("harmonics", "sync_cost/derivations/baryon_fraction.md"),
         ],
     },
     "05_predictions": {
         "title": "Predictions",
         "files": [
-            ("harmonics", "sync_cost/derivations/01_born_rule.md"),
-            ("harmonics", "sync_cost/derivations/02_spectral_tilt.md"),
-            ("harmonics", "sync_cost/derivations/04_spectral_tilt_reframed.md"),
-            ("harmonics", "sync_cost/derivations/08_high_z_mond.md"),
-            ("harmonics", "sync_cost/derivations/09_fidelity_bound.md"),
+            ("harmonics", "sync_cost/derivations/born_rule.md"),
+            ("harmonics", "sync_cost/derivations/spectral_tilt.md"),
+            ("harmonics", "sync_cost/derivations/spectral_tilt_reframed.md"),
+            ("harmonics", "sync_cost/derivations/high_z_mond.md"),
+            ("harmonics", "sync_cost/derivations/fidelity_bound.md"),
         ],
     },
     "04c_extended": {
         "title": "Extended Derivations",
         "files": [
-            ("harmonics", "sync_cost/derivations/30_denomination_boundary.md"),
-            ("harmonics", "sync_cost/derivations/31_speed_of_light.md"),
-            ("harmonics", "sync_cost/derivations/32_minkowski_signature.md"),
-            ("harmonics", "sync_cost/derivations/33_duty_cycle_dictionary.md"),
-            ("harmonics", "sync_cost/derivations/34_generation_mechanism.md"),
-            ("harmonics", "sync_cost/derivations/35_cosmological_cycle.md"),
-            ("harmonics", "sync_cost/derivations/36_conservation_computability.md"),
-            ("harmonics", "sync_cost/derivations/37_figure_eight.md"),
-            ("harmonics", "sync_cost/derivations/38_boundary_weight.md"),
+            ("harmonics", "sync_cost/derivations/denomination_boundary.md"),
+            ("harmonics", "sync_cost/derivations/speed_of_light.md"),
+            ("harmonics", "sync_cost/derivations/minkowski_signature.md"),
+            ("harmonics", "sync_cost/derivations/duty_cycle_dictionary.md"),
+            ("harmonics", "sync_cost/derivations/generation_mechanism.md"),
+            ("harmonics", "sync_cost/derivations/cosmological_cycle.md"),
+            ("harmonics", "sync_cost/derivations/conservation_computability.md"),
+            ("harmonics", "sync_cost/derivations/figure_eight.md"),
+            ("harmonics", "sync_cost/derivations/boundary_weight.md"),
+            ("harmonics", "sync_cost/derivations/stribeck_vortex.md"),
             ("harmonics", "sync_cost/derivations/duty_dimension_proof.md"),
             ("harmonics", "sync_cost/derivations/isotropy_lemma.md"),
             ("harmonics", "sync_cost/derivations/xor_derivation.md"),
+        ],
+    },
+    "04d_gauge": {
+        "title": "Gauge Sector",
+        "files": [
+            ("harmonics", "sync_cost/derivations/discrete_gauge_resolution.md"),
+            ("harmonics", "sync_cost/derivations/gauge_sector_lovelock.md"),
+            ("harmonics", "sync_cost/derivations/gell_mann_nishijima.md"),
+            ("harmonics", "sync_cost/derivations/higgs_from_tongue_boundary.md"),
+            ("harmonics", "sync_cost/derivations/coupling_scales.md"),
         ],
     },
     "06_evidence": {
@@ -121,9 +135,9 @@ SECTIONS = {
         "files": [
             ("harmonics", "RESULTS.md"),
             ("harmonics", "sync_cost/FRAMEWORK.md"),
-            ("harmonics", "sync_cost/derivations/03_a0_threshold.md"),
-            ("harmonics", "sync_cost/derivations/06_planck_scale.md"),
-            ("harmonics", "sync_cost/derivations/07_measurement_collapse.md"),
+            ("harmonics", "sync_cost/derivations/a0_threshold.md"),
+            ("harmonics", "sync_cost/derivations/planck_scale.md"),
+            ("harmonics", "sync_cost/derivations/measurement_collapse.md"),
         ],
     },
     "07_prior_work": {
@@ -297,6 +311,60 @@ DERIVATIONS = {
     29: {"title": "Mediant Derivation", "status": "derived",
          "claim": "Mediant is the unique operation satisfying three simultaneous constraints",
          "depends": [], "section": "01_alphabet"},
+    30: {"title": "Denomination Boundary", "status": "derived",
+         "claim": "Three open questions unified: devil's staircase in K-space is a brachistochrone",
+         "depends": [19, 11], "section": "04c_extended"},
+    31: {"title": "Speed of Light", "status": "derived",
+         "claim": "c as gate propagation speed of the coherent medium at K=1",
+         "depends": [11, 14, 17], "section": "04c_extended"},
+    32: {"title": "Minkowski Signature", "status": "derived",
+         "claim": "(3,1) signature from phase-state observability: 3 observable + 1 dark",
+         "depends": [14, 19], "section": "04c_extended"},
+    33: {"title": "Duty Cycle Dictionary", "status": "derived",
+         "claim": "Coupling constants from Klein bottle duty cycles: sin^2(theta_W) = 8/35",
+         "depends": [19], "section": "04c_extended"},
+    34: {"title": "Generation Mechanism", "status": "derived",
+         "claim": "Three generations from phase-state observability at Stern-Brocot depth",
+         "depends": [10, 14, 19], "section": "04c_extended"},
+    35: {"title": "Cosmological Cycle", "status": "derived",
+         "claim": "Two-voice round in 13/19: gap-twin at 18.7% spacetime duty",
+         "depends": [19, 25], "section": "04c_extended"},
+    36: {"title": "Conservation as Computability", "status": "derived",
+         "claim": "S^1 compact -> |r| <= 1 -> K_eff <= 1 -> circle map invertible -> information conserved",
+         "depends": [10, 11], "section": "04c_extended"},
+    37: {"title": "Figure-Eight Topology", "status": "derived",
+         "claim": "Klein bottle self-intersection = lemniscate; sin^2(theta_W) = 8/35 is crossing probability",
+         "depends": [19, 32], "section": "04c_extended"},
+    38: {"title": "Boundary Weight", "status": "derived",
+         "claim": "Omega_Lambda(w) = (11+2w)/(16+3w); w* = 0.83 at K* = 0.862",
+         "depends": [25, 19], "section": "04c_extended"},
+    39: {"title": "Half-Möbius Boundary", "status": "derived",
+         "claim": "Z4 boundary condition from half-Möbius strip",
+         "depends": [18], "section": "04a_topology"},
+    40: {"title": "Stribeck Vortex", "status": "derived",
+         "claim": "Vortex regime map: overcritical core (K>1) + subcritical annulus (K<1)",
+         "depends": [11, 36], "section": "04c_extended"},
+    41: {"title": "Discrete Gauge Resolution", "status": "derived",
+         "claim": "Gauge structure is discrete: charges, center Z6, confinement from XOR",
+         "depends": [20, 21], "section": "04d_gauge"},
+    42: {"title": "Gauge-Sector Lovelock", "status": "derived",
+         "claim": "SU(3) x SU(2) x U(1) -> Yang-Mills uniquely via Utiyama + Cartan",
+         "depends": [41, 14, 13], "section": "04d_gauge"},
+    43: {"title": "Gell-Mann–Nishijima", "status": "derived",
+         "claim": "Q = T3 + Y/2 derived from Klein bottle identification geometry",
+         "depends": [42, 19], "section": "04d_gauge"},
+    44: {"title": "Higgs from Tongue Boundary", "status": "derived",
+         "claim": "Higgs doublet is tongue boundary mode of open q=2 fiber",
+         "depends": [1, 43, 19], "section": "04d_gauge"},
+    45: {"title": "Coupling Scales", "status": "derived",
+         "claim": "D0 = 1/2 from tree geometry; all dimensionless ratios determined; theta = 0",
+         "depends": [44, 33], "section": "04d_gauge"},
+    46: {"title": "ADM Dictionary", "status": "derived",
+         "claim": "Each ADM entry uniquely identified by K=1 Kuramoto symmetries",
+         "depends": [12, 13], "section": "03_einstein"},
+    47: {"title": "Baryon Fraction", "status": "derived",
+         "claim": "Omega_b = 1/19, Omega_DM = 5/19 from Z6 irreducibility",
+         "depends": [25, 19], "section": "04b_cosmology"},
 }
 
 
@@ -446,7 +514,7 @@ def load_manifest(local_root=None):
         return manifest
     except (FileNotFoundError, URLError, OSError) as e:
         print(f"  MANIFEST.yml — MISSING ({e}), using defaults")
-        return {"derivation_count": 29, "derivation_range": "1–29",
+        return {"derivation_count": 47, "derivation_range": "1–47",
                 "free_parameters": 0, "free_functions": 0}
 
 
@@ -735,7 +803,7 @@ mechanics — arises from the **Stern-Brocot renormalization group flow**:
 per-level variance $\\sigma^2(d) \\sim \\phi^{-4d}$ sums to a convergent
 constant $D_{\\text{eff}} = D_0 / (1 - \\phi^{-4})$.
 
-The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/12_continuum_limits.md),
+The full derivation is in [Derivation 12: The Two Continuum Limits](../03_einstein/continuum_limits.md),
 Part II.
 
 ## Three regimes, one equation
@@ -935,11 +1003,11 @@ numerically and produces all predictions from a single run.
 
 ## Where to start
 
-- **Curious about the math?** Start with [The Alphabet](01_alphabet/10_minimum_alphabet.html) —
+- **Curious about the math?** Start with [The Alphabet](01_alphabet/minimum_alphabet.html) —
   four primitives that generate all the structure
-- **Curious about the physics?** Start with [Predictions](05_predictions/01_born_rule.html) —
+- **Curious about the physics?** Start with [Predictions](05_predictions/born_rule.html) —
   what the framework says and how it compares to measurement
-- **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
+- **Want the punchline?** [K = 1: Einstein](03_einstein/einstein_from_kuramoto.html) —
   how one equation produces general relativity, uniquely
 - **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
   `python -m rfe --observables`
@@ -968,7 +1036,7 @@ def generate_derivation_graph():
     # Plain JSON graph for programmatic consumption
     graph = {
         "title": "Submediant Derivation Chain",
-        "description": "29 derivations from x^2 - x - 1 = 0 to general relativity and quantum mechanics",
+        "description": "47 derivations from x^2 - x - 1 = 0 to general relativity, quantum mechanics, and the Standard Model",
         "author": "N. Joven",
         "license": "CC0 1.0",
         "derivation_count": len(DERIVATIONS),
@@ -1006,8 +1074,8 @@ def generate_derivation_graph():
         "license": "https://creativecommons.org/publicdomain/zero/1.0/",
         "description": (
             "A derivation chain showing how x^2 - x - 1 = 0 leads to "
-            "general relativity (K=1) and quantum mechanics (K<1) "
-            "with zero free parameters and zero free functions."
+            "general relativity (K=1), quantum mechanics (K<1), and the "
+            "Standard Model gauge group with zero free parameters."
         ),
         "hasPart": [
             {"@type": "Chapter", "name": f"Derivation {n}: {d['title']}",

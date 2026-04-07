@@ -1,6 +1,8 @@
 # Submediant
 
-[N. Joven](https://github.com/nickjoven) — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
+N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
+
+Source: [harmonics](https://github.com/nickjoven/harmonics)
 
 ---
 
@@ -21,7 +23,7 @@ physical measurements:
 
 | What the roots do | What we observe | Residual |
 |---|---|---|
-| Their product is $\pm 1$ | Born rule: $P = |\psi|^2$ | exact |
+| Their product is $\pm 1$ | Born rule: $P = \lvert\psi\rvert^2$ | exact |
 | $\phi^2 = \phi + 1$ (self-similarity) | CMB spectral tilt $n_s \approx 0.965$ | 0.2% |
 | $\phi - \psi = \sqrt{5}$ (gap width) | Inflation lasted $\sim 61$ e-folds | CMB-S4, ~2028 |
 
@@ -32,7 +34,7 @@ and that the MOND acceleration scale is $a_0 = 1.25 \times 10^{-10}$ m/s$^2$
 
 The frequency distribution $g(\omega)$ — the one remaining free input —
 determines itself: the distribution that produces dynamics reproducing
-that distribution is unique. Zero free parameters. Zero free functions.
+that distribution is unique. The framework introduces no free parameters and no free functions — every quantity is determined by the recurrence and the boundary conditions.
 
 This site walks through the derivation chain, starting from the polynomial
 and arriving at known physics:
@@ -42,24 +44,28 @@ and arriving at known physics:
 equation** $\to$ **general relativity and quantum mechanics**
 
 Each step is a composition of the previous ones. The
-[derivation chain](https://github.com/nickjoven/harmonics) is 14 steps.
+[derivation chain](https://github.com/nickjoven/harmonics) is 47 steps.
 The [engine](https://github.com/nickjoven/rfe) solves the equation
 numerically and produces all predictions from a single run.
 
 ## Where to start
 
-- **Curious about the math?** Start with [First Principles](reference/first-principles.html) —
+- **Curious about the math?** Start with [The Alphabet](01_alphabet/minimum_alphabet.html) —
   four primitives that generate all the structure
-- **Curious about the physics?** Start with [Constants](reference/constants.html) —
+- **Curious about the physics?** Start with [Predictions](05_predictions/born_rule.html) —
   what the framework says and how it compares to measurement
-- **Want the punchline?** [K = 1: Einstein](03_einstein/13_einstein_from_kuramoto.html) —
+- **Want the punchline?** [K = 1: Einstein](03_einstein/einstein_from_kuramoto.html) —
   how one equation produces general relativity, uniquely
 - **Want to run it?** [rfe](https://github.com/nickjoven/rfe) —
   `python -m rfe --observables`
+- **From scratch?** [First Principles](https://nickjoven.github.io/submediant-site/first-principles.html) —
+  sin(ωt) to Einstein in 10 steps
+- **Where are we?** [Our Address](https://nickjoven.github.io/submediant-site/our_address.html) —
+  the universe's computational clock on the Stern-Brocot tree
 
 ## Source
 
-- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–14)
+- [harmonics](https://github.com/nickjoven/harmonics) — the derivation chain (Derivations 1–47)
 - [rfe](https://github.com/nickjoven/rfe) — the engine (one equation, all observables)
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — one frequency, zero free parameters
 - [201](https://github.com/nickjoven/201) — gravity as synchronization in a frictional medium
