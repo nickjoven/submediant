@@ -43,8 +43,9 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/minimum_alphabet.md"),
             ("harmonics", "sync_cost/derivations/mediant_derivation.md"),
             ("harmonics", "sync_cost/derivations/lie_group_characterization.md"),
+            ("harmonics", "sync_cost/derivations/three_dimensions.md"),
+            ("harmonics", "sync_cost/derivations/address_and_quantity.md"),
         ],
-        "local": ["14_three_dimensions.md"],
     },
     "02_field_equation": {
         "title": "The Field Equation",
@@ -60,6 +61,8 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/einstein_from_kuramoto.md"),
             ("harmonics", "sync_cost/derivations/continuum_limits.md"),
             ("harmonics", "sync_cost/derivations/adm_dictionary.md"),
+            ("harmonics", "sync_cost/derivations/gap1_analytic_proof.md"),
+            ("harmonics", "sync_cost/derivations/gap2_analytic_proof.md"),
         ],
     },
     "04_schrodinger": {
@@ -79,6 +82,8 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/half_mobius_boundary.md"),
             ("harmonics", "sync_cost/derivations/engineering_targets.md"),
             ("harmonics", "sync_cost/derivations/three_zeros.md"),
+            ("harmonics", "sync_cost/derivations/klein_bottle_derivation.md"),
+            ("harmonics", "sync_cost/derivations/half_twist_dynamics.md"),
         ],
     },
     "04b_cosmology": {
@@ -118,6 +123,7 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/duty_dimension_proof.md"),
             ("harmonics", "sync_cost/derivations/isotropy_lemma.md"),
             ("harmonics", "sync_cost/derivations/xor_derivation.md"),
+            ("harmonics", "sync_cost/derivations/CHAIN_KSTAR.md"),
         ],
     },
     "04d_gauge": {
@@ -128,6 +134,12 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/gell_mann_nishijima.md"),
             ("harmonics", "sync_cost/derivations/higgs_from_tongue_boundary.md"),
             ("harmonics", "sync_cost/derivations/coupling_scales.md"),
+            ("harmonics", "sync_cost/derivations/higgs_reframing.md"),
+            ("harmonics", "sync_cost/derivations/mass_sector_closure.md"),
+            ("harmonics", "sync_cost/derivations/a1_from_saddle_node.md"),
+            ("harmonics", "sync_cost/derivations/item12_C_from_K_star.md"),
+            ("harmonics", "sync_cost/derivations/item12_cross_sector_ratios.md"),
+            ("harmonics", "sync_cost/derivations/sector_constants_structure.md"),
         ],
     },
     "06_evidence": {
@@ -138,6 +150,9 @@ SECTIONS = {
             ("harmonics", "sync_cost/derivations/a0_threshold.md"),
             ("harmonics", "sync_cost/derivations/planck_scale.md"),
             ("harmonics", "sync_cost/derivations/measurement_collapse.md"),
+            ("harmonics", "sync_cost/derivations/PROOF_A_gravity.md"),
+            ("harmonics", "sync_cost/derivations/PROOF_B_quantum.md"),
+            ("harmonics", "sync_cost/derivations/FRAMEWORK_TOPOLOGY.md"),
         ],
     },
     "07_prior_work": {
@@ -203,6 +218,10 @@ STATIC_ASSETS = {
         "orbit.gif",
         "spiral.gif",
         "rose.gif",
+        "genesis.gif",
+        # Interactive applications
+        "sync_cost/applications/double_pendulum.html",
+        "sync_cost/applications/three_body_catalog.html",
     ],
     "stribeck-optics": [
         "docs/index.html",
