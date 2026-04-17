@@ -22,4 +22,7 @@ book/equations.md
 book/glossary.md
 book/graph.md
 book/visuals.md
+node_modules/
+test-results/
+playwright-report/
 .ket/cas/
