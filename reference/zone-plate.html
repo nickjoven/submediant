@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Zone Plate</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #000; color: #C0C2C2;
+  font-family: 'Courier New', monospace;
+  overflow: hidden; height: 100vh; width: 100vw;
+}
+canvas { display: block; }
+#info {
+  position: fixed; top: 16px; left: 16px; z-index: 10;
+  font-size: 13px; line-height: 1.7;
+  pointer-events: none;
+}
+#controls {
+  position: fixed; top: 12px; right: 12px; z-index: 10;
+  display: flex; gap: 8px;
+}
+.btn {
+  background: none; border: 1px solid #333; color: #555;
+  padding: 6px 14px; cursor: pointer;
+  font-family: 'Courier New', monospace; font-size: 12px;
+  line-height: 1.4; transition: color 0.3s, border-color 0.3s;
+  -webkit-appearance: none;
+}
+.btn:hover { border-color: #666; color: #999; }
+.btn.on { border-color: #DE3373; color: #DE3373; }
+#status {
+  position: fixed; bottom: 20px; left: 0; right: 0;
+  text-align: center; font-size: 11px; color: #333;
+  pointer-events: none; z-index: 10;
+  font-family: 'Courier New', monospace;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="info">
+  <div style="color:#DE3373;">zone plate</div>
+  <div style="color:#333; font-size:11px; margin-top:2px;">every point on the mirror reflects the laser</div>
+  <div style="color:#333; font-size:11px;">most cancel — one survives</div>
+</div>
+
+<div id="controls">
+  <button class="btn" id="b1">block</button>
+  <button class="btn" id="b2">film</button>
+</div>
+
+<div id="status"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var c = document.getElementById("c");
+  var ctx = c.getContext("2d");
+  var W, H;
+
+  var N = 80;
+  var blocked = false, filmed = false;
+  var curPhase = new Float64Array(N);
+  var curAmp  = new Float64Array(N);
+  var tgtPhase = new Float64Array(N);
+  var tgtAmp  = new Float64Array(N);
+  var rawPhase = new Float64Array(N);
+
+  function resize() {
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+    recompute();
+  }
+
+  function geom() {
+    var sx = W * 0.30, sy = H * 0.11;
+    var dx = W * 0.70, dy = H * 0.11;
+    var ml = W * 0.06, mr = W * 0.94;
+    var my = H * 0.46;
+    var specX = (sx + dx) / 2;
+    var blockR = (mr - ml) * 0.09;
+    var pathSpec = Math.hypot(specX - sx, my - sy) + Math.hypot(specX - dx, my - dy);
+    var pathEdge = Math.hypot(ml - sx, my - sy) + Math.hypot(ml - dx, my - dy);
+    var lambda = (pathEdge - pathSpec) / 9;
+    return {sx:sx,sy:sy,dx:dx,dy:dy,ml:ml,mr:mr,my:my,specX:specX,blockR:blockR,pathSpec:pathSpec,lambda:lambda};
+  }
+
+  function recompute() {
+    var g = geom();
+    var specPh = 2 * Math.PI * g.pathSpec / g.lambda;
+    for (var i = 0; i < N; i++) {
+      var t = i / (N - 1);
+      var mx = g.ml + t * (g.mr - g.ml);
+      var L = Math.hypot(mx - g.sx, g.my - g.sy) + Math.hypot(mx - g.dx, g.my - g.dy);
+      rawPhase[i] = 2 * Math.PI * L / g.lambda;
+      var isBlocked = blocked && Math.abs(mx - g.specX) < g.blockR;
+      tgtAmp[i] = isBlocked ? 0 : 1;
+      tgtPhase[i] = (filmed && !isBlocked) ? specPh : rawPhase[i];
+    }
+  }
+
+  function init() {
+    for (var i = 0; i < N; i++) { curAmp[i] = 1; }
+    resize();
+    for (var i = 0; i < N; i++) { curPhase[i] = tgtPhase[i]; }
+  }
+
+  function toggle(w) {
+    if (w === "block") {
+      blocked = !blocked;
+      if (!blocked) filmed = false;
+    } else {
+      if (!blocked) blocked = true;
+      filmed = !filmed;
+    }
+    document.getElementById("b1").classList.toggle("on", blocked);
+    document.getElementById("b2").classList.toggle("on", filmed);
+    recompute();
+  }
+
+  document.getElementById("b1").addEventListener("click", function(){ toggle("block"); });
+  document.getElementById("b2").addEventListener("click", function(){ toggle("film"); });
+
+  function alerp(a, b, f) {
+    var d = b - a;
+    d -= Math.round(d / (2 * Math.PI)) * 2 * Math.PI;
+    return a + d * f;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var g = geom();
+    var rate = 0.07;
+
+    for (var i = 0; i < N; i++) {
+      curPhase[i] = alerp(curPhase[i], tgtPhase[i], rate);
+      curAmp[i] += (tgtAmp[i] - curAmp[i]) * rate;
+    }
+
+    // ── paths ──
+    for (var i = 0; i < N; i += 2) {
+      if (curAmp[i] < 0.03) continue;
+      var t = i / (N - 1);
+      var mx = g.ml + t * (g.mr - g.ml);
+      var a = curAmp[i] * (filmed ? 0.07 : 0.03);
+      ctx.strokeStyle = "rgba(192,194,194," + a + ")";
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(g.sx, g.sy);
+      ctx.lineTo(mx, g.my);
+      ctx.lineTo(g.dx, g.dy);
+      ctx.stroke();
+    }
+
+    // ── specular path (dashed) ──
+    ctx.strokeStyle = blocked ? "#111" : "rgba(222,51,115,0.15)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 6]);
+    ctx.beginPath();
+    ctx.moveTo(g.sx, g.sy);
+    ctx.lineTo(g.specX, g.my);
+    ctx.lineTo(g.dx, g.dy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── mirror ──
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(g.ml, g.my);
+    ctx.lineTo(g.mr, g.my);
+    ctx.stroke();
+
+    // ── diffractive film ──
+    if (filmed) {
+      ctx.strokeStyle = "rgba(8,169,83,0.25)";
+      ctx.lineWidth = 1;
+      for (var i = 0; i < N; i++) {
+        if (curAmp[i] < 0.1) continue;
+        var t = i / (N - 1);
+        var mx = g.ml + t * (g.mr - g.ml);
+        var h = 2 + 3 * Math.abs(Math.sin(rawPhase[i]));
+        ctx.beginPath();
+        ctx.moveTo(mx, g.my - h);
+        ctx.lineTo(mx, g.my + h);
+        ctx.stroke();
+      }
+    }
+
+    // ── obstruction ──
+    if (blocked) {
+      ctx.beginPath();
+      ctx.arc(g.specX, g.my, g.blockR, 0, Math.PI * 2);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // ── source ──
+    ctx.beginPath();
+    ctx.arc(g.sx, g.sy, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#DE3373";
+    ctx.fill();
+    ctx.fillStyle = "#333";
+    ctx.font = "10px 'Courier New', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("source", g.sx, g.sy - 10);
+
+    // ── detector ──
+    ctx.beginPath();
+    ctx.arc(g.dx, g.dy, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#FCCA28";
+    ctx.fill();
+    ctx.fillStyle = "#333";
+    ctx.fillText("detector", g.dx, g.dy - 10);
+
+    // ── phasor chain ──
+    var arrowL = Math.min(6, W / 150);
+    var chainY = H * 0.74;
+    var px = W * 0.12, py = chainY;
+    var sx = px, sy = py;
+
+    ctx.fillStyle = "#222";
+    ctx.font = "10px 'Courier New', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("phasor sum", W * 0.5, chainY - 40);
+
+    for (var i = 0; i < N; i++) {
+      if (curAmp[i] < 0.03) continue;
+      var amp = curAmp[i];
+      var ph = curPhase[i];
+      var adx = amp * arrowL * Math.cos(ph);
+      var ady = amp * arrowL * Math.sin(ph);
+
+      var tt = i / (N - 1);
+      var hue = (tt * 260 + 220) % 360;
+      ctx.strokeStyle = "hsla(" + hue + ",35%,42%," + (0.45 * amp) + ")";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px + adx, py + ady);
+      ctx.stroke();
+
+      px += adx;
+      py += ady;
+    }
+
+    // ── resultant ──
+    var rLen = Math.hypot(px - sx, py - sy);
+    var maxLen = N * arrowL;
+    var intensity = Math.min(1, rLen / maxLen);
+
+    if (rLen > 1.5) {
+      var ra = Math.atan2(py - sy, px - sx);
+      ctx.strokeStyle = "#DE3373";
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = Math.max(0.25, intensity);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // arrowhead
+      ctx.fillStyle = "#DE3373";
+      ctx.globalAlpha = Math.max(0.25, intensity);
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px - 7 * Math.cos(ra - 0.35), py - 7 * Math.sin(ra - 0.35));
+      ctx.lineTo(px - 7 * Math.cos(ra + 0.35), py - 7 * Math.sin(ra + 0.35));
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // ── start/end markers ──
+    ctx.fillStyle = "#333";
+    ctx.beginPath();
+    ctx.arc(sx, sy, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(px, py, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ── intensity ──
+    var pct = (intensity * 100).toFixed(0);
+    ctx.font = "11px 'Courier New', monospace";
+    ctx.textAlign = "right";
+    ctx.fillStyle = intensity > 0.08 ? "#DE3373" : "#222";
+    ctx.globalAlpha = intensity > 0.08 ? Math.max(0.4, intensity) : 0.4;
+    ctx.fillText(pct + "%", W - 16, H - 16);
+    ctx.globalAlpha = 1;
+
+    // ── intensity bar ──
+    var barX = W - 28, barY = H * 0.68, barH = H * 0.12;
+    ctx.strokeStyle = "#181818";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, 6, barH);
+    ctx.fillStyle = "#DE3373";
+    ctx.globalAlpha = 0.6;
+    ctx.fillRect(barX + 1, barY + barH * (1 - intensity), 4, barH * intensity);
+    ctx.globalAlpha = 1;
+
+    // ── status ──
+    var st = document.getElementById("status");
+    if (!blocked && !filmed) {
+      st.textContent = "all paths contribute \u2014 specular point dominates by phase alignment";
+    } else if (blocked && !filmed) {
+      st.textContent = "specular blocked \u2014 remaining paths cancel by phase mismatch";
+    } else {
+      st.textContent = "diffractive film corrects phases \u2014 light returns via non-specular paths";
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener("resize", resize);
+  init();
+  draw();
+})();
+</script>
+</body>
+</html>

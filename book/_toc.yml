@@ -10,7 +10,8 @@ parts:
         sections:
           - file: 01_alphabet/mediant_derivation
           - file: 01_alphabet/lie_group_characterization
-          - file: 01_alphabet/14_three_dimensions
+          - file: 01_alphabet/three_dimensions
+          - file: 01_alphabet/address_and_quantity
   - caption: "The Field Equation"
     chapters:
       - file: 02_field_equation/rational_field_equation
@@ -23,6 +24,8 @@ parts:
         sections:
           - file: 03_einstein/continuum_limits
           - file: 03_einstein/adm_dictionary
+          - file: 03_einstein/gap1_analytic_proof
+          - file: 03_einstein/gap2_analytic_proof
   - caption: "K < 1: Schrödinger"
     chapters:
       - file: 04_schrodinger/04_schrodinger_intro
@@ -38,6 +41,8 @@ parts:
           - file: 04a_topology/half_mobius_boundary
           - file: 04a_topology/engineering_targets
           - file: 04a_topology/three_zeros
+          - file: 04a_topology/klein_bottle_derivation
+          - file: 04a_topology/half_twist_dynamics
   - caption: "Cosmological Parameters"
     chapters:
       - file: 04b_cosmology/vacuum_energy
@@ -63,6 +68,7 @@ parts:
           - file: 04c_extended/duty_dimension_proof
           - file: 04c_extended/isotropy_lemma
           - file: 04c_extended/xor_derivation
+          - file: 04c_extended/CHAIN_KSTAR
   - caption: "Gauge Sector"
     chapters:
       - file: 04d_gauge/discrete_gauge_resolution
@@ -71,6 +77,12 @@ parts:
           - file: 04d_gauge/gell_mann_nishijima
           - file: 04d_gauge/higgs_from_tongue_boundary
           - file: 04d_gauge/coupling_scales
+          - file: 04d_gauge/higgs_reframing
+          - file: 04d_gauge/mass_sector_closure
+          - file: 04d_gauge/a1_from_saddle_node
+          - file: 04d_gauge/item12_C_from_K_star
+          - file: 04d_gauge/item12_cross_sector_ratios
+          - file: 04d_gauge/sector_constants_structure
   - caption: "Predictions"
     chapters:
       - file: 05_predictions/born_rule
@@ -87,6 +99,9 @@ parts:
           - file: 06_evidence/a0_threshold
           - file: 06_evidence/planck_scale
           - file: 06_evidence/measurement_collapse
+          - file: 06_evidence/PROOF_A_gravity
+          - file: 06_evidence/PROOF_B_quantum
+          - file: 06_evidence/FRAMEWORK_TOPOLOGY
   - caption: "Prior Work"
     chapters:
       - file: 07_prior_work/proslambenomenos
