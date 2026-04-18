@@ -8,6 +8,10 @@
   --m-ref: #DE3373;
   --m-ref-h: 340; --m-ref-s: 72%; --m-ref-l: 54%;
 
+  /* Canonical type stacks */
+  --m-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --m-font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+
   /* Dark mode defaults */
   --m-bg: #000000;
   --m-surface: #000000;
