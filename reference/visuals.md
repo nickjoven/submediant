@@ -18,6 +18,9 @@ Gallery of all visual and interactive resources across the framework, organized 
 | [First Principles](https://nickjoven.github.io/submediant-site/first-principles.html) | sin(ωt) to Einstein. The complete derivation in 10 steps, with an evolving waveform background. |
 | [Oscillations](https://nickjoven.github.io/submediant-site/oscillations.html) | 47 oscillations of f(x) = 1/(1+x). Pipes screensaver, Fibonacci sequence, pure math of 1/φ. |
 | [Derivation Graph](graph) | Interactive D3 force-directed graph of the framework's derivation chain and repository structure. |
+| [Double Pendulum](https://github.com/nickjoven/harmonics/blob/main/sync_cost/applications/double_pendulum.html) | Double pendulum tongue structure. Mode-locking visible in phase portraits of the driven coupled pendulum. |
+| [Three-Body Catalog](https://github.com/nickjoven/harmonics/blob/main/sync_cost/applications/three_body_catalog.html) | Catalog of three-body periodic orbits — the classical counterpart to three coupled oscillators. |
+| [Zone Plate](https://nickjoven.github.io/submediant-site/zone-plate.html) | Feynman path-sum demonstration. Block the specular point with an obstruction, apply a diffractive film, watch the light return via non-specular paths. |
 
 ---
 
@@ -30,6 +33,7 @@ Gallery of all visual and interactive resources across the framework, organized 
 | [orbit.gif](https://github.com/nickjoven/harmonics/blob/main/orbit.gif) | Circle map orbit. Phase evolution showing mode-locking and quasiperiodicity. |
 | [spiral.gif](https://github.com/nickjoven/harmonics/blob/main/spiral.gif) | Spiral convergence. Floquet decay inside an Arnold tongue. |
 | [rose.gif](https://github.com/nickjoven/harmonics/blob/main/rose.gif) | Rose curve from rational frequency ratios. Winding number geometry on the circle. |
+| [genesis.gif](https://github.com/nickjoven/harmonics/blob/main/genesis.gif) | Genesis animation — primordial structure emerging from the tree. |
 
 ---
 
