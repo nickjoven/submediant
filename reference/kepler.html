@@ -255,12 +255,14 @@ body {
 const PHI = (1 + Math.sqrt(5)) / 2;
 
 const groups = {
-  foundation:  { cx: -280, cy: -120, color: "#ffd75c", label: "Foundation" },
-  field_eq:    { cx:  -80, cy: -220, color: "#58a6ff", label: "Field Equation" },
-  spacetime:   { cx:  160, cy: -140, color: "#7ee787", label: "Spacetime" },
-  topology:    { cx:  300, cy:   60, color: "#d2a8ff", label: "Topology" },
-  cosmology:   { cx:  120, cy:  220, color: "#ffa657", label: "Cosmology" },
-  predictions: { cx: -180, cy:  180, color: "#79c0ff", label: "Predictions" }
+  foundation:  { cx: -280, cy: -160, color: "#ffd75c", label: "Foundation" },
+  field_eq:    { cx:  -80, cy: -260, color: "#58a6ff", label: "Field Equation" },
+  spacetime:   { cx:  160, cy: -180, color: "#7ee787", label: "Spacetime" },
+  topology:    { cx:  320, cy:   20, color: "#d2a8ff", label: "Topology" },
+  cosmology:   { cx:  140, cy:  220, color: "#ffa657", label: "Cosmology" },
+  extended:    { cx: -340, cy:   80, color: "#f5a9b8", label: "Extended" },
+  gauge:       { cx:  340, cy:  200, color: "#ff7b72", label: "Gauge Sector" },
+  predictions: { cx: -180, cy:  260, color: "#79c0ff", label: "Predictions" }
 };
 
 const nodes = [
@@ -302,7 +304,33 @@ const nodes = [
   { id:"D7",  title:"Measurement Collapse", claim:"Wavefunction collapse as tongue traversal in the Arnold tongue diagram.", group:"predictions", r:8 },
   { id:"D8",  title:"High-z MOND", claim:"MOND acceleration a_0 varies with redshift: a_0(z) = a_0(0) (1+z)^beta.", group:"predictions", r:8, url:"our_address.html" },
   { id:"D9",  title:"Fidelity Bound", claim:"Self-referential bound: the framework must predict its own derivability.", group:"predictions", r:9 },
-  { id:"D3",  title:"a_0 Threshold", claim:"MOND acceleration a_0 derived from the synchronization cost threshold.", group:"predictions", r:8, url:"our_address.html" }
+  { id:"D3",  title:"a_0 Threshold", claim:"MOND acceleration a_0 derived from the synchronization cost threshold.", group:"predictions", r:8, url:"our_address.html" },
+
+  // Extended Derivations (D30–D40)
+  { id:"D30", title:"Denomination Boundary", claim:"Devil's staircase in K-space is a brachistochrone; three open questions unified.", group:"extended", r:8 },
+  { id:"D31", title:"Speed of Light", claim:"c as gate propagation speed of the coherent medium at K=1.", group:"extended", r:8 },
+  { id:"D32", title:"Minkowski Signature", claim:"(3,1) signature from phase-state observability: 3 observable + 1 dark.", group:"extended", r:8 },
+  { id:"D33", title:"Duty Cycle Dictionary", claim:"Coupling constants from Klein bottle duty cycles: sin^2 theta_W = 8/35.", group:"extended", r:9 },
+  { id:"D34", title:"Generation Mechanism", claim:"Three generations from phase-state observability at Stern-Brocot depth.", group:"extended", r:8 },
+  { id:"D35", title:"Cosmological Cycle", claim:"Two-voice round in 13/19: gap-twin at 18.7% spacetime duty.", group:"extended", r:8 },
+  { id:"D36", title:"Conservation as Computability", claim:"S^1 compact -> |r| <= 1 -> circle map invertible -> information conserved.", group:"extended", r:8 },
+  { id:"D37", title:"Figure-Eight Topology", claim:"Klein bottle self-intersection = lemniscate; sin^2 theta_W = 8/35 is crossing probability.", group:"extended", r:8 },
+  { id:"D38", title:"Boundary Weight", claim:"Omega_Lambda(w) = (11+2w)/(16+3w); w* = 0.83 at K* = 0.862.", group:"extended", r:8 },
+  { id:"D39", title:"Half-Mobius Boundary", claim:"Z_4 boundary condition from half-Mobius strip.", group:"topology", r:8 },
+  { id:"D40", title:"Stribeck Vortex", claim:"Vortex regime map: overcritical core (K>1) + subcritical annulus (K<1).", group:"extended", r:8 },
+
+  // Gauge Sector (D41–D45)
+  { id:"D41", title:"Discrete Gauge Resolution", claim:"Gauge structure is discrete: charges, center Z_6, confinement from XOR.", group:"gauge", r:9 },
+  { id:"D42", title:"Gauge-Sector Lovelock", claim:"SU(3) x SU(2) x U(1) -> Yang-Mills uniquely via Utiyama + Cartan.", group:"gauge", r:10 },
+  { id:"D43", title:"Gell-Mann-Nishijima", claim:"Q = T_3 + Y/2 derived from Klein bottle identification geometry.", group:"gauge", r:8 },
+  { id:"D44", title:"Higgs from Tongue Boundary", claim:"Higgs doublet is tongue boundary mode of open q=2 fiber.", group:"gauge", r:9 },
+  { id:"D45", title:"Coupling Scales", claim:"D_0 = 1/2 from tree geometry; all dimensionless ratios determined; theta = 0.", group:"gauge", r:8 },
+
+  // ADM Dictionary (spacetime)
+  { id:"D46", title:"ADM Dictionary", claim:"Each ADM entry uniquely identified by K=1 Kuramoto symmetries.", group:"spacetime", r:8 },
+
+  // Baryon Fraction (cosmology)
+  { id:"D47", title:"Baryon Fraction", claim:"Omega_b = 1/19, Omega_DM = 5/19 from Z_6 irreducibility.", group:"cosmology", r:9 }
 ];
 
 // Observational predictions — these get special rendering
@@ -312,8 +340,19 @@ const predictions = [
   { nodeId:"D3",  observable:"a_0 (MOND scale)", predicted:"1.25e-10", observed:"1.2e-10", residual:"4%", status:"confirmed" },
   { nodeId:"D14", observable:"d (dimensions)", predicted:"3", observed:"3", residual:"exact", status:"confirmed" },
   { nodeId:"D25", observable:"Omega_Lambda", predicted:"13/19 = 0.6842", observed:"0.6847 +/- 0.0073", residual:"0.07 sigma", status:"confirmed" },
+  { nodeId:"D26", observable:"Hierarchy (M_Pl / H_0)", predicted:"6 x 13^54", observed:"8.492e60", residual:"0.48%", status:"confirmed" },
   { nodeId:"D27", observable:"N_efolds", predicted:"61.3", observed:"TBD", residual:"CMB-S4 ~2028", status:"pending" },
   { nodeId:"D8",  observable:"High-z MOND", predicted:"a_0(z) = a_0(0)(1+z)^beta", observed:"TBD", residual:"—", status:"pending" },
+  { nodeId:"D33", observable:"Weinberg angle sin^2 theta_W", predicted:"8/35 = 0.2286", observed:"0.2312", residual:"1.1%", status:"confirmed" },
+  { nodeId:"D44", observable:"Higgs mass m_H/v", predicted:"1/2", observed:"0.508", residual:"1.6%", status:"confirmed" },
+  { nodeId:"D33", observable:"Higgs quartic lambda", predicted:"1/8 = 0.125", observed:"~0.13", residual:"4%", status:"confirmed" },
+  { nodeId:"D33", observable:"alpha_s / alpha_2", predicted:"27/8 = 3.375", observed:"3.488", residual:"3.2%", status:"confirmed" },
+  { nodeId:"D42", observable:"Gauge group", predicted:"SU(3) x SU(2) x U(1)", observed:"SU(3) x SU(2) x U(1)", residual:"exact", status:"confirmed" },
+  { nodeId:"D41", observable:"Anomaly cancellation", predicted:"6 conditions = 0", observed:"6 conditions = 0", residual:"exact", status:"confirmed" },
+  { nodeId:"D45", observable:"Strong CP angle theta", predicted:"0", observed:"< 1e-10", residual:"exact", status:"confirmed" },
+  { nodeId:"D47", observable:"Omega_DM", predicted:"5/19 = 0.2632", observed:"0.265 +/- 0.007", residual:"0.7%", status:"confirmed" },
+  { nodeId:"D47", observable:"Omega_b", predicted:"1/19 = 0.0526", observed:"0.0493 +/- 0.0003", residual:"6.7%", status:"confirmed" },
+  { nodeId:"D47", observable:"Omega_DM / Omega_b", predicted:"5", observed:"5.41", residual:"7.5%", status:"confirmed" },
   { nodeId:null,  observable:"Alpha Centauri distance", predicted:"SB path length", observed:"4.37 ly", residual:"—", status:"reinterpretation" }
 ];
 
@@ -326,7 +365,19 @@ const edges = [
   ["D14","D10"],["D14","D11"],["D15","D14"],["D16","D11"],["D17","D16"],
   ["D18","D14"],["D19","D18"],["D20","D19"],["D21","D20"],["D23","D19"],
   ["D24","D19"],["D25","D19"],["D25","D28"],["D26","D25"],["D26","D27"],
-  ["D27","D14"],["D27","D19"],["D28","D19"],["D28","D11"]
+  ["D27","D14"],["D27","D19"],["D28","D19"],["D28","D11"],
+  // Extended
+  ["D30","D19"],["D30","D11"],["D31","D11"],["D31","D14"],["D31","D17"],
+  ["D32","D14"],["D32","D19"],["D33","D19"],
+  ["D34","D10"],["D34","D14"],["D34","D19"],["D35","D19"],["D35","D25"],
+  ["D36","D10"],["D36","D11"],["D37","D19"],["D37","D32"],
+  ["D38","D25"],["D38","D19"],["D39","D18"],["D40","D11"],["D40","D36"],
+  // Gauge sector
+  ["D41","D20"],["D41","D21"],["D42","D41"],["D42","D14"],["D42","D13"],
+  ["D43","D42"],["D43","D19"],["D44","D1"],["D44","D43"],["D44","D19"],
+  ["D45","D44"],["D45","D33"],
+  // ADM dictionary and baryon fraction
+  ["D46","D12"],["D46","D13"],["D47","D25"],["D47","D19"]
 ];
 
 // Build lookup

@@ -66,6 +66,12 @@ Interactive force-directed visualization of the framework's derivation chain and
       <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ffa657;margin-right:8px;"></span>Cosmology
     </div>
     <div style="display: flex; align-items: center; margin-bottom: 5px;">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f5a9b8;margin-right:8px;"></span>Extended
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff7b72;margin-right:8px;"></span>Gauge Sector
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
       <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#79c0ff;margin-right:8px;"></span>Predictions
     </div>
     <div style="display: flex; align-items: center; margin-bottom: 5px;">
@@ -144,11 +150,35 @@ const derivations = [
   { id: "D23", label: "D23", title: "Three Zeros", claim: "The field equation has exactly three zeros, corresponding to three generations.", color: "#d2a8ff", group: "topology", r: 10 },
 
   // Cosmology (orange)
-  { id: "D24", label: "D24", title: "Vacuum Energy", claim: "Vacuum energy equals the synchronization cost of the trivial configuration.", color: "#ffa657", group: "cosmology", r: 10 },
-  { id: "D25", label: "D25", title: "Farey Partition (Ω_Λ = 13/19)", claim: "Dark energy fraction Ω_Λ = 13/19 ≈ 0.6842 from Farey partition.", color: "#ffa657", group: "cosmology", r: 11 },
-  { id: "D26", label: "D26", title: "Hierarchy", claim: "The hierarchy between gravity and electromagnetism is a Farey depth ratio.", color: "#ffa657", group: "cosmology", r: 10 },
-  { id: "D27", label: "D27", title: "Exponent", claim: "The critical exponent of synchronization determines the spectral index.", color: "#ffa657", group: "cosmology", r: 10 },
-  { id: "D28", label: "D28", title: "Farey Proof", claim: "Closed-form proof that the Farey partition yields Ω_Λ = 13/19.", color: "#ffa657", group: "cosmology", r: 10 },
+  { id: "D24", label: "D24", title: "Vacuum Energy", claim: "Klein bottle has exactly 4 surviving modes; cosmological constant problem dissolves.", color: "#ffa657", group: "cosmology", r: 10 },
+  { id: "D25", label: "D25", title: "Farey Partition (Ω_Λ = 13/19)", claim: "Ω_Λ = |F_6|/(|F_6|+6) = 13/19 ≈ 0.6842 (observed 0.6847 ± 0.0073).", color: "#ffa657", group: "cosmology", r: 11 },
+  { id: "D26", label: "D26", title: "Hierarchy", claim: "Planck/Hubble ratio R = 6 × 13^54 (residual 0.48%).", color: "#ffa657", group: "cosmology", r: 10 },
+  { id: "D27", label: "D27", title: "Exponent", claim: "Exponent 54 = q₂ × q₃^d derived from spatial dimension and Klein bottle.", color: "#ffa657", group: "cosmology", r: 10 },
+  { id: "D28", label: "D28", title: "Farey Proof", claim: "SO(2) structure at locked/unlocked boundary forces Farey counting.", color: "#ffa657", group: "cosmology", r: 10 },
+  { id: "D47", label: "D47", title: "Baryon Fraction", claim: "Ω_b = 1/19, Ω_DM = 5/19 from Z_6 irreducibility.", color: "#ffa657", group: "cosmology", r: 11 },
+
+  // Extended Derivations (pink)
+  { id: "D30", label: "D30", title: "Denomination Boundary", claim: "Devil's staircase in K-space is a brachistochrone; three open questions unified.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D31", label: "D31", title: "Speed of Light", claim: "c as gate propagation speed of the coherent medium at K=1.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D32", label: "D32", title: "Minkowski Signature", claim: "(3,1) signature from phase-state observability: 3 observable + 1 dark.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D33", label: "D33", title: "Duty Cycle Dictionary", claim: "Coupling constants from Klein bottle duty cycles: sin²θ_W = 8/35.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D34", label: "D34", title: "Generation Mechanism", claim: "Three generations from phase-state observability at Stern-Brocot depth.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D35", label: "D35", title: "Cosmological Cycle", claim: "Two-voice round in 13/19: gap-twin at 18.7% spacetime duty.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D36", label: "D36", title: "Conservation as Computability", claim: "S^1 compact → |r| ≤ 1 → K_eff ≤ 1 → circle map invertible → information conserved.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D37", label: "D37", title: "Figure-Eight Topology", claim: "Klein bottle self-intersection = lemniscate; sin²θ_W = 8/35 is crossing probability.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D38", label: "D38", title: "Boundary Weight", claim: "Ω_Λ(w) = (11+2w)/(16+3w); w* = 0.83 at K* = 0.862.", color: "#f5a9b8", group: "extended", r: 10 },
+  { id: "D39", label: "D39", title: "Half-Möbius Boundary", claim: "Z_4 boundary condition from half-Möbius strip.", color: "#d2a8ff", group: "topology", r: 10 },
+  { id: "D40", label: "D40", title: "Stribeck Vortex", claim: "Vortex regime map: overcritical core (K>1) + subcritical annulus (K<1).", color: "#f5a9b8", group: "extended", r: 10 },
+
+  // Gauge Sector (coral)
+  { id: "D41", label: "D41", title: "Discrete Gauge Resolution", claim: "Gauge structure is discrete: charges, center Z_6, confinement from XOR.", color: "#ff7b72", group: "gauge", r: 11 },
+  { id: "D42", label: "D42", title: "Gauge-Sector Lovelock", claim: "SU(3) × SU(2) × U(1) → Yang-Mills uniquely via Utiyama + Cartan.", color: "#ff7b72", group: "gauge", r: 11 },
+  { id: "D43", label: "D43", title: "Gell-Mann–Nishijima", claim: "Q = T_3 + Y/2 derived from Klein bottle identification geometry.", color: "#ff7b72", group: "gauge", r: 10 },
+  { id: "D44", label: "D44", title: "Higgs from Tongue Boundary", claim: "Higgs doublet is tongue boundary mode of open q=2 fiber.", color: "#ff7b72", group: "gauge", r: 11 },
+  { id: "D45", label: "D45", title: "Coupling Scales", claim: "D_0 = 1/2 from tree geometry; all dimensionless ratios determined; θ = 0.", color: "#ff7b72", group: "gauge", r: 10 },
+
+  // ADM dictionary (spacetime)
+  { id: "D46", label: "D46", title: "ADM Dictionary", claim: "Each ADM entry uniquely identified by K=1 Kuramoto symmetries.", color: "#7ee787", group: "spacetime", r: 10 },
 
   // Predictions (cyan)
   { id: "D1", label: "D1",  title: "Born Rule", claim: "Born's probability rule |ψ|² emerges as basin measure of synchronization.", color: "#79c0ff", group: "predictions", r: 11, url: "constants.html" },
@@ -202,6 +232,28 @@ const depEdges = [
   ["D24", "D19"], ["D25", "D19"], ["D25", "D28"], ["D26", "D25"],
   ["D26", "D27"], ["D27", "D14"], ["D27", "D19"], ["D28", "D19"],
   ["D28", "D11"],
+  // Extended derivations (D30–D40)
+  ["D30", "D19"], ["D30", "D11"],
+  ["D31", "D11"], ["D31", "D14"], ["D31", "D17"],
+  ["D32", "D14"], ["D32", "D19"],
+  ["D33", "D19"],
+  ["D34", "D10"], ["D34", "D14"], ["D34", "D19"],
+  ["D35", "D19"], ["D35", "D25"],
+  ["D36", "D10"], ["D36", "D11"],
+  ["D37", "D19"], ["D37", "D32"],
+  ["D38", "D25"], ["D38", "D19"],
+  ["D39", "D18"],
+  ["D40", "D11"], ["D40", "D36"],
+  // Gauge sector (D41–D45)
+  ["D41", "D20"], ["D41", "D21"],
+  ["D42", "D41"], ["D42", "D14"], ["D42", "D13"],
+  ["D43", "D42"], ["D43", "D19"],
+  ["D44", "D1"],  ["D44", "D43"], ["D44", "D19"],
+  ["D45", "D44"], ["D45", "D33"],
+  // ADM dictionary (D46)
+  ["D46", "D12"], ["D46", "D13"],
+  // Baryon fraction (D47)
+  ["D47", "D25"], ["D47", "D19"],
 ];
 
 // Cross-repo edges (dashed)
@@ -259,6 +311,8 @@ const glowColors = {
   spacetime: "#7ee787",
   topology: "#d2a8ff",
   cosmology: "#ffa657",
+  extended: "#f5a9b8",
+  gauge: "#ff7b72",
   predictions: "#79c0ff",
   prior: "#8b949e",
   repo: "#e6edf3",
