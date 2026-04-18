@@ -510,8 +510,37 @@ function initCopyOverflow() {
   window.addEventListener('resize', function() { setTimeout(scan, 200); });
 }
 
+// ── Page Nav: single-source navigation bar ──────────────────────────────
+// Injected at runtime so each page carries only <nav id="page-nav"></nav>.
+var PAGE_NAV_LINKS = [
+  { href: "first-principles.html", label: "First Principles" },
+  { href: "three-body.html",       label: "Three Bodies" },
+  { href: "oscillations.html",     label: "Oscillations" },
+  { href: "our_address.html",      label: "Our Address" },
+  { href: "constants.html",        label: "Constants" },
+  { href: "kepler.html",           label: "Kepler" },
+  { href: "simulations.html",      label: "Simulations" },
+  { href: "zone-plate.html",       label: "Zone Plate" }
+];
+
+function initPageNav() {
+  var nav = document.getElementById("page-nav");
+  if (!nav) return;
+  if (nav.children.length > 0) return;
+  var here = location.pathname.split("/").pop() || "index.html";
+  for (var i = 0; i < PAGE_NAV_LINKS.length; i++) {
+    var item = PAGE_NAV_LINKS[i];
+    var a = document.createElement("a");
+    a.href = item.href;
+    a.textContent = item.label;
+    if (here === item.href) a.className = "active";
+    nav.appendChild(a);
+  }
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────
 function init() {
+  initPageNav();       // populate nav bar from single source
   createMoonToggle();  // button must exist before applyPalette sets its icon
   applyPalette();
   initFormatAccordion();
